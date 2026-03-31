@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connexion — TicketFlow</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/auth.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<div class="auth-page">
+
+  <!-- GAUCHE -->
+  <div class="auth-left">
+    <div class="auth-left-content">
+      <div class="auth-left-logo">
+        <div class="logo-icon">🎫</div>
+        TicketFlow
+      </div>
+      <h2>Bienvenue sur votre espace de support</h2>
+      <p>Gérez vos tickets, suivez vos demandes et communiquez avec votre équipe en toute simplicité.</p>
+      <div class="auth-features">
+        <div class="auth-feature-item">
+          <div class="icon">⚡</div>
+          <span>Réponses rapides et suivi en temps réel</span>
+        </div>
+        <div class="auth-feature-item">
+          <div class="icon">🔒</div>
+          <span>Sécurisé et confidentiel</span>
+        </div>
+        <div class="auth-feature-item">
+          <div class="icon">📊</div>
+          <span>Tableau de bord personnalisé par rôle</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DROITE -->
+  <div class="auth-right">
+    <div class="auth-form-wrapper">
+      <a href="../index.html" class="back-link">← Retour à l'accueil</a>
+
+      <div class="auth-form-header">
+        <h1>Se connecter</h1>
+        <p>Accédez à votre espace TicketFlow</p>
+      </div>
+
+      <!-- ALERT (masquée par défaut) -->
+      <div class="alert alert-danger" id="alert-error" style="display: none;">
+        ❌ Email ou mot de passe incorrect.
+      </div>
+
+      <form id="login-form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="email">Adresse email</label>
+          <input type="email" id="email" class="form-control" placeholder="vous@exemple.com" autocomplete="email" required />
+        </div>
+
+        <div class="form-group">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <label class="form-label" for="password" style="margin-bottom: 0;">Mot de passe</label>
+            <a href="#" style="font-size: 0.8rem; color: var(--primary);">Mot de passe oublié ?</a>
+          </div>
+          <div class="password-wrapper" style="margin-top: 6px;">
+            <input type="password" id="password" class="form-control" placeholder="••••••••" autocomplete="current-password" required />
+            <button type="button" class="password-toggle" onclick="togglePassword('password', this)">👁️</button>
+          </div>
+        </div>
+
+        <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
+          <label class="checkbox-group">
+            <input type="checkbox" id="remember" />
+            Se souvenir de moi
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; justify-content: center;">
+          Se connecter
+        </button>
+      </form>
+
+      <div class="divider">ou continuer avec</div>
+
+      <button class="social-btn" style="margin-bottom: 10px;">
+        <img src="https://www.google.com/favicon.ico" width="18" alt="Google" />
+        Continuer avec Google
+      </button>
+      <button class="social-btn">
+        <span>🔷</span>
+        Continuer avec Microsoft
+      </button>
+
+      <p class="auth-form-footer">
+        Pas encore de compte ? <a href="register.html">Créer un compte →</a>
+      </p>
+
+      <!-- COMPTES DE DÉMO -->
+      <div style="margin-top: 32px; padding: 16px; background: #f8fafc; border-radius: var(--radius-sm); border: 1px dashed var(--border);">
+        <p style="font-size: 0.8rem; font-weight: 700; color: var(--text); margin-bottom: 10px;">🧪 Comptes de démonstration :</p>
+        <div style="font-size: 0.8rem; color: var(--text-light); display: flex; flex-direction: column; gap: 6px;">
+          <div>
+            <span class="badge badge-primary" style="margin-right: 6px;">Admin</span>
+            admin@ticketflow.fr / <code>admin123</code>
+            <button class="btn btn-sm" style="margin-left: 6px; padding: 2px 8px; font-size: 0.75rem;" onclick="fillDemo('admin@ticketflow.fr','admin123')">Utiliser</button>
+          </div>
+          <div>
+            <span class="badge badge-success" style="margin-right: 6px;">Agent</span>
+            agent@ticketflow.fr / <code>agent123</code>
+            <button class="btn btn-sm" style="margin-left: 6px; padding: 2px 8px; font-size: 0.75rem;" onclick="fillDemo('agent@ticketflow.fr','agent123')">Utiliser</button>
+          </div>
+          <div>
+            <span class="badge badge-gray" style="margin-right: 6px;">User</span>
+            user@ticketflow.fr / <code>user123</code>
+            <button class="btn btn-sm" style="margin-left: 6px; padding: 2px 8px; font-size: 0.75rem;" onclick="fillDemo('user@ticketflow.fr','user123')">Utiliser</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function togglePassword(id, btn) {
+    const input = document.getElementById(id);
+    if (input.type === 'password') {
+      input.type = 'text';
+      btn.textContent = '🙈';
+    } else {
+      input.type = 'password';
+      btn.textContent = '👁️';
+    }
+  }
+
+  function fillDemo(email, password) {
+    document.getElementById('email').value = email;
+    document.getElementById('password').value = password;
+  }
+
+  // Comptes demo (simulés côté client)
+  const DEMO_ACCOUNTS = {
+    'admin@ticketflow.fr': { password: 'admin123', role: 'admin', name: 'Admin Principal' },
+    'agent@ticketflow.fr': { password: 'agent123', role: 'agent', name: 'Agent Support' },
+    'user@ticketflow.fr':  { password: 'user123',  role: 'user',  name: 'Utilisateur Demo' },
+  };
+
+  document.getElementById('login-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email    = document.getElementById('email').value.trim().toLowerCase();
+    const password = document.getElementById('password').value;
+    const alertEl  = document.getElementById('alert-error');
+
+    const account = DEMO_ACCOUNTS[email];
+    if (account && account.password === password) {
+      // Stocker la session
+      localStorage.setItem('tf_user', JSON.stringify({
+        email,
+        name: account.name,
+        role: account.role,
+        avatar: account.name.charAt(0).toUpperCase()
+      }));
+      // Rediriger selon le rôle
+      if (account.role === 'admin')       window.location.href = 'dashboard-admin.html';
+      else if (account.role === 'agent')  window.location.href = 'dashboard-agent.html';
+      else                                window.location.href = 'dashboard-user.html';
+    } else {
+      alertEl.style.display = 'flex';
+      setTimeout(() => { alertEl.style.display = 'none'; }, 4000);
+    }
+  });
+
+  // Pré-remplir si déjà connecté
+  const session = localStorage.getItem('tf_user');
+  if (session) {
+    const user = JSON.parse(session);
+    if (user.role === 'admin')       window.location.href = 'dashboard-admin.html';
+    else if (user.role === 'agent')  window.location.href = 'dashboard-agent.html';
+    else                             window.location.href = 'dashboard-user.html';
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Administration — TicketFlow</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/dashboard.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    .admin-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 28px; }
+    .kpi-card { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; text-align: center; }
+    .kpi-value { font-size: 2rem; font-weight: 800; color: var(--primary); }
+    .kpi-label { font-size: 0.8rem; color: var(--text-light); margin-top: 4px; }
+    .user-row-actions { display: flex; gap: 6px; }
+    .tag-role-admin  { background: #fee2e2; color: #991b1b; }
+    .tag-role-agent  { background: #d1fae5; color: #065f46; }
+    .tag-role-user   { background: #dbeafe; color: #1e40af; }
+    .progress-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<div class="dashboard-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🎫</div>
+      TicketFlow
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">Administration</div>
+      <div class="nav-item active" onclick="showSection('overview')">
+        <span class="nav-icon">📊</span> Vue d'ensemble
+      </div>
+      <div class="nav-item" onclick="showSection('tickets')">
+        <span class="nav-icon">🎫</span> Tous les tickets
+      </div>
+      <div class="nav-item" onclick="showSection('users')">
+        <span class="nav-icon">👥</span> Utilisateurs
+      </div>
+      <div class="nav-item" onclick="showSection('agents')">
+        <span class="nav-icon">🛡️</span> Agents
+      </div>
+      <div class="nav-section-title">Paramètres</div>
+      <div class="nav-item" onclick="showSection('settings')">
+        <span class="nav-icon">⚙️</span> Paramètres
+      </div>
+      <div class="nav-item" onclick="logout()" style="color: var(--danger);">
+        <span class="nav-icon">🚪</span> Déconnexion
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="avatar" id="user-avatar">A</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="user-name">Administrateur</div>
+          <div class="sidebar-user-role">
+            <span class="badge badge-danger" style="font-size: 0.7rem;">Admin</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h2 id="page-title">Vue d'ensemble</h2>
+        <p id="page-subtitle">Tableau de bord administrateur</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn">🔔<span class="notif-dot"></span></button>
+        <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-user')">➕ Ajouter utilisateur</button>
+      </div>
+    </header>
+
+    <div class="page-content">
+
+      <!-- VUE D'ENSEMBLE -->
+      <section id="section-overview">
+        <div class="admin-kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-value" id="kpi-total-tickets">0</div>
+            <div class="kpi-label">Total tickets</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value" style="color: var(--warning);" id="kpi-open">0</div>
+            <div class="kpi-label">Tickets ouverts</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value" style="color: var(--success);" id="kpi-resolved">0</div>
+            <div class="kpi-label">Tickets résolus</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value" style="color: var(--danger);" id="kpi-critical">0</div>
+            <div class="kpi-label">Critiques</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value" id="kpi-users">0</div>
+            <div class="kpi-label">Utilisateurs</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value" id="kpi-agents">0</div>
+            <div class="kpi-label">Agents actifs</div>
+          </div>
+        </div>
+
+        <!-- RÉPARTITION PAR STATUT -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+          <div class="card">
+            <div class="card-header"><h3>Répartition par statut</h3></div>
+            <div class="card-body">
+              <div id="status-bars"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Répartition par priorité</h3></div>
+            <div class="card-body">
+              <div id="priority-bars"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DERNIERS TICKETS -->
+        <div class="table-wrapper">
+          <div class="table-header">
+            <h3>Derniers tickets</h3>
+            <a href="#" onclick="showSection('tickets')" style="font-size: 0.875rem; color: var(--primary);">Voir tous →</a>
+          </div>
+          <div id="recent-tickets-container"></div>
+        </div>
+      </section>
+
+      <!-- TOUS LES TICKETS (ADMIN) -->
+      <section id="section-tickets" style="display: none;">
+        <div class="table-wrapper">
+          <div class="table-header">
+            <h3>Gestion des tickets</h3>
+            <div class="table-controls">
+              <div class="search-box">🔍<input type="text" placeholder="Rechercher..." id="admin-ticket-search" oninput="filterAdminTickets()" /></div>
+              <select class="form-control" style="width: auto; padding: 7px 12px;" id="admin-filter-status" onchange="filterAdminTickets()">
+                <option value="">Tous statuts</option>
+                <option value="ouvert">Ouvert</option>
+                <option value="en_cours">En cours</option>
+                <option value="resolu">Résolu</option>
+                <option value="ferme">Fermé</option>
+              </select>
+            </div>
+          </div>
+          <div id="admin-tickets-container"></div>
+        </div>
+      </section>
+
+      <!-- UTILISATEURS -->
+      <section id="section-users" style="display: none;">
+        <div class="table-wrapper">
+          <div class="table-header">
+            <h3>Gestion des utilisateurs</h3>
+            <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-user')">➕ Ajouter</button>
+          </div>
+          <div id="users-container"></div>
+        </div>
+      </section>
+
+      <!-- AGENTS -->
+      <section id="section-agents" style="display: none;">
+        <div class="table-wrapper">
+          <div class="table-header">
+            <h3>Gestion des agents</h3>
+            <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-agent')">➕ Ajouter un agent</button>
+          </div>
+          <div id="agents-container"></div>
+        </div>
+      </section>
+
+      <!-- PARAMÈTRES -->
+      <section id="section-settings" style="display: none;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 800px;">
+          <div class="card">
+            <div class="card-header"><h3>⚙️ Paramètres généraux</h3></div>
+            <div class="card-body">
+              <div class="form-group">
+                <label class="form-label">Nom de la plateforme</label>
+                <input type="text" class="form-control" value="TicketFlow" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email de contact</label>
+                <input type="email" class="form-control" value="support@ticketflow.fr" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Langue par défaut</label>
+                <select class="form-control">
+                  <option>Français</option>
+                  <option>English</option>
+                  <option>Español</option>
+                </select>
+              </div>
+              <button class="btn btn-primary">Sauvegarder</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>📧 Notifications</h3></div>
+            <div class="card-body">
+              <div class="form-group">
+                <label class="checkbox-group">
+                  <input type="checkbox" checked /> Notifier par email à la création d'un ticket
+                </label>
+              </div>
+              <div class="form-group">
+                <label class="checkbox-group">
+                  <input type="checkbox" checked /> Notifier à chaque changement de statut
+                </label>
+              </div>
+              <div class="form-group">
+                <label class="checkbox-group">
+                  <input type="checkbox" /> Résumé quotidien par email
+                </label>
+              </div>
+              <button class="btn btn-primary">Sauvegarder</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL AJOUTER UTILISATEUR -->
+<div class="modal-overlay" id="modal-add-user">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>➕ Ajouter un utilisateur</h3>
+      <button class="modal-close" onclick="closeModal('modal-add-user')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <div class="form-group">
+          <label class="form-label">Prénom</label>
+          <input type="text" class="form-control" id="nu-firstname" placeholder="Jean" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nom</label>
+          <input type="text" class="form-control" id="nu-lastname" placeholder="Dupont" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-control" id="nu-email" placeholder="jean.dupont@exemple.com" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Rôle</label>
+        <select class="form-control" id="nu-role">
+          <option value="user">Utilisateur</option>
+          <option value="agent">Agent</option>
+          <option value="admin">Administrateur</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-user')">Annuler</button>
+      <button class="btn btn-primary" onclick="addUser()">Créer l'utilisateur</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL AJOUTER AGENT -->
+<div class="modal-overlay" id="modal-add-agent">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>🛡️ Ajouter un agent</h3>
+      <button class="modal-close" onclick="closeModal('modal-add-agent')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <div class="form-group">
+          <label class="form-label">Prénom</label>
+          <input type="text" class="form-control" id="na-firstname" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nom</label>
+          <input type="text" class="form-control" id="na-lastname" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-control" id="na-email" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Spécialité</label>
+        <select class="form-control" id="na-specialty">
+          <option>Technique</option>
+          <option>Facturation</option>
+          <option>Commercial</option>
+          <option>Généraliste</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-agent')">Annuler</button>
+      <button class="btn btn-primary" onclick="addAgent()">Créer l'agent</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentUser = null;
+let allTickets  = [];
+let users  = [];
+let agents = [];
+
+const PRIORITY_LABELS = { bas: 'Bas', moyen: 'Moyen', eleve: 'Élevé', critique: 'Critique' };
+const STATUS_LABELS   = { ouvert: 'Ouvert', en_cours: 'En cours', resolu: 'Résolu', ferme: 'Fermé' };
+const STATUS_BADGE    = { ouvert: 'badge-primary', en_cours: 'badge-warning', resolu: 'badge-success', ferme: 'badge-gray' };
+const PRIORITY_CLASS  = { bas: 'priority-low', moyen: 'priority-medium', eleve: 'priority-high', critique: 'priority-critical' };
+
+document.addEventListener('DOMContentLoaded', () => {
+  const session = localStorage.getItem('tf_user');
+  if (!session) { window.location.href = 'login.html'; return; }
+  currentUser = JSON.parse(session);
+  if (currentUser.role !== 'admin') { window.location.href = 'login.html'; return; }
+
+  document.getElementById('user-avatar').textContent = currentUser.avatar || 'A';
+  document.getElementById('user-name').textContent   = currentUser.name;
+
+  initData();
+  updateKPIs();
+  renderStatusBars();
+  renderPriorityBars();
+  renderRecentTickets();
+});
+
+function initData() {
+  // Tickets de démo
+  allTickets = [
+    { id: 101, title: 'Erreur 500 lors du paiement', category: 'Technique', priority: 'critique', status: 'ouvert',   date: '2026-04-01', userName: 'Marie Durand' },
+    { id: 102, title: 'Demande de remboursement',     category: 'Facturation', priority: 'eleve', status: 'en_cours', date: '2026-03-31', userName: 'Pierre Martin' },
+    { id: 103, title: 'Mot de passe oublié',          category: 'Compte',    priority: 'bas',    status: 'resolu',   date: '2026-03-29', userName: 'Sophie Bernard' },
+    { id: 104, title: 'Application lente sur mobile', category: 'Technique', priority: 'moyen',  status: 'ouvert',   date: '2026-04-01', userName: 'Lucas Petit' },
+    { id: 105, title: 'Facture incorrecte mars 2026', category: 'Facturation', priority: 'eleve', status: 'ouvert',  date: '2026-03-30', userName: 'Emma Rousseau' },
+  ];
+  // Utilisateurs de démo
+  const stored = localStorage.getItem('tf_admin_users');
+  users = stored ? JSON.parse(stored) : [
+    { id: 1, name: 'Marie Durand',   email: 'marie@test.fr',   role: 'user',  createdAt: '2026-03-01' },
+    { id: 2, name: 'Pierre Martin',  email: 'pierre@test.fr',  role: 'user',  createdAt: '2026-03-05' },
+    { id: 3, name: 'Sophie Bernard', email: 'sophie@test.fr',  role: 'user',  createdAt: '2026-03-10' },
+  ];
+  // Agents de démo
+  const storedA = localStorage.getItem('tf_admin_agents');
+  agents = storedA ? JSON.parse(storedA) : [
+    { id: 1, name: 'Agent Support',  email: 'agent@ticketflow.fr', specialty: 'Généraliste', tickets: 12, resolved: 9 },
+    { id: 2, name: 'Alice Lefebvre', email: 'alice@ticketflow.fr', specialty: 'Technique',   tickets: 8,  resolved: 7 },
+  ];
+}
+
+function saveUsers()  { localStorage.setItem('tf_admin_users', JSON.stringify(users)); }
+function saveAgents() { localStorage.setItem('tf_admin_agents', JSON.stringify(agents)); }
+
+function updateKPIs() {
+  document.getElementById('kpi-total-tickets').textContent = allTickets.length;
+  document.getElementById('kpi-open').textContent          = allTickets.filter(t => t.status === 'ouvert').length;
+  document.getElementById('kpi-resolved').textContent      = allTickets.filter(t => t.status === 'resolu').length;
+  document.getElementById('kpi-critical').textContent      = allTickets.filter(t => t.priority === 'critique').length;
+  document.getElementById('kpi-users').textContent         = users.length;
+  document.getElementById('kpi-agents').textContent        = agents.length;
+}
+
+function renderBar(container, items, colors) {
+  const total = allTickets.length || 1;
+  container.innerHTML = items.map(([key, label, color]) => {
+    const count = allTickets.filter(t => t.status === key || t.priority === key).length;
+    const pct   = Math.round((count / total) * 100);
+    return `
+      <div style="margin-bottom: 14px;">
+        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 5px;">
+          <span>${label}</span>
+          <span style="font-weight: 600;">${count} (${pct}%)</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: ${pct}%; background: ${color};"></div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderStatusBars() {
+  renderBar(document.getElementById('status-bars'), [
+    ['ouvert',   'Ouvert',   '#4f46e5'],
+    ['en_cours', 'En cours', '#f59e0b'],
+    ['resolu',   'Résolu',   '#10b981'],
+    ['ferme',    'Fermé',    '#94a3b8'],
+  ]);
+}
+function renderPriorityBars() {
+  renderBar(document.getElementById('priority-bars'), [
+    ['bas',      '🟢 Bas',      '#10b981'],
+    ['moyen',    '🟡 Moyen',    '#f59e0b'],
+    ['eleve',    '🟠 Élevé',    '#f97316'],
+    ['critique', '🔴 Critique', '#ef4444'],
+  ]);
+}
+
+function renderRecentTickets() {
+  const recent = [...allTickets].slice(0, 5);
+  document.getElementById('recent-tickets-container').innerHTML = `
+    <table>
+      <thead><tr><th>#</th><th>Titre</th><th>Client</th><th>Priorité</th><th>Statut</th><th>Date</th></tr></thead>
+      <tbody>
+        ${recent.map(t => `
+          <tr>
+            <td style="color: var(--gray-light); font-size: 0.8rem;">#${t.id}</td>
+            <td><div class="ticket-title">${t.title}<small>${t.category}</small></div></td>
+            <td style="font-size: 0.875rem;">${t.userName || '—'}</td>
+            <td><span class="priority ${PRIORITY_CLASS[t.priority]}">${PRIORITY_LABELS[t.priority]}</span></td>
+            <td><span class="badge ${STATUS_BADGE[t.status]}">${STATUS_LABELS[t.status]}</span></td>
+            <td style="color: var(--text-light); font-size: 0.8rem;">${formatDate(t.date)}</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function renderAdminTickets(list) {
+  const toShow = list || allTickets;
+  document.getElementById('admin-tickets-container').innerHTML = `
+    <table>
+      <thead><tr><th>#</th><th>Titre</th><th>Client</th><th>Priorité</th><th>Statut</th><th>Date</th><th>Actions</th></tr></thead>
+      <tbody>
+        ${toShow.map(t => `
+          <tr>
+            <td style="color: var(--gray-light); font-size: 0.8rem;">#${t.id}</td>
+            <td><div class="ticket-title">${t.title}<small>${t.category}</small></div></td>
+            <td style="font-size: 0.875rem;">${t.userName || '—'}</td>
+            <td><span class="priority ${PRIORITY_CLASS[t.priority]}">${PRIORITY_LABELS[t.priority]}</span></td>
+            <td>
+              <select class="form-control" style="padding:4px 8px; width:auto; font-size:0.8rem;" onchange="adminChangeStatus(${t.id}, this.value)">
+                ${['ouvert','en_cours','resolu','ferme'].map(s => `<option value="${s}" ${t.status===s?'selected':''}>${STATUS_LABELS[s]}</option>`).join('')}
+              </select>
+            </td>
+            <td style="color: var(--text-light); font-size: 0.8rem;">${formatDate(t.date)}</td>
+            <td>
+              <button class="btn btn-sm btn-danger" onclick="deleteTicket(${t.id})">🗑️</button>
+            </td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function filterAdminTickets() {
+  const q  = document.getElementById('admin-ticket-search').value.toLowerCase();
+  const st = document.getElementById('admin-filter-status').value;
+  const filtered = allTickets.filter(t =>
+    (!q  || t.title.toLowerCase().includes(q)) &&
+    (!st || t.status === st)
+  );
+  renderAdminTickets(filtered);
+}
+
+function adminChangeStatus(id, status) {
+  const t = allTickets.find(x => x.id === id);
+  if (t) { t.status = status; updateKPIs(); renderStatusBars(); }
+}
+
+function deleteTicket(id) {
+  if (!confirm('Supprimer ce ticket ?')) return;
+  allTickets = allTickets.filter(x => x.id !== id);
+  renderAdminTickets();
+  updateKPIs();
+  renderStatusBars();
+  renderPriorityBars();
+}
+
+function renderUsers() {
+  document.getElementById('users-container').innerHTML = `
+    <table>
+      <thead><tr><th>#</th><th>Nom</th><th>Email</th><th>Rôle</th><th>Inscrit le</th><th>Actions</th></tr></thead>
+      <tbody>
+        ${users.map((u, i) => `
+          <tr>
+            <td style="color: var(--gray-light); font-size: 0.8rem;">${i+1}</td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="avatar" style="width:28px;height:28px;font-size:0.75rem;">${u.name.charAt(0)}</div>
+                <span style="font-weight:600;font-size:0.875rem;">${u.name}</span>
+              </div>
+            </td>
+            <td style="font-size:0.875rem;color:var(--text-light);">${u.email}</td>
+            <td>
+              <span class="badge ${u.role==='admin' ? 'badge-danger' : u.role==='agent' ? 'badge-success' : 'badge-primary'}">
+                ${u.role==='admin' ? 'Admin' : u.role==='agent' ? 'Agent' : 'Utilisateur'}
+              </span>
+            </td>
+            <td style="font-size:0.8rem;color:var(--text-light);">${formatDate(u.createdAt)}</td>
+            <td>
+              <div class="user-row-actions">
+                <button class="btn btn-sm btn-ghost" onclick="toggleRole(${u.id})">🔄 Rôle</button>
+                <button class="btn btn-sm btn-danger"  onclick="deleteUser(${u.id})">🗑️</button>
+              </div>
+            </td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function renderAgents() {
+  document.getElementById('agents-container').innerHTML = `
+    <table>
+      <thead><tr><th>#</th><th>Nom</th><th>Email</th><th>Spécialité</th><th>Tickets traités</th><th>Résolus</th><th>Actions</th></tr></thead>
+      <tbody>
+        ${agents.map((a, i) => `
+          <tr>
+            <td style="color: var(--gray-light); font-size: 0.8rem;">${i+1}</td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="avatar" style="width:28px;height:28px;font-size:0.75rem;">${a.name.charAt(0)}</div>
+                <span style="font-weight:600;font-size:0.875rem;">${a.name}</span>
+              </div>
+            </td>
+            <td style="font-size:0.875rem;color:var(--text-light);">${a.email}</td>
+            <td><span class="badge badge-gray">${a.specialty}</span></td>
+            <td style="font-size:0.875rem;text-align:center;">${a.tickets}</td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="progress-bar" style="width:80px;">
+                  <div class="progress-fill" style="width:${a.tickets>0?Math.round(a.resolved/a.tickets*100):0}%;background:var(--success);"></div>
+                </div>
+                <span style="font-size:0.8rem;color:var(--text-light);">${a.resolved}/${a.tickets}</span>
+              </div>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-danger" onclick="deleteAgent(${a.id})">🗑️</button>
+            </td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function toggleRole(id) {
+  const u = users.find(x => x.id === id);
+  if (!u) return;
+  const roles = ['user','agent','admin'];
+  u.role = roles[(roles.indexOf(u.role) + 1) % roles.length];
+  saveUsers();
+  renderUsers();
+  updateKPIs();
+}
+
+function deleteUser(id) {
+  if (!confirm('Supprimer cet utilisateur ?')) return;
+  users = users.filter(x => x.id !== id);
+  saveUsers();
+  renderUsers();
+  updateKPIs();
+}
+
+function deleteAgent(id) {
+  if (!confirm('Supprimer cet agent ?')) return;
+  agents = agents.filter(x => x.id !== id);
+  saveAgents();
+  renderAgents();
+  updateKPIs();
+}
+
+function addUser() {
+  const fn = document.getElementById('nu-firstname').value.trim();
+  const ln = document.getElementById('nu-lastname').value.trim();
+  const em = document.getElementById('nu-email').value.trim();
+  const rl = document.getElementById('nu-role').value;
+  if (!fn || !ln || !em) return alert('Veuillez remplir tous les champs.');
+  users.push({ id: Date.now(), name: fn + ' ' + ln, email: em, role: rl, createdAt: new Date().toISOString().split('T')[0] });
+  saveUsers();
+  updateKPIs();
+  renderUsers();
+  closeModal('modal-add-user');
+  ['nu-firstname','nu-lastname','nu-email'].forEach(id => document.getElementById(id).value = '');
+}
+
+function addAgent() {
+  const fn = document.getElementById('na-firstname').value.trim();
+  const ln = document.getElementById('na-lastname').value.trim();
+  const em = document.getElementById('na-email').value.trim();
+  const sp = document.getElementById('na-specialty').value;
+  if (!fn || !ln || !em) return alert('Veuillez remplir tous les champs.');
+  agents.push({ id: Date.now(), name: fn + ' ' + ln, email: em, specialty: sp, tickets: 0, resolved: 0 });
+  saveAgents();
+  updateKPIs();
+  renderAgents();
+  closeModal('modal-add-agent');
+  ['na-firstname','na-lastname','na-email'].forEach(id => document.getElementById(id).value = '');
+}
+
+function showSection(name) {
+  ['overview','tickets','users','agents','settings'].forEach(s => {
+    document.getElementById('section-' + s).style.display = s === name ? 'block' : 'none';
+  });
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+  const titles = {
+    overview:  ['Vue d\'ensemble',    'Tableau de bord administrateur'],
+    tickets:   ['Gestion des tickets','Visualisez et gérez tous les tickets'],
+    users:     ['Utilisateurs',        'Gérez les comptes utilisateurs'],
+    agents:    ['Agents',              'Gérez les agents de support'],
+    settings:  ['Paramètres',          'Configuration de la plateforme'],
+  };
+  document.getElementById('page-title').textContent    = titles[name][0];
+  document.getElementById('page-subtitle').textContent = titles[name][1];
+
+  if (name === 'tickets') renderAdminTickets();
+  if (name === 'users')   renderUsers();
+  if (name === 'agents')  renderAgents();
+}
+
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('open'); });
+});
+function logout() { localStorage.removeItem('tf_user'); window.location.href = '../index.html'; }
+function formatDate(d) {
+  if (!d) return '';
+  const [y,m,day] = d.split('-');
+  return `${day}/${m}/${y}`;
+}
+</script>
+</body>
+</html>

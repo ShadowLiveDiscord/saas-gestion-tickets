@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Espace Agent — TicketFlow</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/dashboard.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<div class="dashboard-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🎫</div>
+      TicketFlow
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">Gestion</div>
+      <div class="nav-item active" onclick="showSection('all-tickets')">
+        <span class="nav-icon">📋</span> Tous les tickets
+        <span class="nav-badge" id="nav-badge">0</span>
+      </div>
+      <div class="nav-item" onclick="showSection('my-tickets')">
+        <span class="nav-icon">🎯</span> Mes tickets assignés
+      </div>
+      <div class="nav-section-title">Compte</div>
+      <div class="nav-item" onclick="showSection('profile')">
+        <span class="nav-icon">👤</span> Mon profil
+      </div>
+      <div class="nav-item" onclick="logout()" style="color: var(--danger);">
+        <span class="nav-icon">🚪</span> Déconnexion
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="avatar" id="user-avatar">A</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="user-name">Agent</div>
+          <div class="sidebar-user-role">
+            <span class="badge badge-success" style="font-size: 0.7rem;">Agent</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h2 id="page-title">Tous les tickets</h2>
+        <p id="page-subtitle">Gérez et traitez les demandes clients</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn">🔔<span class="notif-dot"></span></button>
+      </div>
+    </header>
+
+    <div class="page-content">
+
+      <!-- STATS -->
+      <div class="stats-row" id="stats-row">
+        <div class="stat-card">
+          <div class="stat-card-info"><h3 id="s-total">0</h3><p>Total tickets</p></div>
+          <div class="stat-card-icon blue">📋</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-info"><h3 id="s-open">0</h3><p>Ouverts</p></div>
+          <div class="stat-card-icon orange">⏳</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-info"><h3 id="s-inprogress">0</h3><p>En cours</p></div>
+          <div class="stat-card-icon purple">🔄</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-info"><h3 id="s-resolved">0</h3><p>Résolus aujourd'hui</p></div>
+          <div class="stat-card-icon green">✅</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-info"><h3 id="s-critical">0</h3><p>Critiques</p></div>
+          <div class="stat-card-icon red">🚨</div>
+        </div>
+      </div>
+
+      <!-- TOUS LES TICKETS -->
+      <section id="section-all-tickets">
+        <div class="table-wrapper">
+          <div class="table-header">
+            <h3>Files de tickets</h3>
+            <div class="table-controls">
+              <div class="search-box">🔍
+                <input type="text" placeholder="Rechercher..." id="agent-search" oninput="filterAgentTickets()" />
+              </div>
+              <select class="form-control" style="width: auto; padding: 7px 12px;" id="agent-filter-status" onchange="filterAgentTickets()">
+                <option value="">Tous statuts</option>
+                <option value="ouvert">Ouvert</option>
+                <option value="en_cours">En cours</option>
+                <option value="resolu">Résolu</option>
+                <option value="ferme">Fermé</option>
+              </select>
+              <select class="form-control" style="width: auto; padding: 7px 12px;" id="agent-filter-priority" onchange="filterAgentTickets()">
+                <option value="">Toutes priorités</option>
+                <option value="bas">Bas</option>
+                <option value="moyen">Moyen</option>
+                <option value="eleve">Élevé</option>
+                <option value="critique">Critique</option>
+              </select>
+            </div>
+          </div>
+          <div id="agent-tickets-container"></div>
+        </div>
+      </section>
+
+      <!-- MES TICKETS ASSIGNÉS -->
+      <section id="section-my-tickets" style="display: none;">
+        <div class="table-wrapper">
+          <div class="table-header">
+            <h3>Mes tickets assignés</h3>
+          </div>
+          <div id="my-tickets-container"></div>
+        </div>
+      </section>
+
+      <!-- PROFIL -->
+      <section id="section-profile" style="display: none;">
+        <div class="card" style="max-width: 560px;">
+          <div class="card-header"><h3>👤 Mon profil agent</h3></div>
+          <div class="card-body">
+            <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 28px;">
+              <div class="avatar lg" id="profile-avatar">A</div>
+              <div>
+                <h3 id="profile-name">Agent Support</h3>
+                <p style="color: var(--text-light); font-size: 0.875rem;" id="profile-email">agent@ticketflow.fr</p>
+                <span class="badge badge-success" style="margin-top: 6px;">Agent</span>
+              </div>
+            </div>
+            <p style="font-size: 0.875rem; color: var(--text-light);">Fonctionnalité de modification du profil disponible prochainement.</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL TICKET DÉTAIL AGENT -->
+<div class="modal-overlay" id="modal-ticket">
+  <div class="modal ticket-detail-modal">
+    <div class="modal-header">
+      <div>
+        <h3 id="modal-ticket-title">Titre du ticket</h3>
+        <div style="display: flex; gap: 8px; margin-top: 6px;" id="modal-ticket-meta"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal-ticket')">✕</button>
+    </div>
+    <div class="modal-body">
+      <!-- INFO TICKET -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; padding: 16px; background: var(--bg); border-radius: var(--radius-sm);">
+        <div>
+          <p style="font-size: 0.75rem; color: var(--text-light); font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Créé par</p>
+          <p id="modal-from" style="font-size: 0.875rem; font-weight: 500;"></p>
+        </div>
+        <div>
+          <p style="font-size: 0.75rem; color: var(--text-light); font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Date</p>
+          <p id="modal-date" style="font-size: 0.875rem;"></p>
+        </div>
+        <div>
+          <p style="font-size: 0.75rem; color: var(--text-light); font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Changer le statut</p>
+          <select class="form-control" id="modal-status-select" style="padding: 6px 10px;" onchange="changeStatus()">
+            <option value="ouvert">Ouvert</option>
+            <option value="en_cours">En cours</option>
+            <option value="resolu">Résolu</option>
+            <option value="ferme">Fermé</option>
+          </select>
+        </div>
+        <div>
+          <p style="font-size: 0.75rem; color: var(--text-light); font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Changer la priorité</p>
+          <select class="form-control" id="modal-priority-select" style="padding: 6px 10px;" onchange="changePriority()">
+            <option value="bas">🟢 Bas</option>
+            <option value="moyen">🟡 Moyen</option>
+            <option value="eleve">🟠 Élevé</option>
+            <option value="critique">🔴 Critique</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <h4 style="font-size: 0.8rem; color: var(--text-light); text-transform: uppercase; margin-bottom: 8px;">Description</h4>
+        <p id="modal-desc" style="font-size: 0.875rem; line-height: 1.7;"></p>
+      </div>
+
+      <div>
+        <h4 style="font-size: 0.8rem; color: var(--text-light); text-transform: uppercase; margin-bottom: 12px;">Fil de messages</h4>
+        <div class="message-thread" id="modal-messages"></div>
+        <div style="margin-top: 16px; display: flex; gap: 10px;">
+          <input type="text" class="form-control" id="agent-reply" placeholder="Répondre au client..." />
+          <button class="btn btn-primary" onclick="agentReply()">Envoyer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentUser = null;
+let allTickets  = [];
+let currentTicketId = null;
+
+const PRIORITY_LABELS = { bas: 'Bas', moyen: 'Moyen', eleve: 'Élevé', critique: 'Critique' };
+const STATUS_LABELS   = { ouvert: 'Ouvert', en_cours: 'En cours', resolu: 'Résolu', ferme: 'Fermé' };
+const STATUS_BADGE    = { ouvert: 'badge-primary', en_cours: 'badge-warning', resolu: 'badge-success', ferme: 'badge-gray' };
+const PRIORITY_CLASS  = { bas: 'priority-low', moyen: 'priority-medium', eleve: 'priority-high', critique: 'priority-critical' };
+
+document.addEventListener('DOMContentLoaded', () => {
+  const session = localStorage.getItem('tf_user');
+  if (!session) { window.location.href = 'login.html'; return; }
+  currentUser = JSON.parse(session);
+  if (currentUser.role !== 'agent') {
+    if (currentUser.role === 'admin') window.location.href = 'dashboard-admin.html';
+    else window.location.href = 'dashboard-user.html';
+    return;
+  }
+  document.getElementById('user-avatar').textContent  = currentUser.avatar || 'A';
+  document.getElementById('user-name').textContent    = currentUser.name;
+  document.getElementById('profile-avatar').textContent = currentUser.avatar || 'A';
+  document.getElementById('profile-name').textContent   = currentUser.name;
+  document.getElementById('profile-email').textContent  = currentUser.email;
+
+  loadAllTickets();
+  updateStats();
+  renderAgentTickets();
+});
+
+function loadAllTickets() {
+  // Charger tickets de tous les users (démo)
+  allTickets = [];
+  const demoUsers = ['user@ticketflow.fr'];
+  demoUsers.forEach(email => {
+    const stored = localStorage.getItem('tf_tickets_' + email);
+    if (stored) {
+      const userTickets = JSON.parse(stored).map(t => ({ ...t, userEmail: email, userName: 'Utilisateur Demo' }));
+      allTickets = allTickets.concat(userTickets);
+    }
+  });
+
+  // Ajouter tickets de démo si vide
+  if (allTickets.length === 0) {
+    allTickets = [
+      { id: 101, title: 'Erreur 500 lors du paiement', category: 'Technique', priority: 'critique', status: 'ouvert', date: '2026-04-01', desc: 'Une erreur serveur survient à chaque tentative de paiement.', userEmail: 'client1@test.fr', userName: 'Marie Durand', messages: [] },
+      { id: 102, title: 'Demande de remboursement', category: 'Facturation', priority: 'eleve', status: 'en_cours', date: '2026-03-31', desc: 'J\'ai été débité deux fois pour ma commande du 28 mars.', userEmail: 'client2@test.fr', userName: 'Pierre Martin', messages: [{ from: 'agent', text: 'Bonjour Pierre, nous avons transmis votre demande à la comptabilité.', time: '09:15' }] },
+      { id: 103, title: 'Comment changer mon mot de passe ?', category: 'Compte', priority: 'bas', status: 'resolu', date: '2026-03-29', desc: 'Je n\'arrive pas à trouver l\'option pour changer mon mot de passe.', userEmail: 'client3@test.fr', userName: 'Sophie Bernard', messages: [{ from: 'agent', text: 'Allez dans Mon profil → Sécurité → Changer le mot de passe. Cordialement.', time: '11:00' }] },
+      { id: 104, title: 'Application lente sur mobile', category: 'Technique', priority: 'moyen', status: 'ouvert', date: '2026-04-01', desc: 'Sur iPhone 13, l\'application rame énormément depuis la dernière mise à jour.', userEmail: 'client4@test.fr', userName: 'Lucas Petit', messages: [] },
+    ];
+  }
+}
+
+function updateStats() {
+  document.getElementById('s-total').textContent     = allTickets.length;
+  document.getElementById('s-open').textContent      = allTickets.filter(t => t.status === 'ouvert').length;
+  document.getElementById('s-inprogress').textContent= allTickets.filter(t => t.status === 'en_cours').length;
+  document.getElementById('s-resolved').textContent  = allTickets.filter(t => t.status === 'resolu').length;
+  document.getElementById('s-critical').textContent  = allTickets.filter(t => t.priority === 'critique').length;
+  document.getElementById('nav-badge').textContent   = allTickets.filter(t => t.status === 'ouvert').length;
+}
+
+function renderAgentTickets(list) {
+  const toShow = list || allTickets;
+  const container = document.getElementById('agent-tickets-container');
+  if (toShow.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">✅</div><h3>Aucun ticket</h3><p>Aucun ticket ne correspond à vos critères.</p></div>`;
+    return;
+  }
+  container.innerHTML = `
+    <table>
+      <thead>
+        <tr><th>#</th><th>Titre</th><th>Client</th><th>Priorité</th><th>Statut</th><th>Date</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        ${toShow.map(t => `
+          <tr>
+            <td style="color: var(--gray-light); font-size: 0.8rem;">#${t.id}</td>
+            <td><div class="ticket-title">${t.title}<small>${t.category}</small></div></td>
+            <td>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <div class="avatar" style="width:28px;height:28px;font-size:0.75rem;">${(t.userName||'?').charAt(0)}</div>
+                <span style="font-size: 0.875rem;">${t.userName || t.userEmail}</span>
+              </div>
+            </td>
+            <td><span class="priority ${PRIORITY_CLASS[t.priority]}">${PRIORITY_LABELS[t.priority]}</span></td>
+            <td><span class="badge ${STATUS_BADGE[t.status]}">${STATUS_LABELS[t.status]}</span></td>
+            <td style="color: var(--text-light); font-size: 0.8rem;">${formatDate(t.date)}</td>
+            <td>
+              <button class="btn btn-sm btn-primary" onclick="openTicket(${t.id})">Traiter →</button>
+            </td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function filterAgentTickets() {
+  const q  = document.getElementById('agent-search').value.toLowerCase();
+  const st = document.getElementById('agent-filter-status').value;
+  const pr = document.getElementById('agent-filter-priority').value;
+  const filtered = allTickets.filter(t =>
+    (!q  || t.title.toLowerCase().includes(q) || (t.userName||'').toLowerCase().includes(q)) &&
+    (!st || t.status === st) &&
+    (!pr || t.priority === pr)
+  );
+  renderAgentTickets(filtered);
+}
+
+function openTicket(id) {
+  currentTicketId = id;
+  const t = allTickets.find(x => x.id === id);
+  if (!t) return;
+
+  document.getElementById('modal-ticket-title').textContent = t.title;
+  document.getElementById('modal-ticket-meta').innerHTML = `
+    <span class="badge ${STATUS_BADGE[t.status]}">${STATUS_LABELS[t.status]}</span>
+    <span class="priority ${PRIORITY_CLASS[t.priority]}">${PRIORITY_LABELS[t.priority]}</span>
+    <span class="badge badge-gray">${t.category}</span>`;
+  document.getElementById('modal-from').textContent = t.userName || t.userEmail;
+  document.getElementById('modal-date').textContent = formatDate(t.date);
+  document.getElementById('modal-desc').textContent = t.desc;
+  document.getElementById('modal-status-select').value   = t.status;
+  document.getElementById('modal-priority-select').value = t.priority;
+
+  const msgs = t.messages || [];
+  document.getElementById('modal-messages').innerHTML = msgs.length === 0
+    ? '<p style="color: var(--text-light); font-size: 0.875rem;">Aucun message.</p>'
+    : msgs.map(m => `
+        <div class="message-bubble ${m.from === 'agent' ? 'agent' : ''}">
+          <div class="avatar">${m.from === 'agent' ? 'A' : (t.userName||'U').charAt(0)}</div>
+          <div>
+            <div class="bubble-content">${m.text}</div>
+            <div class="bubble-meta">${m.from === 'agent' ? 'Vous (Agent)' : (t.userName||'Client')} · ${m.time}</div>
+          </div>
+        </div>`).join('');
+
+  openModal('modal-ticket');
+}
+
+function changeStatus() {
+  const t = allTickets.find(x => x.id === currentTicketId);
+  if (!t) return;
+  t.status = document.getElementById('modal-status-select').value;
+  updateStats();
+  filterAgentTickets();
+  document.getElementById('modal-ticket-meta').innerHTML = `
+    <span class="badge ${STATUS_BADGE[t.status]}">${STATUS_LABELS[t.status]}</span>
+    <span class="priority ${PRIORITY_CLASS[t.priority]}">${PRIORITY_LABELS[t.priority]}</span>
+    <span class="badge badge-gray">${t.category}</span>`;
+}
+
+function changePriority() {
+  const t = allTickets.find(x => x.id === currentTicketId);
+  if (!t) return;
+  t.priority = document.getElementById('modal-priority-select').value;
+  filterAgentTickets();
+}
+
+function agentReply() {
+  const input = document.getElementById('agent-reply');
+  const text  = input.value.trim();
+  if (!text) return;
+  const t = allTickets.find(x => x.id === currentTicketId);
+  if (!t) return;
+  const now  = new Date();
+  const time = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+  t.messages.push({ from: 'agent', text, time });
+  input.value = '';
+  openTicket(currentTicketId);
+  if (t.status === 'ouvert') { t.status = 'en_cours'; updateStats(); filterAgentTickets(); }
+}
+
+function showSection(name) {
+  ['all-tickets','my-tickets','profile'].forEach(s => {
+    document.getElementById('section-' + s).style.display = s === name ? 'block' : 'none';
+  });
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const titles = {
+    'all-tickets': ['Tous les tickets', 'Gérez et traitez les demandes clients'],
+    'my-tickets':  ['Mes tickets assignés', 'Tickets qui vous sont assignés'],
+    'profile':     ['Mon profil', 'Informations de votre compte agent'],
+  };
+  document.getElementById('page-title').textContent    = titles[name][0];
+  document.getElementById('page-subtitle').textContent = titles[name][1];
+
+  if (name === 'my-tickets') {
+    const mine = allTickets.filter(t => t.status === 'en_cours');
+    const c = document.getElementById('my-tickets-container');
+    if (mine.length === 0) {
+      c.innerHTML = `<div class="empty-state"><div class="empty-icon">🎯</div><h3>Aucun ticket en cours</h3><p>Prenez en charge des tickets depuis la file principale.</p></div>`;
+    } else {
+      c.innerHTML = document.getElementById('agent-tickets-container').innerHTML;
+    }
+  }
+}
+
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('open'); });
+});
+function logout() { localStorage.removeItem('tf_user'); window.location.href = '../index.html'; }
+function formatDate(d) {
+  if (!d) return '';
+  const [y, m, day] = d.split('-');
+  return `${day}/${m}/${y}`;
+}
+</script>
+</body>
+</html>

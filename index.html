@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TicketFlow — Gestion de tickets simplifiée</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="navbar-brand">
+        <div class="logo-icon">🎫</div>
+        TicketFlow
+      </a>
+      <div class="navbar-menu">
+        <a href="#fonctionnalites">Fonctionnalités</a>
+        <a href="#tarifs">Tarifs</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <div class="navbar-actions">
+        <a href="pages/login.html" class="btn btn-ghost btn-sm">Se connecter</a>
+        <a href="pages/register.html" class="btn btn-primary btn-sm">Commencer gratuitement</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-tag">✨ Nouveau — Version 1.0 disponible</div>
+      <h1>La gestion de tickets<br><span>simple et efficace</span></h1>
+      <p>Centralisez vos demandes clients, suivez leur avancement en temps réel et offrez un support de qualité grâce à TicketFlow.</p>
+      <div class="hero-actions">
+        <a href="pages/register.html" class="btn btn-primary btn-lg">Essayer gratuitement →</a>
+        <a href="#fonctionnalites" class="btn btn-outline btn-lg">Voir les fonctionnalités</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-value">3</div>
+          <div class="stat-label">Rôles distincts</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">100%</div>
+          <div class="stat-label">Web & Responsive</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">∞</div>
+          <div class="stat-label">Tickets gérés</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FONCTIONNALITÉS -->
+  <section class="features" id="fonctionnalites">
+    <div class="section-header">
+      <h2>Tout ce dont vous avez besoin</h2>
+      <p>Une plateforme complète pour gérer efficacement votre support client.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon purple">🎫</div>
+        <h3>Gestion des tickets</h3>
+        <p>Créez, assignez et suivez vos tickets de support en quelques clics. Organisez par priorité et catégorie.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon cyan">👥</div>
+        <h3>3 niveaux d'accès</h3>
+        <p>Utilisateurs, agents et administrateurs : chaque rôle dispose de son propre espace personnalisé.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon green">📊</div>
+        <h3>Tableau de bord</h3>
+        <p>Visualisez les statistiques de votre support en temps réel : tickets ouverts, résolus, temps moyen...</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon orange">💬</div>
+        <h3>Messagerie interne</h3>
+        <p>Communiquez directement sur chaque ticket. Historique complet des échanges entre client et agent.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon pink">🔔</div>
+        <h3>Priorités & Statuts</h3>
+        <p>Classifiez vos tickets par urgence (bas, moyen, élevé, critique) et suivez leur statut en direct.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon blue">⚙️</div>
+        <h3>Panel administrateur</h3>
+        <p>Gérez les utilisateurs, agents, catégories et paramètres de votre plateforme depuis un seul endroit.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMMENT ÇA MARCHE -->
+  <section style="padding: 90px 24px; background: #f8fafc;">
+    <div class="section-header container">
+      <h2>Comment ça marche ?</h2>
+      <p>En 3 étapes simples, votre support est opérationnel.</p>
+    </div>
+    <div class="container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 32px; margin-top: 0;">
+      <div style="text-align: center; padding: 24px;">
+        <div style="width: 64px; height: 64px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: white; font-size: 1.5rem; font-weight: 800;">1</div>
+        <h3 style="margin-bottom: 8px;">Créez votre compte</h3>
+        <p style="color: var(--text-light); font-size: 0.9rem;">Inscrivez-vous en moins de 2 minutes. Aucune carte bancaire requise pour commencer.</p>
+      </div>
+      <div style="text-align: center; padding: 24px;">
+        <div style="width: 64px; height: 64px; background: var(--secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: white; font-size: 1.5rem; font-weight: 800;">2</div>
+        <h3 style="margin-bottom: 8px;">Soumettez un ticket</h3>
+        <p style="color: var(--text-light); font-size: 0.9rem;">Décrivez votre problème, choisissez la catégorie et la priorité. C'est tout.</p>
+      </div>
+      <div style="text-align: center; padding: 24px;">
+        <div style="width: 64px; height: 64px; background: var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: white; font-size: 1.5rem; font-weight: 800;">3</div>
+        <h3 style="margin-bottom: 8px;">Suivi en temps réel</h3>
+        <p style="color: var(--text-light); font-size: 0.9rem;">Suivez l'avancement de votre ticket et échangez avec l'agent assigné directement.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TARIFS -->
+  <section class="pricing" id="tarifs">
+    <div class="section-header">
+      <h2>Des tarifs transparents</h2>
+      <p>Commencez gratuitement, évoluez selon vos besoins.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="plan-name">Starter</div>
+        <div class="price">Gratuit <span>/ mois</span></div>
+        <div class="plan-desc">Parfait pour débuter</div>
+        <ul class="pricing-features">
+          <li>Jusqu'à 3 agents</li>
+          <li>100 tickets / mois</li>
+          <li>Tableau de bord basique</li>
+          <li class="disabled">Statistiques avancées</li>
+          <li class="disabled">API & Intégrations</li>
+          <li class="disabled">Support prioritaire</li>
+        </ul>
+        <a href="pages/register.html" class="btn btn-outline" style="width: 100%; justify-content: center;">Commencer →</a>
+      </div>
+      <div class="pricing-card popular">
+        <div class="popular-badge">⭐ Populaire</div>
+        <div class="plan-name">Pro</div>
+        <div class="price">29€ <span>/ mois</span></div>
+        <div class="plan-desc">Pour les équipes en croissance</div>
+        <ul class="pricing-features">
+          <li>Agents illimités</li>
+          <li>Tickets illimités</li>
+          <li>Tableau de bord avancé</li>
+          <li>Statistiques avancées</li>
+          <li>API & Intégrations</li>
+          <li class="disabled">Support prioritaire</li>
+        </ul>
+        <a href="pages/register.html" class="btn btn-primary" style="width: 100%; justify-content: center;">Choisir Pro →</a>
+      </div>
+      <div class="pricing-card">
+        <div class="plan-name">Entreprise</div>
+        <div class="price">Sur devis</div>
+        <div class="plan-desc">Pour les grandes organisations</div>
+        <ul class="pricing-features">
+          <li>Tout du plan Pro</li>
+          <li>SLA garanti</li>
+          <li>Déploiement on-premise</li>
+          <li>Personnalisation complète</li>
+          <li>API & Intégrations</li>
+          <li>Support prioritaire 24/7</li>
+        </ul>
+        <a href="#contact" class="btn btn-ghost" style="width: 100%; justify-content: center;">Nous contacter →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer" id="contact">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="index.html" class="navbar-brand">
+            <div class="logo-icon">🎫</div>
+            TicketFlow
+          </a>
+          <p style="margin-top: 12px;">La solution de gestion de tickets pensée pour les équipes modernes. Simple, rapide, efficace.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Produit</h4>
+          <a href="#fonctionnalites">Fonctionnalités</a>
+          <a href="#tarifs">Tarifs</a>
+          <a href="#">Changelog</a>
+        </div>
+        <div class="footer-col">
+          <h4>Compte</h4>
+          <a href="pages/login.html">Se connecter</a>
+          <a href="pages/register.html">S'inscrire</a>
+          <a href="pages/dashboard-user.html">Mon espace</a>
+        </div>
+        <div class="footer-col">
+          <h4>Légal</h4>
+          <a href="#">Mentions légales</a>
+          <a href="#">Confidentialité</a>
+          <a href="#">CGU</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 TicketFlow. Tous droits réservés.</p>
+        <p>Fait avec ❤️ pour la gestion de support</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
