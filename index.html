@@ -5,8 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TicketFlow — Gestion de tickets simplifiée</title>
   <link rel="stylesheet" href="css/style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    .logo-icon { font-size: 0; }
+    .logo-icon svg { width: 20px; height: 20px; }
+    .feature-icon-inner { width: 28px; height: 28px; }
+  </style>
 </head>
 <body>
 
@@ -14,17 +18,19 @@
   <nav class="navbar">
     <div class="navbar-inner">
       <a href="index.html" class="navbar-brand">
-        <div class="logo-icon">🎫</div>
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75a3.75 3.75 0 01-7.5 0V6m-4.125 4.5h15.75c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125H4.375A1.125 1.125 0 013.25 21.75V11.625C3.25 11.004 3.754 10.5 4.375 10.5z"/></svg>
+        </div>
         TicketFlow
       </a>
       <div class="navbar-menu">
         <a href="#fonctionnalites">Fonctionnalités</a>
-        <a href="#tarifs">Tarifs</a>
+        <a href="#tarifs" id="nav-tarifs">Tarifs</a>
         <a href="#contact">Contact</a>
       </div>
       <div class="navbar-actions">
         <a href="pages/login.html" class="btn btn-ghost btn-sm">Se connecter</a>
-        <a href="pages/register.html" class="btn btn-primary btn-sm">Commencer gratuitement</a>
+        <a href="pages/register.html" class="btn btn-primary btn-sm" id="btn-register">Commencer gratuitement</a>
       </div>
     </div>
   </nav>
@@ -32,11 +38,11 @@
   <!-- HERO -->
   <section class="hero">
     <div class="hero-content">
-      <div class="hero-tag">✨ Nouveau — Version 1.0 disponible</div>
+      <div class="hero-tag">Version 1.0</div>
       <h1>La gestion de tickets<br><span>simple et efficace</span></h1>
       <p>Centralisez vos demandes clients, suivez leur avancement en temps réel et offrez un support de qualité grâce à TicketFlow.</p>
       <div class="hero-actions">
-        <a href="pages/register.html" class="btn btn-primary btn-lg">Essayer gratuitement →</a>
+        <a href="pages/register.html" class="btn btn-primary btn-lg" id="cta-register">Essayer gratuitement</a>
         <a href="#fonctionnalites" class="btn btn-outline btn-lg">Voir les fonctionnalités</a>
       </div>
       <div class="hero-stats">
@@ -46,7 +52,7 @@
         </div>
         <div class="stat-item">
           <div class="stat-value">100%</div>
-          <div class="stat-label">Web & Responsive</div>
+          <div class="stat-label">Web &amp; Responsive</div>
         </div>
         <div class="stat-item">
           <div class="stat-value">∞</div>
@@ -64,42 +70,54 @@
     </div>
     <div class="features-grid">
       <div class="feature-card">
-        <div class="feature-icon purple">🎫</div>
+        <div class="feature-icon purple">
+          <svg class="feature-icon-inner" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75a3.75 3.75 0 01-7.5 0V6m-4.125 4.5h15.75c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125H4.375A1.125 1.125 0 013.25 21.75V11.625C3.25 11.004 3.754 10.5 4.375 10.5z"/></svg>
+        </div>
         <h3>Gestion des tickets</h3>
         <p>Créez, assignez et suivez vos tickets de support en quelques clics. Organisez par priorité et catégorie.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon cyan">👥</div>
+        <div class="feature-icon cyan">
+          <svg class="feature-icon-inner" viewBox="0 0 24 24" fill="none" stroke="#0891b2" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+        </div>
         <h3>3 niveaux d'accès</h3>
         <p>Utilisateurs, agents et administrateurs : chaque rôle dispose de son propre espace personnalisé.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon green">📊</div>
+        <div class="feature-icon green">
+          <svg class="feature-icon-inner" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>
+        </div>
         <h3>Tableau de bord</h3>
-        <p>Visualisez les statistiques de votre support en temps réel : tickets ouverts, résolus, temps moyen...</p>
+        <p>Visualisez les statistiques de votre support en temps réel : tickets ouverts, résolus, temps moyen.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon orange">💬</div>
+        <div class="feature-icon orange">
+          <svg class="feature-icon-inner" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
+        </div>
         <h3>Messagerie interne</h3>
         <p>Communiquez directement sur chaque ticket. Historique complet des échanges entre client et agent.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon pink">🔔</div>
-        <h3>Priorités & Statuts</h3>
+        <div class="feature-icon pink">
+          <svg class="feature-icon-inner" viewBox="0 0 24 24" fill="none" stroke="#db2777" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+        </div>
+        <h3>Priorités &amp; Statuts</h3>
         <p>Classifiez vos tickets par urgence (bas, moyen, élevé, critique) et suivez leur statut en direct.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon blue">⚙️</div>
+        <div class="feature-icon blue">
+          <svg class="feature-icon-inner" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        </div>
         <h3>Panel administrateur</h3>
         <p>Gérez les utilisateurs, agents, catégories et paramètres de votre plateforme depuis un seul endroit.</p>
       </div>
     </div>
   </section>
 
-  <!-- COMMENT ÇA MARCHE -->
+  <!-- COMMENT CA MARCHE -->
   <section style="padding: 90px 24px; background: #f8fafc;">
     <div class="section-header container">
-      <h2>Comment ça marche ?</h2>
+      <h2>Comment ca marche ?</h2>
       <p>En 3 étapes simples, votre support est opérationnel.</p>
     </div>
     <div class="container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 32px; margin-top: 0;">
@@ -137,13 +155,13 @@
           <li>100 tickets / mois</li>
           <li>Tableau de bord basique</li>
           <li class="disabled">Statistiques avancées</li>
-          <li class="disabled">API & Intégrations</li>
+          <li class="disabled">API &amp; Intégrations</li>
           <li class="disabled">Support prioritaire</li>
         </ul>
-        <a href="pages/register.html" class="btn btn-outline" style="width: 100%; justify-content: center;">Commencer →</a>
+        <a href="pages/register.html" class="btn btn-outline" style="width: 100%; justify-content: center;">Commencer</a>
       </div>
       <div class="pricing-card popular">
-        <div class="popular-badge">⭐ Populaire</div>
+        <div class="popular-badge">Populaire</div>
         <div class="plan-name">Pro</div>
         <div class="price">29€ <span>/ mois</span></div>
         <div class="plan-desc">Pour les équipes en croissance</div>
@@ -152,10 +170,10 @@
           <li>Tickets illimités</li>
           <li>Tableau de bord avancé</li>
           <li>Statistiques avancées</li>
-          <li>API & Intégrations</li>
+          <li>API &amp; Intégrations</li>
           <li class="disabled">Support prioritaire</li>
         </ul>
-        <a href="pages/register.html" class="btn btn-primary" style="width: 100%; justify-content: center;">Choisir Pro →</a>
+        <a href="pages/register.html" class="btn btn-primary" style="width: 100%; justify-content: center;">Choisir Pro</a>
       </div>
       <div class="pricing-card">
         <div class="plan-name">Entreprise</div>
@@ -166,10 +184,10 @@
           <li>SLA garanti</li>
           <li>Déploiement on-premise</li>
           <li>Personnalisation complète</li>
-          <li>API & Intégrations</li>
+          <li>API &amp; Intégrations</li>
           <li>Support prioritaire 24/7</li>
         </ul>
-        <a href="#contact" class="btn btn-ghost" style="width: 100%; justify-content: center;">Nous contacter →</a>
+        <a href="#contact" class="btn btn-ghost" style="width: 100%; justify-content: center;">Nous contacter</a>
       </div>
     </div>
   </section>
@@ -180,7 +198,9 @@
       <div class="footer-top">
         <div class="footer-brand">
           <a href="index.html" class="navbar-brand">
-            <div class="logo-icon">🎫</div>
+            <div class="logo-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75a3.75 3.75 0 01-7.5 0V6m-4.125 4.5h15.75c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125H4.375A1.125 1.125 0 013.25 21.75V11.625C3.25 11.004 3.754 10.5 4.375 10.5z"/></svg>
+            </div>
             TicketFlow
           </a>
           <p style="margin-top: 12px;">La solution de gestion de tickets pensée pour les équipes modernes. Simple, rapide, efficace.</p>
@@ -206,10 +226,27 @@
       </div>
       <div class="footer-bottom">
         <p>© 2026 TicketFlow. Tous droits réservés.</p>
-        <p>Fait avec ❤️ pour la gestion de support</p>
+        <p>Projet SaaS — Gestion de tickets</p>
       </div>
     </div>
   </footer>
 
+  <script src="js/features.js"></script>
+  <script>
+    // Masquer la section tarifs si désactivée
+    if (!isEnabled('pricing')) {
+      const s = document.getElementById('tarifs');
+      if (s) s.style.display = 'none';
+      const nav = document.getElementById('nav-tarifs');
+      if (nav) nav.style.display = 'none';
+    }
+    // Rediriger le bouton register si inscription désactivée
+    if (!isEnabled('register')) {
+      ['btn-register','cta-register'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.href = 'pages/unavailable.html?feature=register';
+      });
+    }
+  </script>
 </body>
 </html>

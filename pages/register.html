@@ -16,22 +16,30 @@
   <div class="auth-left">
     <div class="auth-left-content">
       <div class="auth-left-logo">
-        <div class="logo-icon">🎫</div>
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" width="26" height="26"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75a3.75 3.75 0 01-7.5 0V6m-4.125 4.5h15.75c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125H4.375A1.125 1.125 0 013.25 21.75V11.625C3.25 11.004 3.754 10.5 4.375 10.5z"/></svg>
+        </div>
         TicketFlow
       </div>
       <h2>Rejoignez des milliers d'équipes</h2>
       <p>Créez votre compte en moins de 2 minutes et commencez à gérer vos tickets efficacement dès aujourd'hui.</p>
       <div class="auth-features">
         <div class="auth-feature-item">
-          <div class="icon">🆓</div>
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
           <span>Gratuit pour commencer, sans CB</span>
         </div>
         <div class="auth-feature-item">
-          <div class="icon">⚙️</div>
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12a7.5 7.5 0 0015 0m-15 0a7.5 7.5 0 1115 0m-15 0H3m16.5 0H21m-1.5 0H12m-8.457 3.077l1.41-.513m14.095-5.13l1.41-.513M5.106 17.785l1.15-.964m11.49-9.642l1.149-.964M7.501 19.795l.75-1.3m7.5-12.99l.75-1.3m-6.063 16.658l.26-1.477m2.605-14.772l.26-1.477m0 17.726l-.26-1.477M10.698 4.614l-.26-1.477M16.5 19.794l-.75-1.299M7.5 4.205L12 12m6.894 5.785l-1.149-.964M6.256 7.178l-1.15-.964m15.352 8.864l-1.41-.513M4.954 9.435l-1.41-.514M12.002 12l-3.75 6.495"/></svg>
+          </div>
           <span>Configuration en 2 minutes</span>
         </div>
         <div class="auth-feature-item">
-          <div class="icon">🤝</div>
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
+          </div>
           <span>Support disponible 7j/7</span>
         </div>
       </div>
@@ -48,9 +56,8 @@
         <p>Rejoignez TicketFlow dès maintenant</p>
       </div>
 
-      <!-- ALERT SUCCESS -->
       <div class="alert alert-success" id="alert-success" style="display: none;">
-        ✅ Compte créé ! Redirection en cours...
+        Compte créé avec succès. Redirection en cours...
       </div>
 
       <form id="register-form" novalidate>
@@ -79,10 +86,12 @@
           <label class="form-label" for="password">Mot de passe</label>
           <div class="password-wrapper">
             <input type="password" id="password" class="form-control" placeholder="Min. 8 caractères" required />
-            <button type="button" class="password-toggle" onclick="togglePassword('password', this)">👁️</button>
+            <button type="button" class="password-toggle" onclick="togglePassword('password', this)" aria-label="Afficher le mot de passe">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </button>
           </div>
           <div id="strength-bar" style="margin-top: 8px; height: 4px; border-radius: 2px; background: var(--border); overflow: hidden;">
-            <div id="strength-fill" style="height: 100%; width: 0; background: var(--danger); transition: all 0.3s;"></div>
+            <div id="strength-fill" style="height: 100%; width: 0; transition: all 0.3s;"></div>
           </div>
           <p id="strength-label" style="font-size: 0.75rem; color: var(--gray-light); margin-top: 4px;"></p>
         </div>
@@ -91,7 +100,9 @@
           <label class="form-label" for="password-confirm">Confirmer le mot de passe</label>
           <div class="password-wrapper">
             <input type="password" id="password-confirm" class="form-control" placeholder="••••••••" required />
-            <button type="button" class="password-toggle" onclick="togglePassword('password-confirm', this)">👁️</button>
+            <button type="button" class="password-toggle" onclick="togglePassword('password-confirm', this)" aria-label="Afficher le mot de passe">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </button>
           </div>
           <p id="match-label" style="font-size: 0.75rem; margin-top: 4px;"></p>
         </div>
@@ -104,40 +115,36 @@
         </div>
 
         <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; justify-content: center;">
-          Créer mon compte →
+          Créer mon compte
         </button>
       </form>
 
       <p class="auth-form-footer">
-        Déjà un compte ? <a href="login.html">Se connecter →</a>
+        Déjà un compte ? <a href="login.html">Se connecter</a>
       </p>
     </div>
   </div>
 
 </div>
 
+<script src="../js/features.js"></script>
 <script>
+  requireFeature('register');
+
   function togglePassword(id, btn) {
     const input = document.getElementById(id);
-    if (input.type === 'password') {
-      input.type = 'text';
-      btn.textContent = '🙈';
-    } else {
-      input.type = 'password';
-      btn.textContent = '👁️';
-    }
+    input.type = input.type === 'password' ? 'text' : 'password';
   }
 
-  // Jauge de force du mot de passe
   document.getElementById('password').addEventListener('input', function() {
-    const val = this.value;
+    const val   = this.value;
     const fill  = document.getElementById('strength-fill');
     const label = document.getElementById('strength-label');
     let score = 0;
-    if (val.length >= 8)  score++;
-    if (/[A-Z]/.test(val)) score++;
-    if (/[0-9]/.test(val)) score++;
-    if (/[^A-Za-z0-9]/.test(val)) score++;
+    if (val.length >= 8)           score++;
+    if (/[A-Z]/.test(val))         score++;
+    if (/[0-9]/.test(val))         score++;
+    if (/[^A-Za-z0-9]/.test(val))  score++;
 
     const levels = [
       { w: '25%',  bg: '#ef4444', text: 'Très faible' },
@@ -145,24 +152,23 @@
       { w: '75%',  bg: '#3b82f6', text: 'Moyen' },
       { w: '100%', bg: '#10b981', text: 'Fort' },
     ];
-    if (val.length === 0) { fill.style.width = '0'; label.textContent = ''; return; }
+    if (!val) { fill.style.width = '0'; label.textContent = ''; return; }
     const lvl = levels[Math.min(score - 1, 3)] || levels[0];
-    fill.style.width  = lvl.w;
+    fill.style.width      = lvl.w;
     fill.style.background = lvl.bg;
-    label.textContent = lvl.text;
-    label.style.color = lvl.bg;
+    label.textContent     = lvl.text;
+    label.style.color     = lvl.bg;
   });
 
-  // Vérification correspondance
   document.getElementById('password-confirm').addEventListener('input', function() {
-    const p1 = document.getElementById('password').value;
+    const p1    = document.getElementById('password').value;
     const label = document.getElementById('match-label');
     if (!this.value) { label.textContent = ''; return; }
     if (this.value === p1) {
-      label.textContent = '✅ Les mots de passe correspondent';
+      label.textContent = 'Les mots de passe correspondent';
       label.style.color = 'var(--success)';
     } else {
-      label.textContent = '❌ Les mots de passe ne correspondent pas';
+      label.textContent = 'Les mots de passe ne correspondent pas';
       label.style.color = 'var(--danger)';
     }
   });
@@ -181,7 +187,6 @@
     if (!terms) return alert('Veuillez accepter les conditions d\'utilisation.');
     if (password.length < 8) return alert('Le mot de passe doit contenir au moins 8 caractères.');
 
-    // Sauvegarder et connecter
     localStorage.setItem('tf_user', JSON.stringify({
       email,
       name: firstname + ' ' + lastname,

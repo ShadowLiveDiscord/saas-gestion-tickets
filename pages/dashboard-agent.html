@@ -15,24 +15,26 @@
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-logo">
-      <div class="logo-icon">🎫</div>
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75a3.75 3.75 0 01-7.5 0V6m-4.125 4.5h15.75c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125H4.375A1.125 1.125 0 013.25 21.75V11.625C3.25 11.004 3.754 10.5 4.375 10.5z"/></svg>
+      </div>
       TicketFlow
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section-title">Gestion</div>
       <div class="nav-item active" onclick="showSection('all-tickets')">
-        <span class="nav-icon">📋</span> Tous les tickets
+        <span class="nav-icon" style="font-size:0.75rem;font-weight:700;">ALL</span> Tous les tickets
         <span class="nav-badge" id="nav-badge">0</span>
       </div>
       <div class="nav-item" onclick="showSection('my-tickets')">
-        <span class="nav-icon">🎯</span> Mes tickets assignés
+        <span class="nav-icon" style="font-size:0.75rem;font-weight:700;">MES</span> Mes tickets assignés
       </div>
       <div class="nav-section-title">Compte</div>
       <div class="nav-item" onclick="showSection('profile')">
-        <span class="nav-icon">👤</span> Mon profil
+        <span class="nav-icon" style="font-size:0.75rem;font-weight:700;">PRF</span> Mon profil
       </div>
       <div class="nav-item" onclick="logout()" style="color: var(--danger);">
-        <span class="nav-icon">🚪</span> Déconnexion
+        <span class="nav-icon" style="font-size:0.75rem;font-weight:700;">EXT</span> Déconnexion
       </div>
     </nav>
     <div class="sidebar-footer">
@@ -56,7 +58,6 @@
         <p id="page-subtitle">Gérez et traitez les demandes clients</p>
       </div>
       <div class="topbar-actions">
-        <button class="icon-btn">🔔<span class="notif-dot"></span></button>
       </div>
     </header>
 
@@ -66,23 +67,23 @@
       <div class="stats-row" id="stats-row">
         <div class="stat-card">
           <div class="stat-card-info"><h3 id="s-total">0</h3><p>Total tickets</p></div>
-          <div class="stat-card-icon blue">📋</div>
+          <div class="stat-card-icon blue" style="font-size:1.1rem;font-weight:700;color:#2563eb;">T</div>
         </div>
         <div class="stat-card">
           <div class="stat-card-info"><h3 id="s-open">0</h3><p>Ouverts</p></div>
-          <div class="stat-card-icon orange">⏳</div>
+          <div class="stat-card-icon orange" style="font-size:1.1rem;font-weight:700;color:#d97706;">O</div>
         </div>
         <div class="stat-card">
           <div class="stat-card-info"><h3 id="s-inprogress">0</h3><p>En cours</p></div>
-          <div class="stat-card-icon purple">🔄</div>
+          <div class="stat-card-icon purple" style="font-size:1.1rem;font-weight:700;color:#7c3aed;">E</div>
         </div>
         <div class="stat-card">
           <div class="stat-card-info"><h3 id="s-resolved">0</h3><p>Résolus aujourd'hui</p></div>
-          <div class="stat-card-icon green">✅</div>
+          <div class="stat-card-icon green" style="font-size:1.1rem;font-weight:700;color:#059669;">R</div>
         </div>
         <div class="stat-card">
           <div class="stat-card-info"><h3 id="s-critical">0</h3><p>Critiques</p></div>
-          <div class="stat-card-icon red">🚨</div>
+          <div class="stat-card-icon red" style="font-size:1.1rem;font-weight:700;color:#dc2626;">!</div>
         </div>
       </div>
 
@@ -92,8 +93,7 @@
           <div class="table-header">
             <h3>Files de tickets</h3>
             <div class="table-controls">
-              <div class="search-box">🔍
-                <input type="text" placeholder="Rechercher..." id="agent-search" oninput="filterAgentTickets()" />
+              <div class="search-box">              <input type="text" placeholder="Rechercher..." id="agent-search" oninput="filterAgentTickets()" />
               </div>
               <select class="form-control" style="width: auto; padding: 7px 12px;" id="agent-filter-status" onchange="filterAgentTickets()">
                 <option value="">Tous statuts</option>
@@ -205,6 +205,7 @@
   </div>
 </div>
 
+<script src="../js/features.js"></script>
 <script>
 let currentUser = null;
 let allTickets  = [];
@@ -271,7 +272,7 @@ function renderAgentTickets(list) {
   const toShow = list || allTickets;
   const container = document.getElementById('agent-tickets-container');
   if (toShow.length === 0) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-icon">✅</div><h3>Aucun ticket</h3><p>Aucun ticket ne correspond à vos critères.</p></div>`;
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon" style="font-size:2rem;">—</div><h3>Aucun ticket</h3><p>Aucun ticket ne correspond à vos critères.</p></div>`;
     return;
   }
   container.innerHTML = `
@@ -294,7 +295,7 @@ function renderAgentTickets(list) {
             <td><span class="badge ${STATUS_BADGE[t.status]}">${STATUS_LABELS[t.status]}</span></td>
             <td style="color: var(--text-light); font-size: 0.8rem;">${formatDate(t.date)}</td>
             <td>
-              <button class="btn btn-sm btn-primary" onclick="openTicket(${t.id})">Traiter →</button>
+              <button class="btn btn-sm btn-primary" onclick="openTicket(${t.id})">Traiter</button>
             </td>
           </tr>`).join('')}
       </tbody>
@@ -394,7 +395,7 @@ function showSection(name) {
     const mine = allTickets.filter(t => t.status === 'en_cours');
     const c = document.getElementById('my-tickets-container');
     if (mine.length === 0) {
-      c.innerHTML = `<div class="empty-state"><div class="empty-icon">🎯</div><h3>Aucun ticket en cours</h3><p>Prenez en charge des tickets depuis la file principale.</p></div>`;
+      c.innerHTML = `<div class="empty-state"><div class="empty-icon" style="font-size:2rem;">—</div><h3>Aucun ticket en cours</h3><p>Prenez en charge des tickets depuis la file principale.</p></div>`;
     } else {
       c.innerHTML = document.getElementById('agent-tickets-container').innerHTML;
     }
