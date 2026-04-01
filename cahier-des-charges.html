@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cahier des charges — TicketFlow</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-light: #ede9fe;
+      --secondary: #06b6d4;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --dark: #0f172a;
+      --text: #1e293b;
+      --text-light: #64748b;
+      --border: #e2e8f0;
+      --bg: #f8fafc;
+      --white: #ffffff;
+      --radius: 10px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.7; }
+
+    /* LAYOUT */
+    .page-wrapper { display: flex; min-height: 100vh; }
+
+    /* SIDEBAR TOC */
+    .toc {
+      width: 260px; flex-shrink: 0;
+      background: var(--white);
+      border-right: 1px solid var(--border);
+      position: sticky; top: 0; height: 100vh;
+      overflow-y: auto; padding: 28px 0;
+    }
+    .toc-brand {
+      padding: 0 20px 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .toc-brand h2 { font-size: 1rem; font-weight: 800; color: var(--dark); }
+    .toc-brand p  { font-size: 0.75rem; color: var(--text-light); margin-top: 2px; }
+    .toc-section { padding: 0 12px; margin-bottom: 4px; }
+    .toc-section-title {
+      font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: .08em; color: var(--text-light);
+      padding: 8px 8px 4px; display: block;
+    }
+    .toc a {
+      display: block; padding: 6px 10px;
+      border-radius: 6px; font-size: 0.82rem;
+      color: var(--text-light); text-decoration: none;
+      transition: all .15s;
+    }
+    .toc a:hover { background: var(--primary-light); color: var(--primary); }
+    .toc a.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+
+    /* MAIN */
+    .main { flex: 1; max-width: 860px; padding: 48px 56px 80px; }
+
+    /* COVER */
+    .cover {
+      background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 50%, var(--secondary) 100%);
+      border-radius: var(--radius); padding: 48px 40px; color: white; margin-bottom: 48px;
+    }
+    .cover-tag { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; opacity: .75; margin-bottom: 12px; }
+    .cover h1 { font-size: 2.2rem; font-weight: 800; line-height: 1.2; margin-bottom: 12px; }
+    .cover p  { opacity: .85; font-size: 0.95rem; max-width: 520px; }
+    .cover-meta { display: flex; gap: 32px; margin-top: 28px; flex-wrap: wrap; }
+    .cover-meta-item label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: .06em; opacity: .65; display: block; margin-bottom: 2px; }
+    .cover-meta-item span  { font-weight: 600; font-size: 0.875rem; }
+
+    /* SECTIONS */
+    .section { margin-bottom: 52px; scroll-margin-top: 24px; }
+    .section-number {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 8px;
+      background: var(--primary-light); color: var(--primary);
+      font-size: 0.75rem; font-weight: 800; margin-right: 10px; flex-shrink: 0;
+    }
+    .section-header { display: flex; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid var(--border); }
+    .section-header h2 { font-size: 1.25rem; font-weight: 700; }
+
+    h3 { font-size: 0.95rem; font-weight: 700; margin: 20px 0 10px; color: var(--dark); }
+    p  { margin-bottom: 10px; color: var(--text); }
+
+    /* TABLE */
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 0.83rem; }
+    thead tr { background: var(--bg); }
+    th { padding: 9px 14px; text-align: left; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-light); border-bottom: 2px solid var(--border); }
+    td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: #fafafa; }
+
+    /* BADGE */
+    .badge { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 999px; font-size: 0.72rem; font-weight: 600; }
+    .badge-primary { background: #ede9fe; color: #4f46e5; }
+    .badge-success { background: #d1fae5; color: #065f46; }
+    .badge-warning { background: #fef3c7; color: #92400e; }
+    .badge-danger  { background: #fee2e2; color: #991b1b; }
+    .badge-gray    { background: #f1f5f9; color: #64748b; }
+    .badge-cyan    { background: #cffafe; color: #155e75; }
+
+    /* CARD */
+    .card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin-bottom: 14px; }
+    .card h4 { font-size: 0.875rem; font-weight: 700; margin-bottom: 8px; }
+    .card p  { font-size: 0.83rem; color: var(--text-light); margin: 0; }
+
+    /* ROLE CARDS */
+    .role-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 14px 0; }
+    .role-card { border: 1.5px solid var(--border); border-radius: var(--radius); padding: 18px; }
+    .role-card .role-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 6px; }
+    .role-card ul { padding-left: 16px; font-size: 0.8rem; color: var(--text-light); }
+    .role-card ul li { margin-bottom: 4px; }
+    .role-card.admin  { border-color: #fca5a5; background: #fff5f5; }
+    .role-card.agent  { border-color: #6ee7b7; background: #f0fdf4; }
+    .role-card.user   { border-color: #93c5fd; background: #eff6ff; }
+
+    /* TIMELINE */
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before { content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px; background: var(--border); }
+    .timeline-item { position: relative; margin-bottom: 24px; }
+    .timeline-item::before {
+      content: ''; position: absolute; left: -24px; top: 6px;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: var(--primary); border: 2px solid white;
+      box-shadow: 0 0 0 2px var(--primary);
+    }
+    .timeline-item h4 { font-size: 0.875rem; font-weight: 700; margin-bottom: 4px; }
+    .timeline-item p  { font-size: 0.8rem; color: var(--text-light); margin: 0; }
+    .timeline-item .phase-badge { margin-bottom: 6px; }
+
+    /* PRIORITY */
+    .prio-high   { color: #dc2626; font-weight: 600; }
+    .prio-medium { color: #d97706; font-weight: 600; }
+    .prio-low    { color: #059669; font-weight: 600; }
+
+    /* ALERT */
+    .alert { padding: 12px 16px; border-radius: 8px; font-size: 0.83rem; margin: 14px 0; display: flex; gap: 10px; align-items: flex-start; }
+    .alert-info    { background: #dbeafe; color: #1e40af; border-left: 3px solid #3b82f6; }
+    .alert-warning { background: #fef3c7; color: #92400e; border-left: 3px solid #f59e0b; }
+    .alert-success { background: #d1fae5; color: #065f46; border-left: 3px solid #10b981; }
+
+    /* CHECKLIST */
+    .checklist { list-style: none; padding: 0; }
+    .checklist li { display: flex; align-items: flex-start; gap: 8px; padding: 5px 0; font-size: 0.83rem; border-bottom: 1px solid var(--border); }
+    .checklist li:last-child { border: none; }
+    .checklist li::before { content: ''; width: 16px; height: 16px; border: 1.5px solid var(--border); border-radius: 4px; flex-shrink: 0; margin-top: 1px; }
+
+    /* PRINT */
+    @media print {
+      .toc { display: none; }
+      .main { padding: 24px; max-width: 100%; }
+      .cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+
+    @media (max-width: 768px) {
+      .toc { display: none; }
+      .main { padding: 24px 20px; }
+      .role-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- SOMMAIRE -->
+  <nav class="toc">
+    <div class="toc-brand">
+      <h2>TicketFlow</h2>
+      <p>Cahier des charges v1.0</p>
+    </div>
+    <div class="toc-section">
+      <span class="toc-section-title">Document</span>
+      <a href="#s1">1. Présentation du projet</a>
+      <a href="#s2">2. Objectifs</a>
+      <a href="#s3">3. Périmètre fonctionnel</a>
+    </div>
+    <div class="toc-section">
+      <span class="toc-section-title">Fonctionnel</span>
+      <a href="#s4">4. Rôles et accès</a>
+      <a href="#s5">5. Gestion des tickets</a>
+      <a href="#s6">6. Dashboards</a>
+      <a href="#s7">7. Panel administrateur</a>
+    </div>
+    <div class="toc-section">
+      <span class="toc-section-title">Technique</span>
+      <a href="#s8">8. Architecture technique</a>
+      <a href="#s9">9. Sécurité et accès</a>
+      <a href="#s10">10. Interfaces utilisateur</a>
+    </div>
+    <div class="toc-section">
+      <span class="toc-section-title">Projet</span>
+      <a href="#s11">11. Planning et livrables</a>
+      <a href="#s12">12. Contraintes</a>
+      <a href="#s13">13. Glossaire</a>
+    </div>
+  </nav>
+
+  <!-- CONTENU -->
+  <main class="main">
+
+    <!-- COUVERTURE -->
+    <div class="cover">
+      <div class="cover-tag">Cahier des charges — Projet SaaS</div>
+      <h1>TicketFlow<br>Plateforme de gestion de tickets</h1>
+      <p>Système de support client multi-rôles accessible via navigateur web, sans installation requise.</p>
+      <div class="cover-meta">
+        <div class="cover-meta-item"><label>Version</label><span>1.0</span></div>
+        <div class="cover-meta-item"><label>Date</label><span>Avril 2026</span></div>
+        <div class="cover-meta-item"><label>Statut</label><span>En cours de développement</span></div>
+        <div class="cover-meta-item"><label>Type</label><span>Projet SaaS — Frontend</span></div>
+      </div>
+    </div>
+
+    <!-- 1. PRÉSENTATION -->
+    <section class="section" id="s1">
+      <div class="section-header">
+        <span class="section-number">1</span>
+        <h2>Présentation du projet</h2>
+      </div>
+
+      <h3>Contexte</h3>
+      <p>TicketFlow est une application web de type SaaS (Software as a Service) permettant à des organisations de gérer leurs demandes de support client sous forme de tickets. Le projet est développé dans le cadre d'un cours, en HTML, CSS et JavaScript pur, sans framework ni backend.</p>
+
+      <h3>Problème résolu</h3>
+      <p>Les équipes de support manquent souvent d'un outil centralisé pour recevoir, trier et traiter les demandes clients. TicketFlow propose une solution simple, accessible depuis n'importe quel navigateur, sans installation.</p>
+
+      <h3>Public cible</h3>
+      <table>
+        <thead><tr><th>Profil</th><th>Besoin principal</th></tr></thead>
+        <tbody>
+          <tr><td>Petites et moyennes entreprises</td><td>Centraliser les demandes clients sans outil complexe</td></tr>
+          <tr><td>Équipes de support</td><td>Traiter et suivre les tickets efficacement</td></tr>
+          <tr><td>Clients / utilisateurs finaux</td><td>Soumettre une demande et suivre son avancement</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 2. OBJECTIFS -->
+    <section class="section" id="s2">
+      <div class="section-header">
+        <span class="section-number">2</span>
+        <h2>Objectifs du projet</h2>
+      </div>
+
+      <h3>Objectifs principaux</h3>
+      <table>
+        <thead><tr><th>Objectif</th><th>Priorité</th><th>Statut</th></tr></thead>
+        <tbody>
+          <tr><td>Créer une interface de soumission de tickets pour les utilisateurs</td><td><span class="prio-high">Haute</span></td><td><span class="badge badge-success">Réalisé</span></td></tr>
+          <tr><td>Permettre aux agents de traiter et répondre aux tickets</td><td><span class="prio-high">Haute</span></td><td><span class="badge badge-success">Réalisé</span></td></tr>
+          <tr><td>Fournir un panel d'administration complet</td><td><span class="prio-high">Haute</span></td><td><span class="badge badge-success">Réalisé</span></td></tr>
+          <tr><td>Système d'authentification avec 3 rôles distincts</td><td><span class="prio-high">Haute</span></td><td><span class="badge badge-success">Réalisé</span></td></tr>
+          <tr><td>Messagerie interne sur chaque ticket</td><td><span class="prio-medium">Moyenne</span></td><td><span class="badge badge-warning">En cours</span></td></tr>
+          <tr><td>Statistiques et tableaux de bord</td><td><span class="prio-medium">Moyenne</span></td><td><span class="badge badge-success">Réalisé</span></td></tr>
+          <tr><td>Système de feature flags pour contrôler les modules</td><td><span class="prio-medium">Moyenne</span></td><td><span class="badge badge-success">Réalisé</span></td></tr>
+          <tr><td>Hébergement en ligne (GitHub Pages)</td><td><span class="prio-low">Basse</span></td><td><span class="badge badge-success">Réalisé</span></td></tr>
+          <tr><td>Notifications par email</td><td><span class="prio-low">Basse</span></td><td><span class="badge badge-gray">Prévu v2</span></td></tr>
+          <tr><td>API REST pour intégrations tierces</td><td><span class="prio-low">Basse</span></td><td><span class="badge badge-gray">Prévu v2</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 3. PÉRIMÈTRE -->
+    <section class="section" id="s3">
+      <div class="section-header">
+        <span class="section-number">3</span>
+        <h2>Périmètre fonctionnel</h2>
+      </div>
+
+      <h3>Ce qui est inclus (v1)</h3>
+      <table>
+        <thead><tr><th>Module</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>Page d'accueil</td><td>Landing page publique avec présentation, fonctionnalités, tarifs</td></tr>
+          <tr><td>Authentification</td><td>Connexion / inscription avec redirection selon le rôle</td></tr>
+          <tr><td>Espace utilisateur</td><td>Création, suivi et consultation des tickets personnels</td></tr>
+          <tr><td>Espace agent</td><td>File de tickets, traitement, réponse, changement de statut</td></tr>
+          <tr><td>Panel administrateur</td><td>KPIs, gestion utilisateurs/agents, feature flags, paramètres</td></tr>
+          <tr><td>Feature flags</td><td>Activation/désactivation de chaque module depuis l'admin</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Ce qui est exclu (v1)</h3>
+      <div class="alert alert-warning">
+        Les fonctionnalités suivantes ne font pas partie de la version 1 et seront traitées dans une version ultérieure : backend/base de données, notifications email, API REST, application mobile, pièces jointes sur les tickets, SLA automatique.
+      </div>
+    </section>
+
+    <!-- 4. RÔLES -->
+    <section class="section" id="s4">
+      <div class="section-header">
+        <span class="section-number">4</span>
+        <h2>Rôles et niveaux d'accès</h2>
+      </div>
+
+      <p>La plateforme distingue trois rôles, chacun avec son propre espace et ses permissions.</p>
+
+      <div class="role-grid">
+        <div class="role-card admin">
+          <div class="role-title">Administrateur</div>
+          <span class="badge badge-danger" style="margin-bottom:10px;">Admin</span>
+          <ul>
+            <li>Accès total à la plateforme</li>
+            <li>Gestion des utilisateurs et agents</li>
+            <li>Activation/désactivation des modules</li>
+            <li>Consultation de toutes les statistiques</li>
+            <li>Configuration des paramètres système</li>
+            <li>Suppression de tickets</li>
+          </ul>
+        </div>
+        <div class="role-card agent">
+          <div class="role-title">Agent</div>
+          <span class="badge badge-success" style="margin-bottom:10px;">Agent</span>
+          <ul>
+            <li>Voir tous les tickets ouverts</li>
+            <li>Prendre en charge un ticket</li>
+            <li>Répondre aux utilisateurs</li>
+            <li>Modifier le statut d'un ticket</li>
+            <li>Modifier la priorité d'un ticket</li>
+            <li>Voir ses tickets assignés</li>
+          </ul>
+        </div>
+        <div class="role-card user">
+          <div class="role-title">Utilisateur</div>
+          <span class="badge badge-primary" style="margin-bottom:10px;">Utilisateur</span>
+          <ul>
+            <li>Créer un ticket de support</li>
+            <li>Suivre ses propres tickets</li>
+            <li>Consulter les réponses des agents</li>
+            <li>Envoyer des messages sur un ticket</li>
+            <li>Modifier son profil</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>Matrice des permissions</h3>
+      <table>
+        <thead><tr><th>Action</th><th>Utilisateur</th><th>Agent</th><th>Admin</th></tr></thead>
+        <tbody>
+          <tr><td>Créer un ticket</td><td><span class="badge badge-success">Oui</span></td><td><span class="badge badge-gray">Non</span></td><td><span class="badge badge-success">Oui</span></td></tr>
+          <tr><td>Voir ses propres tickets</td><td><span class="badge badge-success">Oui</span></td><td><span class="badge badge-gray">N/A</span></td><td><span class="badge badge-success">Oui</span></td></tr>
+          <tr><td>Voir tous les tickets</td><td><span class="badge badge-gray">Non</span></td><td><span class="badge badge-success">Oui</span></td><td><span class="badge badge-success">Oui</span></td></tr>
+          <tr><td>Répondre à un ticket</td><td><span class="badge badge-success">Oui</span></td><td><span class="badge badge-success">Oui</span></td><td><span class="badge badge-success">Oui</span></td></tr>
+          <tr><td>Changer le statut</td><td><span class="badge badge-gray">Non</span></td><td><span class="badge badge-success">Oui</span></td><td><span class="badge badge-success">Oui</span></td></tr>
+          <tr><td>Changer la priorité</td><td><span class="badge badge-gray">Non</span></td><td><span class="badge badge-success">Oui</span></td><td><span class="badge badge-success">Oui</span></td></tr>
+          <tr><td>Supprimer un ticket</td><td><span class="badge badge-gray">Non</span></td><td><span class="badge badge-gray">Non</span></td><td><span class="badge badge-success">Oui</span></td></tr>
+          <tr><td>Gérer les utilisateurs</td><td><span class="badge badge-gray">Non</span></td><td><span class="badge badge-gray">Non</span></td><td><span class="badge badge-success">Oui</span></td></tr>
+          <tr><td>Activer/désactiver modules</td><td><span class="badge badge-gray">Non</span></td><td><span class="badge badge-gray">Non</span></td><td><span class="badge badge-success">Oui</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 5. TICKETS -->
+    <section class="section" id="s5">
+      <div class="section-header">
+        <span class="section-number">5</span>
+        <h2>Gestion des tickets</h2>
+      </div>
+
+      <h3>Cycle de vie d'un ticket</h3>
+      <div class="alert alert-info">
+        Un ticket passe par plusieurs statuts depuis sa création jusqu'à sa résolution.
+      </div>
+      <table>
+        <thead><tr><th>Statut</th><th>Description</th><th>Qui peut le définir</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge badge-primary">Ouvert</span></td><td>Ticket créé, en attente de prise en charge</td><td>Automatique à la création</td></tr>
+          <tr><td><span class="badge badge-warning">En cours</span></td><td>Un agent a pris en charge le ticket</td><td>Agent, Admin</td></tr>
+          <tr><td><span class="badge badge-success">Résolu</span></td><td>Le problème a été traité et résolu</td><td>Agent, Admin</td></tr>
+          <tr><td><span class="badge badge-gray">Fermé</span></td><td>Ticket archivé, plus de modification possible</td><td>Agent, Admin</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Niveaux de priorité</h3>
+      <table>
+        <thead><tr><th>Priorité</th><th>Description</th><th>Délai de traitement cible</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge badge-success">Bas</span></td><td>Demande non urgente, amélioration ou question</td><td>72h</td></tr>
+          <tr><td><span class="badge badge-warning">Moyen</span></td><td>Problème fonctionnel sans impact critique</td><td>24h</td></tr>
+          <tr><td><span class="badge" style="background:#ffedd5;color:#9a3412;">Élevé</span></td><td>Problème important affectant l'activité</td><td>8h</td></tr>
+          <tr><td><span class="badge badge-danger">Critique</span></td><td>Blocage total, perte de données, sécurité</td><td>2h</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Catégories de tickets</h3>
+      <table>
+        <thead><tr><th>Catégorie</th><th>Exemples de demandes</th></tr></thead>
+        <tbody>
+          <tr><td>Technique</td><td>Bug, erreur serveur, lenteur, crash</td></tr>
+          <tr><td>Facturation</td><td>Remboursement, facture incorrecte, abonnement</td></tr>
+          <tr><td>Compte</td><td>Mot de passe oublié, accès bloqué, modification profil</td></tr>
+          <tr><td>Commercial</td><td>Demande de devis, changement d'offre, partenariat</td></tr>
+          <tr><td>Autre</td><td>Toute demande ne rentrant pas dans les catégories précédentes</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Champs d'un ticket</h3>
+      <table>
+        <thead><tr><th>Champ</th><th>Type</th><th>Obligatoire</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>Titre</td><td>Texte court</td><td>Oui</td><td>Résumé du problème en une ligne</td></tr>
+          <tr><td>Description</td><td>Texte long</td><td>Oui</td><td>Détail complet du problème rencontré</td></tr>
+          <tr><td>Catégorie</td><td>Liste déroulante</td><td>Oui</td><td>Type de demande parmi les catégories définies</td></tr>
+          <tr><td>Priorité</td><td>Liste déroulante</td><td>Oui</td><td>Niveau d'urgence estimé par l'utilisateur</td></tr>
+          <tr><td>Statut</td><td>Automatique</td><td>—</td><td>Défini automatiquement, modifiable par agent/admin</td></tr>
+          <tr><td>Date de création</td><td>Date/heure</td><td>—</td><td>Générée automatiquement</td></tr>
+          <tr><td>Créateur</td><td>Référence utilisateur</td><td>—</td><td>Lié au compte connecté</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 6. DASHBOARDS -->
+    <section class="section" id="s6">
+      <div class="section-header">
+        <span class="section-number">6</span>
+        <h2>Dashboards par rôle</h2>
+      </div>
+
+      <h3>Dashboard Utilisateur</h3>
+      <table>
+        <thead><tr><th>Fonctionnalité</th><th>Description</th><th>Module flag</th></tr></thead>
+        <tbody>
+          <tr><td>Compteurs de tickets</td><td>Total, en cours, résolus, critiques</td><td><span class="badge badge-success">Toujours actif</span></td></tr>
+          <tr><td>Liste de mes tickets</td><td>Tableau avec tri et pagination</td><td><span class="badge badge-success">Toujours actif</span></td></tr>
+          <tr><td>Créer un ticket</td><td>Formulaire de soumission</td><td><span class="badge badge-cyan">user_create_ticket</span></td></tr>
+          <tr><td>Filtres et recherche</td><td>Filtrer par statut, priorité, mot-clé</td><td><span class="badge badge-cyan">user_filters</span></td></tr>
+          <tr><td>Messagerie sur ticket</td><td>Fil de discussion avec l'agent</td><td><span class="badge badge-cyan">user_messaging</span></td></tr>
+          <tr><td>Profil utilisateur</td><td>Modification des informations personnelles</td><td><span class="badge badge-cyan">user_profile</span></td></tr>
+        </tbody>
+      </table>
+
+      <h3>Dashboard Agent</h3>
+      <table>
+        <thead><tr><th>Fonctionnalité</th><th>Description</th><th>Module flag</th></tr></thead>
+        <tbody>
+          <tr><td>File de tickets</td><td>Tous les tickets ouverts et en cours</td><td><span class="badge badge-success">Toujours actif</span></td></tr>
+          <tr><td>Fiche ticket</td><td>Détail complet avec historique</td><td><span class="badge badge-success">Toujours actif</span></td></tr>
+          <tr><td>Répondre</td><td>Envoyer un message à l'utilisateur</td><td><span class="badge badge-cyan">agent_reply</span></td></tr>
+          <tr><td>Changer le statut</td><td>Ouvert / En cours / Résolu / Fermé</td><td><span class="badge badge-cyan">agent_change_status</span></td></tr>
+          <tr><td>Changer la priorité</td><td>Bas / Moyen / Élevé / Critique</td><td><span class="badge badge-cyan">agent_change_priority</span></td></tr>
+          <tr><td>Mes tickets assignés</td><td>Onglet filtré sur les tickets en cours</td><td><span class="badge badge-cyan">agent_my_tickets</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 7. ADMIN -->
+    <section class="section" id="s7">
+      <div class="section-header">
+        <span class="section-number">7</span>
+        <h2>Panel administrateur</h2>
+      </div>
+
+      <h3>Sections du panel</h3>
+      <table>
+        <thead><tr><th>Section</th><th>Contenu</th><th>Module flag</th></tr></thead>
+        <tbody>
+          <tr><td>Vue d'ensemble</td><td>KPIs globaux, graphiques de répartition, derniers tickets</td><td><span class="badge badge-success">Toujours actif</span></td></tr>
+          <tr><td>Gestion des tickets</td><td>Tableau complet, changement de statut, suppression</td><td><span class="badge badge-cyan">admin_tickets</span></td></tr>
+          <tr><td>Gestion des utilisateurs</td><td>Liste, ajout, modification de rôle, suppression</td><td><span class="badge badge-cyan">admin_users</span></td></tr>
+          <tr><td>Gestion des agents</td><td>Liste, ajout, statistiques de performance</td><td><span class="badge badge-cyan">admin_agents</span></td></tr>
+          <tr><td>Modules du site</td><td>Activation/désactivation des 20 modules par toggle</td><td><span class="badge badge-success">Toujours actif</span></td></tr>
+          <tr><td>Statistiques</td><td>Barres de progression par statut et priorité</td><td><span class="badge badge-cyan">admin_stats</span></td></tr>
+          <tr><td>Paramètres système</td><td>Nom de la plateforme, email, langue, notifications</td><td><span class="badge badge-cyan">admin_settings</span></td></tr>
+        </tbody>
+      </table>
+
+      <h3>Système de Feature Flags</h3>
+      <p>L'administrateur peut activer ou désactiver chacun des 20 modules de la plateforme depuis la section "Modules du site". Les modules sont regroupés en 4 catégories :</p>
+      <table>
+        <thead><tr><th>Groupe</th><th>Nombre de modules</th><th>Exemples</th></tr></thead>
+        <tbody>
+          <tr><td>Pages publiques</td><td>5</td><td>Page d'accueil, Inscription, Connexion, Tarifs</td></tr>
+          <tr><td>Espace utilisateur</td><td>5</td><td>Dashboard, Créer ticket, Filtres, Messagerie</td></tr>
+          <tr><td>Espace agent</td><td>5</td><td>Dashboard, Répondre, Statut, Priorité</td></tr>
+          <tr><td>Panel administrateur</td><td>5</td><td>Tickets, Utilisateurs, Agents, Stats</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 8. ARCHITECTURE -->
+    <section class="section" id="s8">
+      <div class="section-header">
+        <span class="section-number">8</span>
+        <h2>Architecture technique</h2>
+      </div>
+
+      <h3>Stack technologique</h3>
+      <table>
+        <thead><tr><th>Couche</th><th>Technologie</th><th>Justification</th></tr></thead>
+        <tbody>
+          <tr><td>Structure</td><td>HTML5</td><td>Standard web, compatible tous navigateurs</td></tr>
+          <tr><td>Style</td><td>CSS3 (variables, grid, flexbox)</td><td>Mise en page moderne sans framework</td></tr>
+          <tr><td>Logique</td><td>JavaScript ES6+ (vanilla)</td><td>Pas de dépendance externe, léger</td></tr>
+          <tr><td>Persistance</td><td>localStorage</td><td>Stockage côté client, sans backend</td></tr>
+          <tr><td>Typographie</td><td>Google Fonts (Inter)</td><td>Police moderne et lisible</td></tr>
+          <tr><td>Hébergement</td><td>GitHub Pages</td><td>Gratuit, déploiement automatique</td></tr>
+          <tr><td>Versioning</td><td>Git / GitHub</td><td>Suivi des modifications, collaboration</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Structure des fichiers</h3>
+      <div class="card">
+        <pre style="font-size:0.8rem;color:var(--text-light);line-height:1.8;font-family:monospace;">
+saas-gestion-tickets/
+├── index.html                  ← Page d'accueil publique
+├── cahier-des-charges.html     ← Ce document
+├── css/
+│   ├── style.css               ← Styles globaux (variables, composants)
+│   ├── auth.css                ← Styles pages connexion / inscription
+│   └── dashboard.css           ← Styles dashboards (sidebar, tableaux, modals)
+├── js/
+│   └── features.js             ← Système de feature flags
+└── pages/
+    ├── login.html              ← Connexion
+    ├── register.html           ← Inscription
+    ├── dashboard-user.html     ← Espace utilisateur
+    ├── dashboard-agent.html    ← Espace agent
+    ├── dashboard-admin.html    ← Panel administrateur
+    └── unavailable.html        ← Page "Module désactivé"</pre>
+      </div>
+
+      <h3>Stockage des données (localStorage)</h3>
+      <table>
+        <thead><tr><th>Clé</th><th>Contenu</th></tr></thead>
+        <tbody>
+          <tr><td><code>tf_user</code></td><td>Session utilisateur connecté (nom, email, rôle)</td></tr>
+          <tr><td><code>tf_tickets_[email]</code></td><td>Tickets de l'utilisateur identifié par son email</td></tr>
+          <tr><td><code>tf_admin_users</code></td><td>Liste des utilisateurs gérés par l'admin</td></tr>
+          <tr><td><code>tf_admin_agents</code></td><td>Liste des agents gérés par l'admin</td></tr>
+          <tr><td><code>tf_features</code></td><td>État activé/désactivé de chaque module</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 9. SÉCURITÉ -->
+    <section class="section" id="s9">
+      <div class="section-header">
+        <span class="section-number">9</span>
+        <h2>Sécurité et contrôle d'accès</h2>
+      </div>
+
+      <h3>Mécanismes de protection</h3>
+      <table>
+        <thead><tr><th>Mécanisme</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>Vérification de session</td><td>Chaque dashboard vérifie la présence de <code>tf_user</code> au chargement</td></tr>
+          <tr><td>Vérification du rôle</td><td>Redirection automatique si le rôle ne correspond pas à la page</td></tr>
+          <tr><td>Feature flags</td><td>Redirection vers "Prochainement" si le module est désactivé</td></tr>
+          <tr><td>Protection admin</td><td>Le panel admin ne peut pas être désactivé par les feature flags</td></tr>
+        </tbody>
+      </table>
+
+      <div class="alert alert-warning">
+        Note : cette version utilise une authentification simulée côté client (localStorage). Dans une version de production, l'authentification devra être gérée par un backend sécurisé avec tokens JWT ou sessions serveur.
+      </div>
+    </section>
+
+    <!-- 10. UI -->
+    <section class="section" id="s10">
+      <div class="section-header">
+        <span class="section-number">10</span>
+        <h2>Interfaces utilisateur</h2>
+      </div>
+
+      <h3>Principes de design</h3>
+      <table>
+        <thead><tr><th>Principe</th><th>Application</th></tr></thead>
+        <tbody>
+          <tr><td>Responsive</td><td>Mise en page adaptée mobile, tablette et desktop</td></tr>
+          <tr><td>Cohérence visuelle</td><td>Variables CSS centralisées, composants réutilisables</td></tr>
+          <tr><td>Accessibilité</td><td>Contrastes suffisants, labels sur les formulaires</td></tr>
+          <tr><td>Feedback utilisateur</td><td>Alertes de succès/erreur, états de chargement</td></tr>
+          <tr><td>Navigation claire</td><td>Sidebar fixe avec section active mise en évidence</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Composants UI développés</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">
+        <div class="card"><h4>Boutons</h4><p>Primary, outline, ghost, danger, success — tailles sm/md/lg</p></div>
+        <div class="card"><h4>Badges</h4><p>Statuts et priorités avec code couleur cohérent</p></div>
+        <div class="card"><h4>Tableaux</h4><p>Tri, filtres, pagination, états vides</p></div>
+        <div class="card"><h4>Modals</h4><p>Overlay avec animation, fermeture au clic extérieur</p></div>
+        <div class="card"><h4>Formulaires</h4><p>Validation, jauge de force mot de passe, messages d'erreur</p></div>
+        <div class="card"><h4>Toggle switch</h4><p>Interrupteur animé pour les feature flags</p></div>
+        <div class="card"><h4>Sidebar</h4><p>Navigation fixe avec section active et badge compteur</p></div>
+        <div class="card"><h4>Stat cards</h4><p>Cartes KPI avec valeur et icône colorée</p></div>
+      </div>
+    </section>
+
+    <!-- 11. PLANNING -->
+    <section class="section" id="s11">
+      <div class="section-header">
+        <span class="section-number">11</span>
+        <h2>Planning et livrables</h2>
+      </div>
+
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="phase-badge"><span class="badge badge-success">Phase 1 — Terminée</span></div>
+          <h4>Structure et design de base</h4>
+          <p>Mise en place de la structure HTML/CSS, variables de design, composants réutilisables (boutons, cartes, tableaux, formulaires).</p>
+        </div>
+        <div class="timeline-item">
+          <div class="phase-badge"><span class="badge badge-success">Phase 2 — Terminée</span></div>
+          <h4>Pages publiques</h4>
+          <p>Landing page complète (hero, fonctionnalités, tarifs, footer), page de connexion avec comptes démo, page d'inscription avec validation.</p>
+        </div>
+        <div class="timeline-item">
+          <div class="phase-badge"><span class="badge badge-success">Phase 3 — Terminée</span></div>
+          <h4>Dashboards utilisateur et agent</h4>
+          <p>Espace utilisateur (création de tickets, suivi, messagerie), espace agent (file de tickets, traitement, réponse, changement de statut/priorité).</p>
+        </div>
+        <div class="timeline-item">
+          <div class="phase-badge"><span class="badge badge-success">Phase 4 — Terminée</span></div>
+          <h4>Panel administrateur</h4>
+          <p>KPIs, graphiques, gestion utilisateurs/agents, feature flags avec 20 modules configurables.</p>
+        </div>
+        <div class="timeline-item">
+          <div class="phase-badge"><span class="badge badge-warning">Phase 5 — En cours</span></div>
+          <h4>Améliorations et corrections</h4>
+          <p>Suppression des emojis, correction des bugs de navigation, amélioration du système de feature flags, hébergement GitHub Pages.</p>
+        </div>
+        <div class="timeline-item">
+          <div class="phase-badge"><span class="badge badge-gray">Phase 6 — Prévu</span></div>
+          <h4>Version 2 — Backend</h4>
+          <p>Intégration d'un backend (Node.js ou PHP), base de données, authentification sécurisée, notifications email, API REST.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12. CONTRAINTES -->
+    <section class="section" id="s12">
+      <div class="section-header">
+        <span class="section-number">12</span>
+        <h2>Contraintes du projet</h2>
+      </div>
+
+      <h3>Contraintes techniques</h3>
+      <table>
+        <thead><tr><th>Contrainte</th><th>Impact</th><th>Solution adoptée</th></tr></thead>
+        <tbody>
+          <tr><td>Pas de backend</td><td>Pas de persistance réelle entre navigateurs</td><td>localStorage pour simuler la persistance</td></tr>
+          <tr><td>Pas de base de données</td><td>Données perdues si localStorage effacé</td><td>Données de démo pré-chargées</td></tr>
+          <tr><td>Pas de framework JS</td><td>Code plus verbeux</td><td>Architecture modulaire avec fonctions réutilisables</td></tr>
+          <tr><td>Hébergement statique</td><td>Pas de traitement serveur</td><td>GitHub Pages (fichiers statiques)</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Contraintes pédagogiques</h3>
+      <table>
+        <thead><tr><th>Contrainte</th><th>Réponse</th></tr></thead>
+        <tbody>
+          <tr><td>Projet progressif (montrer l'avancement)</td><td>Système de feature flags permettant d'activer les modules un par un</td></tr>
+          <tr><td>Code lisible et maintenable</td><td>Séparation CSS/JS/HTML, nommage cohérent, commentaires</td></tr>
+          <tr><td>Interface professionnelle</td><td>Design moderne inspiré des SaaS actuels (Linear, Notion)</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 13. GLOSSAIRE -->
+    <section class="section" id="s13">
+      <div class="section-header">
+        <span class="section-number">13</span>
+        <h2>Glossaire</h2>
+      </div>
+
+      <table>
+        <thead><tr><th>Terme</th><th>Définition</th></tr></thead>
+        <tbody>
+          <tr><td><strong>SaaS</strong></td><td>Software as a Service — logiciel accessible via un navigateur web, sans installation</td></tr>
+          <tr><td><strong>Ticket</strong></td><td>Demande de support créée par un utilisateur, traitée par un agent</td></tr>
+          <tr><td><strong>Feature Flag</strong></td><td>Interrupteur permettant d'activer ou désactiver une fonctionnalité sans modifier le code</td></tr>
+          <tr><td><strong>Dashboard</strong></td><td>Tableau de bord regroupant les informations et actions principales d'un rôle</td></tr>
+          <tr><td><strong>localStorage</strong></td><td>Stockage de données dans le navigateur, persistant entre les sessions</td></tr>
+          <tr><td><strong>KPI</strong></td><td>Key Performance Indicator — indicateur clé de performance (ex : nombre de tickets ouverts)</td></tr>
+          <tr><td><strong>Rôle</strong></td><td>Niveau d'accès d'un utilisateur : Utilisateur, Agent ou Administrateur</td></tr>
+          <tr><td><strong>Statut</strong></td><td>État actuel d'un ticket : Ouvert, En cours, Résolu ou Fermé</td></tr>
+          <tr><td><strong>Priorité</strong></td><td>Niveau d'urgence d'un ticket : Bas, Moyen, Élevé ou Critique</td></tr>
+          <tr><td><strong>GitHub Pages</strong></td><td>Service d'hébergement gratuit de sites statiques proposé par GitHub</td></tr>
+        </tbody>
+      </table>
+
+      <div class="alert alert-success" style="margin-top: 28px;">
+        Document généré automatiquement — TicketFlow v1.0 — Avril 2026
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // Highlight TOC active link on scroll
+  const sections = document.querySelectorAll('.section');
+  const links    = document.querySelectorAll('.toc a');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.toc a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
