@@ -17,17 +17,24 @@
     .progress-fill { height: 100%; border-radius: 4px; }
 
     /* FEATURE FLAGS */
-    .feature-flag-grid { display: flex; flex-direction: column; gap: 12px; }
+    .ff-group { margin-bottom: 28px; }
+    .ff-group-title {
+      font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: .08em; color: var(--gray-light);
+      margin-bottom: 10px; padding: 0 4px;
+    }
+    .feature-flag-grid { display: flex; flex-direction: column; gap: 8px; }
     .feature-flag-item {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 16px 20px;
+      padding: 14px 18px;
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
       background: white;
       transition: var(--transition);
     }
-    .feature-flag-item:hover { border-color: var(--primary-light); }
-    .feature-flag-item.active { border-color: var(--success); background: #f0fdf4; }
+    .feature-flag-item:hover { border-color: var(--primary-light); box-shadow: 0 2px 8px rgba(79,70,229,.06); }
+    .feature-flag-item.active { border-color: #bbf7d0; background: #f0fdf4; }
+    .feature-flag-item.inactive { background: #fafafa; }
     .feature-flag-info { flex: 1; }
     .feature-flag-name { font-weight: 600; font-size: 0.9rem; }
     .feature-flag-desc { font-size: 0.8rem; color: var(--text-light); margin-top: 2px; }
@@ -207,20 +214,22 @@
 
       <!-- MODULES DU SITE (FEATURE FLAGS) -->
       <section id="section-features" style="display: none;">
-        <div style="max-width: 680px;">
-          <div class="card" style="margin-bottom: 20px;">
-            <div class="card-header">
-              <div>
-                <h3>Modules du site</h3>
-                <p style="font-size: 0.8rem; color: var(--text-light); margin-top: 4px;">Activez ou désactivez chaque partie du site pour contrôler ce qui est accessible aux visiteurs.</p>
-              </div>
+        <div style="max-width: 740px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <h3 style="margin-bottom: 4px;">Modules du site</h3>
+              <p style="font-size: 0.85rem; color: var(--text-light);">Activez ou désactivez chaque partie du site. Les modules désactivés affichent une page "Prochainement".</p>
             </div>
-            <div class="card-body">
-              <div class="feature-flag-grid" id="feature-flags-list"></div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-sm btn-ghost" onclick="setAllFeatures(true)">Tout activer</button>
+              <button class="btn btn-sm btn-ghost" style="color: var(--danger); border-color: var(--danger);" onclick="setAllFeatures(false)">Tout désactiver</button>
             </div>
           </div>
-          <div class="alert alert-info" style="font-size: 0.875rem;">
-            Les modifications sont appliquées immédiatement. Les modules désactivés affichent une page "Prochainement" aux visiteurs.
+
+          <div id="feature-flags-list"></div>
+
+          <div class="alert alert-info" style="font-size: 0.825rem; margin-top: 16px;">
+            Les modifications sont instantanées. Le panel administrateur (cette page) reste toujours accessible depuis le bouton "Accès administration" en bas de la page de maintenance.
           </div>
         </div>
       </section>
@@ -351,12 +360,25 @@
     document.getElementById('user-avatar').textContent = currentUser.avatar || 'A';
     document.getElementById('user-name').textContent   = currentUser.name;
 
+    applyAdminFlags();
     initData();
     updateKPIs();
     renderStatusBars();
     renderPriorityBars();
     renderRecentTickets();
   });
+
+  function applyAdminFlags() {
+    const hide = (sel) => { const el = document.querySelector(sel); if (el) el.style.display = 'none'; };
+    if (!isEnabled('admin_tickets'))  hide('.nav-item[onclick*="\'tickets\'"]');
+    if (!isEnabled('admin_users'))    hide('.nav-item[onclick*="\'users\'"]');
+    if (!isEnabled('admin_agents'))   hide('.nav-item[onclick*="\'agents\'"]');
+    if (!isEnabled('admin_settings')) hide('.nav-item[onclick*="\'settings\'"]');
+    if (!isEnabled('admin_stats')) {
+      const statsGrid = document.querySelector('#section-overview > div:nth-child(2)');
+      if (statsGrid) statsGrid.style.display = 'none';
+    }
+  }
 
   function initData() {
     allTickets = [
@@ -523,20 +545,29 @@
 
   // ===== FEATURE FLAGS =====
   function renderFeatureFlags() {
-    const features = getFeatures();
+    const groups = getGroupedFeatures();
     const container = document.getElementById('feature-flags-list');
-    container.innerHTML = Object.entries(features).map(([key, f]) => `
-      <div class="feature-flag-item ${f.enabled ? 'active' : ''}" id="flag-item-${key}">
-        <div class="feature-flag-info">
-          <div class="feature-flag-name">${f.label}</div>
-          <div class="feature-flag-desc">${f.desc}</div>
-        </div>
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <span style="font-size: 0.8rem; font-weight: 600; color: ${f.enabled ? 'var(--success)' : 'var(--gray-light)'};" id="flag-label-${key}">${f.enabled ? 'Actif' : 'Inactif'}</span>
-          <label class="toggle-switch">
-            <input type="checkbox" ${f.enabled ? 'checked' : ''} onchange="toggleFeature('${key}', this.checked)" />
-            <span class="toggle-slider"></span>
-          </label>
+    container.innerHTML = Object.entries(groups).map(([groupName, items]) => `
+      <div class="ff-group">
+        <div class="ff-group-title">${groupName}</div>
+        <div class="feature-flag-grid">
+          ${items.map(f => `
+            <div class="feature-flag-item ${f.enabled ? 'active' : 'inactive'}" id="flag-item-${f.key}">
+              <div class="feature-flag-info" style="flex:1; min-width:0;">
+                <div class="feature-flag-name" style="display:flex;align-items:center;gap:8px;">
+                  ${f.label}
+                  ${f.protect ? '<span style="font-size:0.7rem;background:#dbeafe;color:#1e40af;padding:1px 7px;border-radius:999px;font-weight:600;">protégé</span>' : ''}
+                </div>
+                <div class="feature-flag-desc">${f.desc}</div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px; flex-shrink:0; margin-left: 16px;">
+                <span style="font-size: 0.8rem; font-weight: 600; color: ${f.enabled ? 'var(--success)' : 'var(--gray-light)'}; min-width:44px; text-align:right;" id="flag-label-${f.key}">${f.enabled ? 'Actif' : 'Inactif'}</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" ${f.enabled ? 'checked' : ''} onchange="toggleFeature('${f.key}', this.checked)" />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>`).join('')}
         </div>
       </div>`).join('');
   }
@@ -547,8 +578,24 @@
     saveFeatures(features);
     const item  = document.getElementById('flag-item-' + key);
     const label = document.getElementById('flag-label-' + key);
-    if (item)  { item.classList.toggle('active', enabled); }
-    if (label) { label.textContent = enabled ? 'Actif' : 'Inactif'; label.style.color = enabled ? 'var(--success)' : 'var(--gray-light)'; }
+    if (item) {
+      item.classList.toggle('active', enabled);
+      item.classList.toggle('inactive', !enabled);
+    }
+    if (label) {
+      label.textContent  = enabled ? 'Actif' : 'Inactif';
+      label.style.color  = enabled ? 'var(--success)' : 'var(--gray-light)';
+    }
+  }
+
+  function setAllFeatures(enabled) {
+    const features = getFeatures();
+    // Ne jamais désactiver le panel admin lui-même
+    Object.keys(features).forEach(k => {
+      if (k !== 'dashboard_admin') features[k].enabled = enabled;
+    });
+    saveFeatures(features);
+    renderFeatureFlags();
   }
 
   function toggleRole(id) {

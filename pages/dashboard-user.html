@@ -291,6 +291,8 @@
 
 <script src="../js/features.js"></script>
 <script>
+requireFeature('dashboard_user');
+
 // ===== DATA & SESSION =====
 let currentUser = null;
 let tickets = [];
@@ -320,10 +322,35 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('profile-name-input').value   = currentUser.name;
   document.getElementById('profile-email-input').value  = currentUser.email;
 
+  // Appliquer les feature flags sur l'interface
+  applyFeatureFlags();
+
   loadTickets();
   renderTickets();
   updateStats();
 });
+
+function applyFeatureFlags() {
+  // Bouton + menu "Nouveau ticket"
+  if (!isEnabled('user_create_ticket')) {
+    const btn = document.querySelector('.topbar-actions .btn-primary');
+    if (btn) btn.style.display = 'none';
+    const navItem = document.querySelector('.nav-item[onclick*="new-ticket"]');
+    if (navItem) navItem.style.display = 'none';
+    const inlineForm = document.getElementById('section-new-ticket');
+    if (inlineForm) inlineForm.style.display = 'none';
+  }
+  // Filtres et recherche
+  if (!isEnabled('user_filters')) {
+    const controls = document.querySelector('.table-controls');
+    if (controls) controls.style.display = 'none';
+  }
+  // Profil
+  if (!isEnabled('user_profile')) {
+    const navProfile = document.querySelector('.nav-item[onclick*="profile"]');
+    if (navProfile) navProfile.style.display = 'none';
+  }
+}
 
 // ===== TICKETS =====
 function loadTickets() {
@@ -467,6 +494,10 @@ function viewTicket(id) {
             <div class="bubble-meta">${m.from === 'agent' ? 'Agent' : 'Vous'} · ${m.time}</div>
           </div>
         </div>`).join('');
+
+  // Messagerie
+  const replyZone = document.querySelector('#modal-ticket-detail .modal-body > div:last-child');
+  if (replyZone) replyZone.style.display = isEnabled('user_messaging') ? '' : 'none';
 
   openModal('modal-ticket-detail');
 }

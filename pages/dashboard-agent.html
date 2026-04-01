@@ -207,6 +207,8 @@
 
 <script src="../js/features.js"></script>
 <script>
+requireFeature('dashboard_agent');
+
 let currentUser = null;
 let allTickets  = [];
 let currentTicketId = null;
@@ -231,10 +233,18 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('profile-name').textContent   = currentUser.name;
   document.getElementById('profile-email').textContent  = currentUser.email;
 
+  applyAgentFlags();
   loadAllTickets();
   updateStats();
   renderAgentTickets();
 });
+
+function applyAgentFlags() {
+  if (!isEnabled('agent_my_tickets')) {
+    const nav = document.querySelector('.nav-item[onclick*="my-tickets"]');
+    if (nav) nav.style.display = 'none';
+  }
+}
 
 function loadAllTickets() {
   // Charger tickets de tous les users (démo)
@@ -329,6 +339,15 @@ function openTicket(id) {
   document.getElementById('modal-desc').textContent = t.desc;
   document.getElementById('modal-status-select').value   = t.status;
   document.getElementById('modal-priority-select').value = t.priority;
+
+  // Masquer selon feature flags
+  const statusRow = document.getElementById('modal-status-select').closest('div');
+  const priorityRow = document.getElementById('modal-priority-select').closest('div');
+  if (statusRow)   statusRow.style.display   = isEnabled('agent_change_status')   ? '' : 'none';
+  if (priorityRow) priorityRow.style.display = isEnabled('agent_change_priority') ? '' : 'none';
+
+  const replyZone = document.querySelector('#modal-ticket .modal-body > div:last-child');
+  if (replyZone) replyZone.style.display = isEnabled('agent_reply') ? '' : 'none';
 
   const msgs = t.messages || [];
   document.getElementById('modal-messages').innerHTML = msgs.length === 0

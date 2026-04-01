@@ -134,6 +134,8 @@
 
 <script src="../js/features.js"></script>
 <script>
+  requireFeature('login');
+
   function togglePassword(id, btn) {
     const input = document.getElementById(id);
     const isHidden = input.type === 'password';

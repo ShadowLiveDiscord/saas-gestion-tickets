@@ -115,7 +115,7 @@
   </section>
 
   <!-- COMMENT CA MARCHE -->
-  <section style="padding: 90px 24px; background: #f8fafc;">
+  <section data-section="how" style="padding: 90px 24px; background: #f8fafc;">
     <div class="section-header container">
       <h2>Comment ca marche ?</h2>
       <p>En 3 étapes simples, votre support est opérationnel.</p>
@@ -233,19 +233,38 @@
 
   <script src="js/features.js"></script>
   <script>
-    // Masquer la section tarifs si désactivée
+    // Section tarifs
     if (!isEnabled('pricing')) {
       const s = document.getElementById('tarifs');
       if (s) s.style.display = 'none';
       const nav = document.getElementById('nav-tarifs');
       if (nav) nav.style.display = 'none';
     }
-    // Rediriger le bouton register si inscription désactivée
+
+    // Section "Comment ca marche"
+    if (!isEnabled('how_it_works')) {
+      const s = document.querySelector('section[data-section="how"]');
+      if (s) s.style.display = 'none';
+    }
+
+    // Bouton inscription
     if (!isEnabled('register')) {
       ['btn-register','cta-register'].forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.href = 'pages/unavailable.html?feature=register';
+        if (el) { el.href = 'pages/unavailable.html?feature=register'; el.style.opacity = '0.5'; }
       });
+    }
+
+    // Page d'accueil elle-même désactivée -> page maintenance
+    if (!isEnabled('landing')) {
+      document.body.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f8fafc;font-family:Inter,sans-serif;text-align:center;padding:24px;">
+          <div>
+            <h1 style="font-size:2rem;font-weight:800;color:#0f172a;margin-bottom:12px;">Site en maintenance</h1>
+            <p style="color:#64748b;max-width:400px;">La plateforme est temporairement indisponible. Veuillez réessayer dans quelques instants.</p>
+            <a href="pages/login.html" style="display:inline-block;margin-top:24px;padding:10px 24px;background:#4f46e5;color:white;border-radius:8px;font-weight:600;text-decoration:none;">Accès administration</a>
+          </div>
+        </div>`;
     }
   </script>
 </body>
