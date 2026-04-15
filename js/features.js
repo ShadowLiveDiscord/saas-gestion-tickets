@@ -103,12 +103,14 @@ function toggleFeatureSave(key, enabled) {
 }
 
 /**
- * Passe tous les modules à enabled/disabled sauf dashboard_admin.
+ * Passe tous les modules à enabled/disabled sauf dashboard_admin et login.
+ * Ces deux modules sont protégés : sans login, l'admin ne peut plus accéder au panel.
  */
 function setAllFeaturesSave(enabled) {
   const map = _getStateMap();
+  const ALWAYS_ON = ['dashboard_admin', 'login'];
   FEATURES_DEF.forEach(f => {
-    if (f.key !== 'dashboard_admin') map[f.key] = enabled;
+    if (!ALWAYS_ON.includes(f.key)) map[f.key] = enabled;
   });
   _saveStored(map);
 }

@@ -559,6 +559,7 @@
                 <div class="feature-flag-name" style="display:flex;align-items:center;gap:8px;">
                   ${f.label}
                   ${f.protect ? '<span style="font-size:0.68rem;background:#dbeafe;color:#1e40af;padding:1px 8px;border-radius:999px;font-weight:700;letter-spacing:.02em;">page protégée</span>' : ''}
+                  ${['dashboard_admin','login'].includes(f.key) ? '<span style="font-size:0.68rem;background:#fef3c7;color:#92400e;padding:1px 8px;border-radius:999px;font-weight:700;letter-spacing:.02em;">🔒 verrouillé</span>' : ''}
                 </div>
                 <div class="feature-flag-desc">${f.desc}</div>
               </div>
@@ -566,8 +567,8 @@
                 <span class="flag-state-label" id="flag-label-${f.key}" style="font-size:0.8rem;font-weight:600;min-width:46px;text-align:right;color:${f.enabled ? 'var(--success)' : 'var(--gray-light)'};">
                   ${f.enabled ? 'Actif' : 'Inactif'}
                 </span>
-                <label class="toggle-switch" title="${f.key === 'dashboard_admin' ? 'Ce module ne peut pas être désactivé ici' : ''}">
-                  <input type="checkbox" ${f.enabled ? 'checked' : ''} ${f.key === 'dashboard_admin' ? 'disabled' : ''} onchange="toggleFeature('${f.key}', this.checked)" />
+                <label class="toggle-switch" title="${['dashboard_admin','login'].includes(f.key) ? 'Ce module est verrouillé — requis pour l\'accès administrateur' : ''}">
+                  <input type="checkbox" ${f.enabled ? 'checked' : ''} ${['dashboard_admin','login'].includes(f.key) ? 'disabled' : ''} onchange="toggleFeature('${f.key}', this.checked)" />
                   <span class="toggle-slider"></span>
                 </label>
               </div>
@@ -576,8 +577,10 @@
       </div>`).join('');
   }
 
+  const LOCKED_FEATURES = ['dashboard_admin', 'login'];
+
   function toggleFeature(key, enabled) {
-    if (key === 'dashboard_admin' && !enabled) return; // sécurité
+    if (LOCKED_FEATURES.includes(key) && !enabled) return; // modules verrouillés
     toggleFeatureSave(key, enabled);
 
     const item  = document.getElementById('flag-item-' + key);

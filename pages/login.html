@@ -171,7 +171,8 @@
 
       const features = getFeatures();
       if (account.role === 'admin') {
-        window.location.href = features.dashboard_admin.enabled ? 'dashboard-admin.html' : 'unavailable.html?feature=dashboard_admin';
+        // L'admin accède toujours à son panel, quels que soient les feature flags
+        window.location.href = 'dashboard-admin.html';
       } else if (account.role === 'agent') {
         window.location.href = features.dashboard_agent.enabled ? 'dashboard-agent.html' : 'unavailable.html?feature=dashboard_agent';
       } else {
@@ -187,7 +188,8 @@
   if (session) {
     const user = JSON.parse(session);
     const features = getFeatures();
-    if (user.role === 'admin' && features.dashboard_admin.enabled) window.location.href = 'dashboard-admin.html';
+    // L'admin est toujours redirigé vers son panel, sans vérification de feature flag
+    if (user.role === 'admin') window.location.href = 'dashboard-admin.html';
     else if (user.role === 'agent' && features.dashboard_agent.enabled) window.location.href = 'dashboard-agent.html';
     else if (user.role === 'user' && features.dashboard_user.enabled) window.location.href = 'dashboard-user.html';
   }
