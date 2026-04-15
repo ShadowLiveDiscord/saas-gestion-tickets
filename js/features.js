@@ -29,6 +29,9 @@ const FEATURES_DEF = [
   { key: 'agent_change_priority',group: 'Espace agent',    label: 'Changer la priorité',           desc: 'L\'agent peut modifier la priorité d\'un ticket.',                     defaultOn: false, protect: false },
   { key: 'agent_my_tickets',     group: 'Espace agent',    label: 'Onglet "Mes tickets"',          desc: 'Onglet listant uniquement les tickets assignés à l\'agent.',            defaultOn: false, protect: false },
 
+  /* ── Outils ── */
+  { key: 'codeur_generator', group: 'Outils',               label: 'Générateur Codeur.com',         desc: 'Outil de génération de messages de candidature et de devis PDF.',              defaultOn: true,  protect: false },
+
   /* ── Panel admin ── */
   { key: 'dashboard_admin',  group: 'Panel administrateur', label: 'Panel administrateur',         desc: 'Accès à la console d\'administration complète.',                        defaultOn: true,  protect: true  },
   { key: 'admin_tickets',    group: 'Panel administrateur', label: 'Gestion des tickets',          desc: 'Section de visualisation et gestion de tous les tickets.',              defaultOn: true,  protect: false },

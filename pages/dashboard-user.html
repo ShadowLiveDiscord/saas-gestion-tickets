@@ -29,6 +29,10 @@
       <div class="nav-item" onclick="showSection('new-ticket')">
         <span class="nav-icon">+</span> Nouveau ticket
       </div>
+      <div class="nav-section-title" data-section="outils">Outils</div>
+      <div class="nav-item" onclick="window.location.href='codeur-generator.html'">
+        <span class="nav-icon">✉</span> Générateur Codeur.com
+      </div>
       <div class="nav-section-title">Compte</div>
       <div class="nav-item" onclick="showSection('profile')">
         <span class="nav-icon">&#9750;</span> Mon profil
@@ -349,6 +353,13 @@ function applyFeatureFlags() {
   if (!isEnabled('user_profile')) {
     const navProfile = document.querySelector('.nav-item[onclick*="profile"]');
     if (navProfile) navProfile.style.display = 'none';
+  }
+  // Générateur Codeur.com
+  if (!isEnabled('codeur_generator')) {
+    const navCodeur = document.querySelector('.nav-item[onclick*="codeur-generator"]');
+    if (navCodeur) navCodeur.style.display = 'none';
+    const navOutilsTitle = document.querySelector('.nav-section-title[data-section="outils"]');
+    if (navOutilsTitle) navOutilsTitle.style.display = 'none';
   }
 }
 

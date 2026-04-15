@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Générateur Codeur.com — TicketFlow</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/dashboard.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <style>
+    /* ── TABS ── */
+    .tab-bar {
+      display: flex;
+      gap: 4px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 5px;
+      margin-bottom: 28px;
+      width: fit-content;
+    }
+    .tab-btn {
+      padding: 9px 22px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-light);
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      transition: var(--transition);
+    }
+    .tab-btn.active {
+      background: var(--white);
+      color: var(--primary);
+      box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── TEXTAREA RÉSULTAT ── */
+    .result-box {
+      width: 100%;
+      min-height: 180px;
+      padding: 16px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: var(--text);
+      background: #f8fafc;
+      resize: vertical;
+      font-family: inherit;
+      outline: none;
+      transition: var(--transition);
+    }
+    .result-box:focus { border-color: var(--primary); background: white; }
+
+    /* ── LIGNES DEVIS ── */
+    .ligne-row {
+      display: grid;
+      grid-template-columns: 1fr 80px 110px 36px;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .ligne-row input { margin-bottom: 0; }
+    .btn-remove-ligne {
+      width: 34px; height: 34px;
+      display: flex; align-items: center; justify-content: center;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: white;
+      color: var(--danger);
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+    .btn-remove-ligne:hover { background: #fee2e2; border-color: var(--danger); }
+
+    /* ── TOTAUX ── */
+    .totaux-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .total-line {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+    }
+    .total-line.ttc {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--primary);
+      border-top: 1.5px solid var(--border);
+      padding-top: 8px;
+      margin-top: 4px;
+    }
+
+    /* ── COPY NOTIFICATION ── */
+    .copy-toast {
+      position: fixed;
+      bottom: 28px; right: 28px;
+      background: var(--dark);
+      color: white;
+      padding: 12px 22px;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 600;
+      box-shadow: var(--shadow-md);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: all 0.3s ease;
+      z-index: 9999;
+      pointer-events: none;
+    }
+    .copy-toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ── SECTION HEADER ── */
+    .section-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--gray-light);
+      margin-bottom: 12px;
+    }
+
+    /* ── PREVIEW PDF ── */
+    .pdf-preview {
+      background: white;
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 40px;
+      text-align: center;
+      color: var(--text-light);
+      font-size: 0.875rem;
+      margin-top: 20px;
+    }
+
+    .tone-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .tone-chip {
+      padding: 5px 14px;
+      border-radius: 999px;
+      border: 1.5px solid var(--border);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      background: white;
+      color: var(--text-light);
+    }
+    .tone-chip.selected { background: #ede9fe; color: var(--primary); border-color: var(--primary-light); }
+  </style>
+</head>
+<body>
+
+<div class="dashboard-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75a3.75 3.75 0 01-7.5 0V6m-4.125 4.5h15.75c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125H4.375A1.125 1.125 0 013.25 21.75V11.625C3.25 11.004 3.754 10.5 4.375 10.5z"/></svg>
+      </div>
+      TicketFlow
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">Outils</div>
+      <div class="nav-item active">
+        <span class="nav-icon">✉</span> Générateur Codeur.com
+      </div>
+      <div class="nav-section-title">Navigation</div>
+      <div class="nav-item" id="nav-back" onclick="goBack()">
+        <span class="nav-icon">←</span> Retour au dashboard
+      </div>
+      <div class="nav-item" onclick="logout()" style="color: var(--danger);">
+        <span class="nav-icon">→</span> Déconnexion
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="avatar" id="user-avatar">U</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="user-name">Utilisateur</div>
+          <div class="sidebar-user-role">
+            <span class="badge badge-gray" id="user-role-badge" style="font-size: 0.7rem;">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <h2>Générateur Codeur.com</h2>
+        <p>Répondez aux projets et générez vos devis en PDF</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-outline btn-sm" onclick="goBack()">← Retour</button>
+      </div>
+    </header>
+
+    <div class="page-content">
+
+      <!-- TABS -->
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('message', this)">✉ Message de candidature</button>
+        <button class="tab-btn" onclick="switchTab('devis', this)">📄 Devis PDF</button>
+      </div>
+
+      <!-- ───────────────────────────────────────────
+           TAB 1 : MESSAGE DE CANDIDATURE
+      ─────────────────────────────────────────── -->
+      <div class="tab-panel active" id="panel-message">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+
+          <!-- FORMULAIRE -->
+          <div class="card">
+            <div class="card-header">
+              <h3>Informations du projet</h3>
+            </div>
+            <div class="card-body">
+
+              <div class="form-group">
+                <label class="form-label">Titre du projet (copié depuis codeur.com)</label>
+                <input type="text" class="form-control" id="msg-projet" placeholder="Ex: Création d'un site e-commerce Shopify" oninput="previewMessage()" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Ton prénom / nom ou raison sociale</label>
+                <input type="text" class="form-control" id="msg-nom" placeholder="Ex: Jean Dupont" oninput="previewMessage()" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Ton expertise principale</label>
+                <input type="text" class="form-control" id="msg-expertise" placeholder="Ex: Développeur web full-stack React/Node" oninput="previewMessage()" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Délai estimé</label>
+                <input type="text" class="form-control" id="msg-delai" placeholder="Ex: 2 semaines" oninput="previewMessage()" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Budget proposé (€ HT)</label>
+                <input type="number" class="form-control" id="msg-budget" placeholder="Ex: 1500" oninput="previewMessage()" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Accroche personnalisée (optionnel)</label>
+                <textarea class="form-control" id="msg-accroche" rows="3" placeholder="Ex: J'ai déjà réalisé 3 projets similaires pour des boutiques Shopify..." oninput="previewMessage()" style="resize:vertical;"></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" style="margin-bottom: 8px;">Ton du message</label>
+                <div class="tone-chips">
+                  <span class="tone-chip selected" data-tone="pro" onclick="selectTone(this)">Professionnel</span>
+                  <span class="tone-chip" data-tone="chaleureux" onclick="selectTone(this)">Chaleureux</span>
+                  <span class="tone-chip" data-tone="concis" onclick="selectTone(this)">Concis</span>
+                  <span class="tone-chip" data-tone="expert" onclick="selectTone(this)">Expert</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- RÉSULTAT -->
+          <div>
+            <div class="card" style="margin-bottom: 16px;">
+              <div class="card-header">
+                <h3>Message généré</h3>
+                <button class="btn btn-sm btn-outline" onclick="copierMessage()">📋 Copier</button>
+              </div>
+              <div class="card-body">
+                <textarea class="result-box" id="msg-result" placeholder="Remplissez le formulaire pour générer votre message..."></textarea>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+              <button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="previewMessage()">
+                ↺ Régénérer
+              </button>
+              <button class="btn btn-success" style="flex:1;justify-content:center;" onclick="copierMessage()">
+                📋 Copier le message
+              </button>
+            </div>
+
+            <!-- TIPS -->
+            <div style="margin-top: 16px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: var(--radius-sm); padding: 14px 18px;">
+              <p style="font-size: 0.8rem; font-weight: 700; color: #1e40af; margin-bottom: 6px;">💡 Conseils pour codeur.com</p>
+              <ul style="font-size: 0.78rem; color: #3b82f6; padding-left: 16px; display: flex; flex-direction: column; gap: 4px; list-style: disc;">
+                <li>Personnalise l'accroche selon le secteur du client</li>
+                <li>Mentionne une réalisation similaire si tu en as</li>
+                <li>Reste concis : 150-250 mots est idéal</li>
+                <li>Propose un appel ou une démo gratuite</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ───────────────────────────────────────────
+           TAB 2 : DEVIS PDF
+      ─────────────────────────────────────────── -->
+      <div class="tab-panel" id="panel-devis">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+
+          <!-- FORMULAIRE DEVIS -->
+          <div>
+            <!-- Infos émetteur -->
+            <div class="card" style="margin-bottom: 20px;">
+              <div class="card-header"><h3>Vos informations</h3></div>
+              <div class="card-body">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Nom / Société</label>
+                    <input type="text" class="form-control" id="dv-emetteur-nom" placeholder="Jean Dupont" oninput="updateTotaux()" />
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" id="dv-emetteur-email" placeholder="jean@mail.com" oninput="updateTotaux()" />
+                  </div>
+                </div>
+                <div class="form-group" style="margin-top: 12px; margin-bottom: 0;">
+                  <label class="form-label">Adresse / SIRET (optionnel)</label>
+                  <input type="text" class="form-control" id="dv-emetteur-adresse" placeholder="12 rue de la Paix, 75001 Paris — SIRET 123 456 789" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Infos client -->
+            <div class="card" style="margin-bottom: 20px;">
+              <div class="card-header"><h3>Client</h3></div>
+              <div class="card-body">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Nom / Société client</label>
+                    <input type="text" class="form-control" id="dv-client-nom" placeholder="ACME Corp" oninput="updateTotaux()" />
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Email client</label>
+                    <input type="email" class="form-control" id="dv-client-email" placeholder="contact@acme.fr" />
+                  </div>
+                </div>
+                <div class="form-group" style="margin-top: 12px; margin-bottom: 0;">
+                  <label class="form-label">Objet du devis (titre du projet)</label>
+                  <input type="text" class="form-control" id="dv-objet" placeholder="Ex: Développement site e-commerce" oninput="updateTotaux()" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Prestations -->
+            <div class="card" style="margin-bottom: 20px;">
+              <div class="card-header">
+                <h3>Prestations</h3>
+                <button class="btn btn-sm btn-outline" onclick="ajouterLigne()">+ Ligne</button>
+              </div>
+              <div class="card-body">
+                <div style="display: grid; grid-template-columns: 1fr 80px 110px 36px; gap: 8px; margin-bottom: 6px;">
+                  <span class="section-title" style="margin-bottom:0;">Description</span>
+                  <span class="section-title" style="margin-bottom:0;">Qté</span>
+                  <span class="section-title" style="margin-bottom:0;">P.U. HT (€)</span>
+                  <span></span>
+                </div>
+                <div id="lignes-container"></div>
+
+                <!-- Totaux -->
+                <div class="totaux-box">
+                  <div class="total-line"><span>Total HT</span><span id="total-ht">0,00 €</span></div>
+                  <div class="total-line">
+                    <span>TVA
+                      <select id="tva-rate" onchange="updateTotaux()" style="border: 1px solid var(--border); border-radius: 6px; padding: 2px 6px; font-size: 0.8rem; margin-left: 6px;">
+                        <option value="0">0 %</option>
+                        <option value="5.5">5,5 %</option>
+                        <option value="10">10 %</option>
+                        <option value="20" selected>20 %</option>
+                      </select>
+                    </span>
+                    <span id="total-tva">0,00 €</span>
+                  </div>
+                  <div class="total-line ttc"><span>TOTAL TTC</span><span id="total-ttc">0,00 €</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Options -->
+            <div class="card">
+              <div class="card-header"><h3>Options du devis</h3></div>
+              <div class="card-body">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Validité du devis</label>
+                    <input type="text" class="form-control" id="dv-validite" value="30 jours" />
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Acompte à la commande</label>
+                    <input type="text" class="form-control" id="dv-acompte" placeholder="Ex: 30 %" />
+                  </div>
+                </div>
+                <div class="form-group" style="margin-top: 12px; margin-bottom: 0;">
+                  <label class="form-label">Conditions / mentions légales</label>
+                  <textarea class="form-control" id="dv-conditions" rows="2" style="resize:vertical;">Paiement à 30 jours. Tout litige sera soumis au tribunal compétent.</textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- APERÇU + BOUTON -->
+          <div>
+            <div class="card" style="margin-bottom: 16px;">
+              <div class="card-header">
+                <h3>Aperçu du devis</h3>
+                <span class="badge badge-primary" id="dv-numero-badge">DEV-0001</span>
+              </div>
+              <div class="card-body" style="padding: 0;">
+                <div id="apercu-devis" style="padding: 28px; font-size: 0.85rem; line-height: 1.7;"></div>
+              </div>
+            </div>
+
+            <button class="btn btn-primary btn-lg" style="width:100%; justify-content:center;" onclick="genererPDF()">
+              ⬇ Télécharger le devis en PDF
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="copy-toast" id="toast">✅ Copié dans le presse-papiers !</div>
+
+<script src="../js/features.js"></script>
+<script>
+
+/* ── FEATURE GUARD ── */
+requireFeature('codeur_generator');
+
+/* ── SESSION ── */
+const sessionRaw = localStorage.getItem('tf_user');
+if (!sessionRaw) { window.location.href = '../pages/login.html'; }
+const currentUser = sessionRaw ? JSON.parse(sessionRaw) : {};
+if (currentUser.name)   document.getElementById('user-name').textContent   = currentUser.name;
+if (currentUser.avatar) document.getElementById('user-avatar').textContent = currentUser.avatar;
+const roleBadge = document.getElementById('user-role-badge');
+const roleLabels = { admin: 'Admin', agent: 'Agent', user: 'Utilisateur' };
+roleBadge.textContent = roleLabels[currentUser.role] || currentUser.role;
+roleBadge.className = 'badge ' + (currentUser.role === 'admin' ? 'badge-danger' : currentUser.role === 'agent' ? 'badge-success' : 'badge-primary') + ' ' + 'badge-sm';
+roleBadge.style.fontSize = '0.7rem';
+
+function goBack() {
+  const dest = { admin: 'dashboard-admin.html', agent: 'dashboard-agent.html', user: 'dashboard-user.html' };
+  window.location.href = dest[currentUser.role] || '../index.html';
+}
+function logout() { localStorage.removeItem('tf_user'); window.location.href = '../index.html'; }
+
+/* ── TABS ── */
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'devis') { updateTotaux(); renderApercu(); }
+}
+
+/* ══════════════════════════════════════
+   TAB 1 — MESSAGE CODEUR.COM
+══════════════════════════════════════ */
+
+let selectedTone = 'pro';
+
+function selectTone(el) {
+  document.querySelectorAll('.tone-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedTone = el.dataset.tone;
+  previewMessage();
+}
+
+const TEMPLATES = {
+  pro: (data) => `Bonjour,
+
+J'ai lu votre projet "${data.projet}" avec attention et je suis convaincu de pouvoir vous livrer une solution de qualité dans les délais.
+
+${data.accroche ? data.accroche + '\n\n' : ''}Fort de mon expérience en tant que ${data.expertise}, je propose une approche rigoureuse : cadrage précis, développements itératifs et communication transparente tout au long du projet.
+
+Je peux réaliser ce projet en ${data.delai} pour un budget de ${data.budget}€ HT.
+
+Je reste disponible pour un échange afin de mieux cerner vos besoins et vous proposer une solution adaptée.
+
+Cordialement,
+${data.nom}`,
+
+  chaleureux: (data) => `Bonjour !
+
+Votre projet "${data.projet}" m'a vraiment interpellé et j'adorerais contribuer à sa réussite. 😊
+
+${data.accroche ? data.accroche + '\n\n' : ''}En tant que ${data.expertise}, j'apporte une vraie écoute et un suivi personnalisé. Mon objectif : que vous soyez 100 % satisfait du résultat.
+
+Je peux réaliser ce projet en ${data.delai} pour ${data.budget}€ HT — n'hésitez pas à me contacter pour qu'on en discute !
+
+À bientôt,
+${data.nom}`,
+
+  concis: (data) => `Bonjour,
+
+Votre projet "${data.projet}" correspond exactement à mon domaine : ${data.expertise}.
+${data.accroche ? '\n' + data.accroche + '\n' : ''}
+Délai : ${data.delai} — Budget : ${data.budget}€ HT.
+
+Disponible pour un appel de 15 min cette semaine.
+
+${data.nom}`,
+
+  expert: (data) => `Bonjour,
+
+Spécialisé en ${data.expertise}, j'ai analysé votre projet "${data.projet}" et identifié les points clés à traiter en priorité.
+${data.accroche ? '\n' + data.accroche + '\n' : ''}
+Ma proposition :
+• Délai d'exécution : ${data.delai}
+• Budget : ${data.budget}€ HT
+• Livrables définis dès la phase de cadrage
+• Communication hebdomadaire et jalons validés ensemble
+
+Je génère un devis détaillé sur simple demande.
+
+${data.nom}`,
+};
+
+function previewMessage() {
+  const data = {
+    projet:    document.getElementById('msg-projet').value.trim()    || '[Titre du projet]',
+    nom:       document.getElementById('msg-nom').value.trim()       || '[Votre nom]',
+    expertise: document.getElementById('msg-expertise').value.trim() || '[votre expertise]',
+    delai:     document.getElementById('msg-delai').value.trim()     || '[délai]',
+    budget:    document.getElementById('msg-budget').value           || '[budget]',
+    accroche:  document.getElementById('msg-accroche').value.trim(),
+  };
+  const fn = TEMPLATES[selectedTone] || TEMPLATES.pro;
+  document.getElementById('msg-result').value = fn(data);
+}
+
+function copierMessage() {
+  const txt = document.getElementById('msg-result').value;
+  if (!txt) return;
+  navigator.clipboard.writeText(txt).then(() => showToast('✅ Message copié dans le presse-papiers !'));
+}
+
+/* ══════════════════════════════════════
+   TAB 2 — DEVIS PDF
+══════════════════════════════════════ */
+
+let lignes = [];
+let devisNumero = 'DEV-' + String(Date.now()).slice(-4);
+
+function ajouterLigne(desc = '', qte = 1, pu = '') {
+  const id = Date.now() + Math.random();
+  lignes.push({ id, desc, qte, pu });
+  renderLignes();
+  updateTotaux();
+}
+
+function supprimerLigne(id) {
+  lignes = lignes.filter(l => l.id !== id);
+  renderLignes();
+  updateTotaux();
+}
+
+function renderLignes() {
+  const c = document.getElementById('lignes-container');
+  c.innerHTML = lignes.map(l => `
+    <div class="ligne-row" id="row-${l.id}">
+      <input type="text" class="form-control" value="${l.desc}" placeholder="Prestation / description"
+        oninput="updateLigne(${l.id}, 'desc', this.value)" style="font-size:0.85rem;" />
+      <input type="number" class="form-control" value="${l.qte}" min="1"
+        oninput="updateLigne(${l.id}, 'qte', this.value)" style="font-size:0.85rem; text-align:right;" />
+      <input type="number" class="form-control" value="${l.pu}" placeholder="0"
+        oninput="updateLigne(${l.id}, 'pu', this.value)" style="font-size:0.85rem; text-align:right;" />
+      <button class="btn-remove-ligne" onclick="supprimerLigne(${l.id})" title="Supprimer">✕</button>
+    </div>
+  `).join('');
+}
+
+function updateLigne(id, field, val) {
+  const l = lignes.find(x => x.id === id);
+  if (l) l[field] = field === 'qte' || field === 'pu' ? parseFloat(val) || 0 : val;
+  updateTotaux();
+}
+
+function updateTotaux() {
+  const ht  = lignes.reduce((sum, l) => sum + (parseFloat(l.qte) || 0) * (parseFloat(l.pu) || 0), 0);
+  const tva = ht * (parseFloat(document.getElementById('tva-rate').value) / 100);
+  document.getElementById('total-ht').textContent  = formatEur(ht);
+  document.getElementById('total-tva').textContent = formatEur(tva);
+  document.getElementById('total-ttc').textContent = formatEur(ht + tva);
+  renderApercu();
+}
+
+function formatEur(n) {
+  return n.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+}
+
+function renderApercu() {
+  const emNom    = document.getElementById('dv-emetteur-nom').value   || '—';
+  const emEmail  = document.getElementById('dv-emetteur-email').value || '—';
+  const emAdr    = document.getElementById('dv-emetteur-adresse').value;
+  const clNom    = document.getElementById('dv-client-nom').value     || '—';
+  const clEmail  = document.getElementById('dv-client-email').value;
+  const objet    = document.getElementById('dv-objet').value          || '—';
+  const validite = document.getElementById('dv-validite').value       || '30 jours';
+  const acompte  = document.getElementById('dv-acompte').value;
+  const tvaRate  = document.getElementById('tva-rate').value;
+  const ht       = lignes.reduce((sum, l) => sum + (parseFloat(l.qte)||0)*(parseFloat(l.pu)||0), 0);
+  const tva      = ht * parseFloat(tvaRate) / 100;
+
+  document.getElementById('dv-numero-badge').textContent = devisNumero;
+
+  document.getElementById('apercu-devis').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;gap:20px;">
+      <div>
+        <div style="font-weight:800;font-size:1rem;color:var(--primary);margin-bottom:2px;">${emNom}</div>
+        <div style="color:var(--text-light);font-size:0.8rem;">${emEmail}</div>
+        ${emAdr ? `<div style="color:var(--text-light);font-size:0.8rem;">${emAdr}</div>` : ''}
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:1.4rem;font-weight:800;color:var(--dark);">DEVIS</div>
+        <div style="font-size:0.78rem;color:var(--text-light);">${devisNumero}</div>
+        <div style="font-size:0.78rem;color:var(--text-light);">Le ${new Date().toLocaleDateString('fr-FR')}</div>
+        <div style="font-size:0.78rem;color:var(--text-light);">Validité : ${validite}</div>
+      </div>
+    </div>
+
+    <div style="background:#f8fafc;border-radius:8px;padding:12px 16px;margin-bottom:20px;">
+      <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;color:var(--gray-light);margin-bottom:4px;">CLIENT</div>
+      <div style="font-weight:600;">${clNom}</div>
+      ${clEmail ? `<div style="font-size:0.8rem;color:var(--text-light);">${clEmail}</div>` : ''}
+      <div style="margin-top:8px;font-size:0.78rem;"><b>Objet :</b> ${objet}</div>
+    </div>
+
+    ${lignes.length === 0
+      ? `<div style="text-align:center;padding:20px;color:var(--gray-light);font-size:0.85rem;">Ajoutez des lignes de prestation →</div>`
+      : `<table style="width:100%;border-collapse:collapse;font-size:0.82rem;margin-bottom:16px;">
+          <thead>
+            <tr style="background:#ede9fe;color:var(--primary);">
+              <th style="padding:8px 10px;text-align:left;border-radius:6px 0 0 6px;">Prestation</th>
+              <th style="padding:8px 10px;text-align:center;width:50px;">Qté</th>
+              <th style="padding:8px 10px;text-align:right;width:90px;">P.U. HT</th>
+              <th style="padding:8px 10px;text-align:right;border-radius:0 6px 6px 0;width:90px;">Total HT</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${lignes.map((l, i) => `
+              <tr style="background:${i%2===0?'white':'#fafafa'};">
+                <td style="padding:8px 10px;">${l.desc || '—'}</td>
+                <td style="padding:8px 10px;text-align:center;">${l.qte||0}</td>
+                <td style="padding:8px 10px;text-align:right;">${formatEur(parseFloat(l.pu)||0)}</td>
+                <td style="padding:8px 10px;text-align:right;font-weight:600;">${formatEur((parseFloat(l.qte)||0)*(parseFloat(l.pu)||0))}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>`
+    }
+
+    <div style="display:flex;justify-content:flex-end;">
+      <div style="min-width:220px;">
+        <div style="display:flex;justify-content:space-between;font-size:0.82rem;padding:4px 0;"><span>Total HT</span><span>${formatEur(ht)}</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:0.82rem;padding:4px 0;color:var(--text-light);"><span>TVA (${tvaRate} %)</span><span>${formatEur(tva)}</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:0.95rem;font-weight:800;color:var(--primary);border-top:1.5px solid var(--border);padding-top:6px;margin-top:4px;"><span>TOTAL TTC</span><span>${formatEur(ht+tva)}</span></div>
+      </div>
+    </div>
+
+    ${acompte ? `<div style="margin-top:12px;font-size:0.8rem;color:var(--text-light);">Acompte à la commande : <b>${acompte}</b></div>` : ''}
+  `;
+}
+
+/* ── GÉNÉRATION PDF ── */
+function genererPDF() {
+  if (typeof window.jspdf === 'undefined') {
+    alert('La bibliothèque PDF n\'est pas chargée. Vérifiez votre connexion internet.');
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+  const emNom    = document.getElementById('dv-emetteur-nom').value   || '—';
+  const emEmail  = document.getElementById('dv-emetteur-email').value || '';
+  const emAdr    = document.getElementById('dv-emetteur-adresse').value || '';
+  const clNom    = document.getElementById('dv-client-nom').value     || '—';
+  const clEmail  = document.getElementById('dv-client-email').value   || '';
+  const objet    = document.getElementById('dv-objet').value          || '—';
+  const validite = document.getElementById('dv-validite').value       || '30 jours';
+  const acompte  = document.getElementById('dv-acompte').value        || '';
+  const conditions = document.getElementById('dv-conditions').value   || '';
+  const tvaRate  = parseFloat(document.getElementById('tva-rate').value);
+  const ht       = lignes.reduce((sum, l) => sum + (parseFloat(l.qte)||0)*(parseFloat(l.pu)||0), 0);
+  const tva      = ht * tvaRate / 100;
+  const ttc      = ht + tva;
+  const dateStr  = new Date().toLocaleDateString('fr-FR');
+
+  const PRIMARY   = [79, 70, 229];
+  const DARK      = [15, 23, 42];
+  const GRAY      = [100, 116, 139];
+  const LIGHT_BG  = [248, 250, 252];
+
+  /* ─── EN-TÊTE ─── */
+  // Bandeau couleur
+  doc.setFillColor(...PRIMARY);
+  doc.rect(0, 0, 210, 28, 'F');
+
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(22);
+  doc.setFont('helvetica', 'bold');
+  doc.text('DEVIS', 14, 17);
+
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.text(devisNumero, 14, 23);
+
+  doc.setFontSize(9);
+  doc.text(`Date : ${dateStr}`, 210 - 14, 16, { align: 'right' });
+  doc.text(`Validité : ${validite}`, 210 - 14, 22, { align: 'right' });
+
+  /* ─── ÉMETTEUR / CLIENT ─── */
+  const y0 = 36;
+
+  // Boîte émetteur
+  doc.setFillColor(...LIGHT_BG);
+  doc.roundedRect(14, y0, 85, 38, 3, 3, 'F');
+  doc.setTextColor(...GRAY);
+  doc.setFontSize(7);
+  doc.setFont('helvetica', 'bold');
+  doc.text('ÉMETTEUR', 19, y0 + 7);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.setTextColor(...DARK);
+  doc.text(emNom, 19, y0 + 14);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8.5);
+  doc.setTextColor(...GRAY);
+  if (emEmail) doc.text(emEmail, 19, y0 + 20);
+  if (emAdr)   { const lines = doc.splitTextToSize(emAdr, 75); doc.text(lines, 19, y0 + 27); }
+
+  // Boîte client
+  doc.setFillColor(...LIGHT_BG);
+  doc.roundedRect(111, y0, 85, 38, 3, 3, 'F');
+  doc.setTextColor(...GRAY);
+  doc.setFontSize(7);
+  doc.setFont('helvetica', 'bold');
+  doc.text('CLIENT', 116, y0 + 7);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.setTextColor(...DARK);
+  doc.text(clNom, 116, y0 + 14);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8.5);
+  doc.setTextColor(...GRAY);
+  if (clEmail) doc.text(clEmail, 116, y0 + 20);
+
+  /* ─── OBJET ─── */
+  const yObj = y0 + 46;
+  doc.setFillColor(...PRIMARY);
+  doc.setTextColor(255, 255, 255);
+  doc.roundedRect(14, yObj, 182, 9, 2, 2, 'F');
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'bold');
+  doc.text(`Objet : ${objet}`, 19, yObj + 6.2);
+
+  /* ─── TABLEAU DES PRESTATIONS ─── */
+  const yTable = yObj + 15;
+
+  if (typeof doc.autoTable === 'function') {
+    doc.autoTable({
+      startY: yTable,
+      margin: { left: 14, right: 14 },
+      head: [['Prestation / Description', 'Qté', 'P.U. HT', 'Total HT']],
+      body: lignes.map(l => [
+        l.desc || '—',
+        String(l.qte || 0),
+        formatEur(parseFloat(l.pu) || 0),
+        formatEur((parseFloat(l.qte)||0) * (parseFloat(l.pu)||0)),
+      ]),
+      styles: { fontSize: 9, cellPadding: 5 },
+      headStyles: {
+        fillColor: PRIMARY,
+        textColor: [255, 255, 255],
+        fontStyle: 'bold',
+        halign: 'left',
+      },
+      columnStyles: {
+        0: { cellWidth: 'auto' },
+        1: { halign: 'center', cellWidth: 20 },
+        2: { halign: 'right',  cellWidth: 35 },
+        3: { halign: 'right',  cellWidth: 35, fontStyle: 'bold' },
+      },
+      alternateRowStyles: { fillColor: LIGHT_BG },
+      theme: 'grid',
+    });
+  }
+
+  /* ─── TOTAUX ─── */
+  const yAfterTable = (doc.lastAutoTable ? doc.lastAutoTable.finalY : yTable + 20) + 8;
+  const xTot = 210 - 14 - 75;
+
+  doc.setFillColor(...LIGHT_BG);
+  doc.roundedRect(xTot - 4, yAfterTable - 4, 79, tvaRate > 0 ? 34 : 20, 2, 2, 'F');
+
+  doc.setTextColor(...DARK);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.text('Total HT', xTot, yAfterTable + 4);
+  doc.text(formatEur(ht), 210 - 14, yAfterTable + 4, { align: 'right' });
+
+  if (tvaRate > 0) {
+    doc.setTextColor(...GRAY);
+    doc.text(`TVA (${tvaRate} %)`, xTot, yAfterTable + 12);
+    doc.text(formatEur(tva), 210 - 14, yAfterTable + 12, { align: 'right' });
+  }
+
+  const yTTC = tvaRate > 0 ? yAfterTable + 22 : yAfterTable + 10;
+  doc.setFillColor(...PRIMARY);
+  doc.roundedRect(xTot - 4, yTTC - 6, 79, 11, 2, 2, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.text('TOTAL TTC', xTot, yTTC + 1.5);
+  doc.text(formatEur(ttc), 210 - 14, yTTC + 1.5, { align: 'right' });
+
+  /* ─── ACOMPTE & CONDITIONS ─── */
+  let yBottom = yTTC + 18;
+  doc.setTextColor(...GRAY);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  if (acompte) {
+    doc.text(`Acompte à la commande : ${acompte}`, 14, yBottom);
+    yBottom += 7;
+  }
+  if (conditions) {
+    const cLines = doc.splitTextToSize(conditions, 182);
+    doc.text(cLines, 14, yBottom);
+    yBottom += cLines.length * 5 + 4;
+  }
+
+  /* ─── PIED DE PAGE ─── */
+  doc.setFillColor(...PRIMARY);
+  doc.rect(0, 287, 210, 10, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(7.5);
+  doc.text(`${emNom} — ${emEmail}`, 14, 293);
+  doc.text(`Généré par TicketFlow`, 210 - 14, 293, { align: 'right' });
+
+  /* ─── SAUVEGARDE ─── */
+  const filename = `Devis_${clNom.replace(/[^a-z0-9]/gi,'_')}_${devisNumero}.pdf`;
+  doc.save(filename);
+  showToast('📄 Devis téléchargé : ' + filename);
+}
+
+/* ── TOAST ── */
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+/* ── INIT ── */
+ajouterLigne('Développement / Conception', 1, '');
+ajouterLigne('Intégration et tests', 1, '');
+previewMessage();
+renderApercu();
+
+</script>
+</body>
+</html>
