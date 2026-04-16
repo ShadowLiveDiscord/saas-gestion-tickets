@@ -1,483 +1,444 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Présentation Technique — TicketFlow</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TicketFlow — Présentation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
   <style>
     :root {
-      --primary: #4f46e5;
-      --primary-dark: #3730a3;
-      --primary-light: #ede9fe;
-      --secondary: #06b6d4;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --dark: #0f172a;
-      --dark-2: #1e293b;
-      --gray: #64748b;
-      --gray-light: #94a3b8;
-      --border: #e2e8f0;
-      --bg: #f8fafc;
-      --white: #ffffff;
-      --text: #1e293b;
-      --radius: 12px;
-      --radius-sm: 8px;
-      --shadow: 0 4px 6px -1px rgba(0,0,0,.07);
-      --shadow-md: 0 10px 15px -3px rgba(0,0,0,.1);
+      --p: #4f46e5; --pd: #3730a3; --pl: #ede9fe;
+      --sec: #06b6d4; --ok: #10b981; --warn: #f59e0b; --err: #ef4444;
+      --dark: #0f172a; --dark2: #1e293b; --gray: #64748b; --gl: #94a3b8;
+      --border: #e2e8f0; --bg: #f8fafc; --w: #fff;
     }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      font-size: 15px;
-      line-height: 1.7;
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;}
+    body{background:#0f172a}
+
+    /* ── DECK ── */
+    #deck{position:relative;width:100%;height:100vh;overflow:hidden}
+    .slide{
+      position:absolute;inset:0;
+      display:flex;flex-direction:column;
+      opacity:0;transform:translateX(60px);
+      transition:opacity .45s ease,transform .45s ease;
+      pointer-events:none;
+    }
+    .slide.active{opacity:1;transform:translateX(0);pointer-events:all}
+    .slide.out{opacity:0;transform:translateX(-60px)}
+
+    /* ── NAV ── */
+    #nav{
+      position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
+      display:flex;align-items:center;gap:12px;
+      background:rgba(15,23,42,.85);backdrop-filter:blur(12px);
+      border:1px solid rgba(255,255,255,.1);
+      border-radius:999px;padding:10px 20px;z-index:999;
+    }
+    .nav-btn{
+      width:36px;height:36px;border-radius:50%;border:none;
+      background:rgba(255,255,255,.1);color:white;
+      font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
+      transition:background .2s;
+    }
+    .nav-btn:hover{background:var(--p)}
+    #slide-counter{color:rgba(255,255,255,.6);font-size:0.82rem;font-weight:600;min-width:60px;text-align:center}
+    .dot-nav{display:flex;gap:6px;align-items:center}
+    .dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.25);cursor:pointer;transition:all .2s}
+    .dot.active{background:var(--p);transform:scale(1.3)}
+
+    /* ── PROGRESS BAR ── */
+    #progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--p),var(--sec));transition:width .4s ease;z-index:1000}
+
+    /* ── SLIDE LAYOUTS ── */
+    .slide-title{
+      background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#0c1a2e 100%);
+      align-items:center;justify-content:center;text-align:center;
+    }
+    .slide-light{background:var(--bg)}
+    .slide-dark{background:var(--dark)}
+    .slide-gradient{background:linear-gradient(135deg,#ede9fe 0%,#cffafe 100%)}
+    .slide-split{background:var(--w);display:grid!important;grid-template-columns:1fr 1fr}
+
+    /* ── COMMON TEXT ── */
+    .slide-num{font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px}
+    .big-title{font-size:clamp(2rem,5vw,3.8rem);font-weight:900;line-height:1.1;margin-bottom:16px}
+    .sub{font-size:1rem;opacity:.7;max-width:600px;margin:0 auto;line-height:1.7}
+    .section-label{
+      display:inline-flex;align-items:center;gap:6px;
+      background:var(--pl);color:var(--p);
+      font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;
+      padding:4px 14px;border-radius:999px;margin-bottom:16px;
     }
 
-    /* ── LAYOUT ── */
-    .layout { display: flex; min-height: 100vh; }
+    /* ── CARD ── */
+    .card{background:var(--w);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.06)}
+    .card-h{padding:12px 18px;border-bottom:1px solid var(--border);font-weight:700;font-size:.85rem;background:var(--bg);display:flex;align-items:center;gap:8px}
+    .card-b{padding:18px}
 
-    /* ── TOC SIDEBAR ── */
-    .toc {
-      width: 250px; flex-shrink: 0;
-      background: var(--white);
-      border-right: 1px solid var(--border);
-      position: sticky; top: 0; height: 100vh;
-      overflow-y: auto; padding: 28px 0;
-    }
-    .toc-brand { padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
-    .toc-brand h2 { font-size: 0.95rem; font-weight: 800; color: var(--dark); }
-    .toc-brand p  { font-size: 0.72rem; color: var(--gray-light); margin-top: 2px; }
-    .toc-link {
-      display: block; padding: 7px 20px;
-      font-size: 0.82rem; font-weight: 500; color: var(--gray);
-      text-decoration: none;
-      border-left: 2px solid transparent;
-      transition: all 0.2s;
-    }
-    .toc-link:hover { color: var(--primary); background: var(--primary-light); border-left-color: var(--primary); }
-    .toc-link.active { color: var(--primary); font-weight: 700; border-left-color: var(--primary); background: var(--primary-light); }
-    .toc-section-label {
-      font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
-      letter-spacing: .08em; color: var(--gray-light);
-      padding: 12px 20px 4px;
-    }
+    /* ── BADGE ── */
+    .badge{display:inline-flex;align-items:center;padding:2px 10px;border-radius:999px;font-size:.7rem;font-weight:700}
+    .b-p{background:#ede9fe;color:#4f46e5} .b-ok{background:#d1fae5;color:#065f46}
+    .b-w{background:#fef3c7;color:#92400e} .b-e{background:#fee2e2;color:#991b1b}
+    .b-i{background:#cffafe;color:#155e75} .b-g{background:#f1f5f9;color:#64748b}
 
-    /* ── CONTENT ── */
-    .content { flex: 1; max-width: 860px; padding: 48px 52px; }
+    /* ════════════════════════════
+       MAQUETTES CSS DU SITE
+    ════════════════════════════ */
 
-    /* ── SECTIONS ── */
-    .section { margin-bottom: 64px; }
-    .section-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: var(--primary-light); color: var(--primary);
-      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: .06em; padding: 4px 12px; border-radius: 999px;
-      margin-bottom: 10px;
+    /* Fenêtre de navigateur */
+    .browser{
+      background:#1e293b;border-radius:12px;overflow:hidden;
+      box-shadow:0 24px 60px rgba(0,0,0,.5);
     }
-    .section h2 {
-      font-size: 1.6rem; font-weight: 800; color: var(--dark);
-      margin-bottom: 6px;
+    .browser-bar{
+      height:36px;background:#334155;display:flex;align-items:center;gap:8px;padding:0 14px;
     }
-    .section-subtitle {
-      font-size: 0.9rem; color: var(--gray); margin-bottom: 28px;
-      border-bottom: 1.5px solid var(--border); padding-bottom: 16px;
+    .browser-dot{width:11px;height:11px;border-radius:50%}
+    .browser-url{
+      flex:1;background:#1e293b;border-radius:6px;height:22px;
+      display:flex;align-items:center;padding:0 10px;margin:0 10px;
+      font-size:.68rem;color:#94a3b8;font-family:monospace;
     }
+    .browser-body{background:var(--bg);overflow:hidden}
 
-    /* ── CARDS ── */
-    .card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      margin-bottom: 20px;
+    /* Mini dashboard layout */
+    .mini-dash{display:flex;height:100%}
+    .mini-sidebar{
+      width:56px;background:var(--w);border-right:1px solid var(--border);
+      display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:8px;
     }
-    .card-header {
-      padding: 14px 20px;
-      border-bottom: 1px solid var(--border);
-      font-weight: 700; font-size: 0.9rem;
-      display: flex; align-items: center; gap: 8px;
-      background: var(--bg);
+    .mini-sidebar-full{width:140px;background:var(--w);border-right:1px solid var(--border);padding:10px 8px;display:flex;flex-direction:column;gap:4px}
+    .mini-logo{width:28px;height:28px;background:linear-gradient(135deg,#4f46e5,#06b6d4);border-radius:8px;margin-bottom:6px}
+    .mini-nav-item{width:32px;height:32px;background:var(--bg);border-radius:6px}
+    .mini-nav-item.act{background:#ede9fe}
+    .mini-main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+    .mini-topbar{height:36px;background:var(--w);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 12px;gap:8px}
+    .mini-topbar-title{font-size:.65rem;font-weight:700;color:var(--dark)}
+    .mini-content{padding:12px;flex:1;overflow:hidden}
+    .mini-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+    .mini-stat{background:var(--w);border:1px solid var(--border);border-radius:6px;padding:6px;text-align:center}
+    .mini-stat-n{font-size:.9rem;font-weight:800;color:var(--p)}
+    .mini-stat-l{font-size:.52rem;color:var(--gl)}
+    .mini-table-row{
+      display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;
+      padding:5px 8px;border-bottom:1px solid var(--border);align-items:center;
+      font-size:.6rem;
     }
-    .card-body { padding: 20px; }
+    .mini-table-row.head{background:var(--bg);font-weight:700;color:var(--gray)}
 
-    /* ── DIAGRAM ── */
-    .archi-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-bottom: 24px;
+    /* Mini login */
+    .mini-login{
+      display:flex;height:100%;
     }
-    .archi-box {
-      background: var(--white);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px;
-      text-align: center;
-      position: relative;
-    }
-    .archi-box.highlight { border-color: var(--primary); background: var(--primary-light); }
-    .archi-box .icon {
-      width: 44px; height: 44px;
-      border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.3rem;
-      margin: 0 auto 10px;
-    }
-    .archi-box h4 { font-size: 0.9rem; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
-    .archi-box p  { font-size: 0.78rem; color: var(--gray); }
+    .mini-login-left{flex:1;background:linear-gradient(135deg,#4f46e5,#06b6d4);display:flex;flex-direction:column;justify-content:center;padding:20px}
+    .mini-login-right{flex:1;background:var(--w);display:flex;flex-direction:column;justify-content:center;padding:20px}
+    .mini-input{background:var(--bg);border:1px solid var(--border);border-radius:5px;height:18px;margin-bottom:6px;padding:0 6px;font-size:.6rem;display:flex;align-items:center;color:var(--gl)}
+    .mini-btn{background:var(--p);color:white;border-radius:5px;height:22px;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;margin-top:6px}
 
-    .flow-arrow {
-      display: flex; align-items: center; justify-content: center;
-      color: var(--primary); font-size: 1.4rem; font-weight: 800;
-      margin: 8px 0;
+    /* Mini landing */
+    .mini-landing-hero{
+      background:linear-gradient(135deg,#0f172a,#1e1b4b);
+      padding:20px;text-align:center;
     }
 
-    /* ── SCHEMA BDD ── */
-    .schema-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.85rem;
+    /* JSON block */
+    .json{
+      background:#0f172a;border-radius:8px;padding:14px 16px;
+      font-family:'Consolas','Courier New',monospace;font-size:.78rem;line-height:1.9;
+      overflow:hidden;
     }
-    .schema-table th {
-      background: var(--primary);
-      color: white;
-      padding: 10px 14px;
-      text-align: left;
-      font-weight: 700;
-    }
-    .schema-table th:first-child { border-radius: 6px 0 0 0; }
-    .schema-table th:last-child  { border-radius: 0 6px 0 0; }
-    .schema-table td {
-      padding: 9px 14px;
-      border-bottom: 1px solid var(--border);
-      vertical-align: top;
-    }
-    .schema-table tr:last-child td { border-bottom: none; }
-    .schema-table tr:nth-child(even) td { background: #f8fafc; }
-    .schema-table .type  { color: var(--secondary); font-family: monospace; font-weight: 600; font-size: 0.8rem; }
-    .schema-table .key   { color: var(--warning); font-weight: 700; }
-    .schema-table .note  { color: var(--gray); font-size: 0.78rem; }
+    .jk{color:#93c5fd} .jv{color:#86efac} .js{color:#fca5a5} .jc{color:#475569} .jf{color:#fde68a}
 
-    /* ── CODE BLOCK ── */
-    .code-block {
-      background: var(--dark);
-      color: #e2e8f0;
-      border-radius: var(--radius-sm);
-      padding: 18px 20px;
-      font-family: 'Consolas', 'Courier New', monospace;
-      font-size: 0.82rem;
-      line-height: 1.8;
-      overflow-x: auto;
-      margin-bottom: 16px;
+    /* flow arrow */
+    .flow{display:flex;align-items:center;gap:0}
+    .flow-box{
+      background:var(--w);border:1.5px solid var(--border);border-radius:8px;
+      padding:10px 16px;font-size:.78rem;font-weight:600;text-align:center;
+      min-width:100px;
     }
-    .code-block .comment { color: #64748b; }
-    .code-block .key     { color: #93c5fd; }
-    .code-block .val     { color: #86efac; }
-    .code-block .func    { color: #fde68a; }
-    .code-block .str     { color: #fca5a5; }
+    .flow-box.hi{border-color:var(--p);background:var(--pl);color:var(--p)}
+    .flow-arr{color:var(--gl);font-size:1.2rem;margin:0 6px}
 
-    /* ── FLOW STEPS ── */
-    .steps { display: flex; flex-direction: column; gap: 0; }
-    .step {
-      display: flex; gap: 16px;
-      padding: 16px 0;
-      border-left: 2px solid var(--border);
-      padding-left: 24px;
-      position: relative;
-    }
-    .step:last-child { border-left-color: transparent; }
-    .step-num {
-      position: absolute; left: -14px; top: 16px;
-      width: 26px; height: 26px;
-      background: var(--primary);
-      color: white;
-      border-radius: 50%;
-      font-size: 0.75rem; font-weight: 800;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-    .step-content h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 3px; color: var(--dark); }
-    .step-content p  { font-size: 0.82rem; color: var(--gray); }
-    .step-content code {
-      background: var(--primary-light);
-      color: var(--primary);
-      padding: 1px 6px;
-      border-radius: 4px;
-      font-size: 0.78rem;
-      font-family: monospace;
-    }
+    /* status nodes */
+    .status-flow{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:nowrap}
+    .snode{display:flex;flex-direction:column;align-items:center;gap:6px}
+    .scircle{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;text-align:center;line-height:1.3}
+    .sarr{font-size:1.3rem;color:var(--gl);margin:0 8px;padding-bottom:22px}
 
-    /* ── BADGES ── */
-    .badge {
-      display: inline-flex; align-items: center;
-      padding: 2px 10px; border-radius: 999px;
-      font-size: 0.72rem; font-weight: 700;
-    }
-    .badge-primary { background: #ede9fe; color: var(--primary); }
-    .badge-success { background: #d1fae5; color: #065f46; }
-    .badge-warning { background: #fef3c7; color: #92400e; }
-    .badge-danger  { background: #fee2e2; color: #991b1b; }
-    .badge-info    { background: #cffafe; color: #155e75; }
-    .badge-gray    { background: #f1f5f9; color: var(--gray); }
+    /* feature toggle rows */
+    .ff-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;background:var(--w)}
+    .ff-row.on{border-color:#bbf7d0;background:#f0fdf4}
+    .ff-row.locked{border-color:#fde68a;background:#fffbeb}
+    .toggle{width:38px;height:22px;border-radius:999px;position:relative;cursor:pointer;transition:.2s}
+    .toggle.on{background:#10b981} .toggle.off{background:#e2e8f0}
+    .toggle::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;background:white;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+    .toggle.on::after{left:19px}
 
-    /* ── ROLE TABLE ── */
-    .role-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
-    .role-card {
-      background: var(--white);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px;
-    }
-    .role-card.admin  { border-color: #fecaca; background: #fff5f5; }
-    .role-card.agent  { border-color: #a7f3d0; background: #f0fdf4; }
-    .role-card.user   { border-color: #bfdbfe; background: #eff6ff; }
-    .role-card h4 { font-size: 0.875rem; font-weight: 700; margin-bottom: 8px; }
-    .role-card ul { padding-left: 14px; font-size: 0.8rem; color: var(--gray); list-style: disc; display: flex; flex-direction: column; gap: 3px; }
+    /* storage viz */
+    .storage-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--w);border:1px solid var(--border);border-radius:8px;margin-bottom:6px}
+    .storage-key{font-family:monospace;font-size:.78rem;font-weight:700;color:var(--p);min-width:180px;flex-shrink:0}
+    .storage-val{font-size:.75rem;color:var(--gray);line-height:1.6}
 
-    /* ── STORAGE VIZ ── */
-    .storage-row {
-      display: flex; align-items: flex-start; gap: 14px;
-      padding: 12px 16px;
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      margin-bottom: 8px;
-    }
-    .storage-key {
-      font-family: monospace;
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: var(--primary);
-      min-width: 200px;
-    }
-    .storage-desc { font-size: 0.82rem; color: var(--gray); }
+    /* role cards */
+    .role-card{background:var(--w);border:1.5px solid var(--border);border-radius:12px;padding:20px;text-align:center}
+    .role-card.admin{border-color:#fecaca;background:#fff5f5}
+    .role-card.agent{border-color:#a7f3d0;background:#f0fdf4}
+    .role-card.user{border-color:#bfdbfe;background:#eff6ff}
+    .role-icon{font-size:2rem;margin-bottom:10px}
+    .role-perms{text-align:left;font-size:.75rem;color:var(--gray);margin-top:10px;display:flex;flex-direction:column;gap:4px}
+    .role-perms li{display:flex;align-items:center;gap:6px}
+    .role-perms li::before{content:'✓';color:var(--ok);font-weight:800;font-size:.7rem}
 
-    /* ── STATUS CYCLE ── */
-    .status-cycle {
-      display: flex; align-items: center; gap: 10px;
-      flex-wrap: wrap;
-      margin: 16px 0;
+    /* archi layers */
+    .layer{
+      background:var(--w);border:1.5px solid var(--border);border-radius:10px;
+      padding:14px 20px;display:flex;align-items:center;gap:14px;
+      margin-bottom:8px;transition:.2s;
     }
-    .status-node {
-      display: flex; flex-direction: column; align-items: center; gap: 4px;
-    }
-    .status-circle {
-      width: 60px; height: 60px;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.7rem; font-weight: 700; text-align: center; line-height: 1.2;
-    }
-    .status-arrow { font-size: 1.2rem; color: var(--gray-light); padding-bottom: 20px; }
+    .layer.hi{border-color:var(--p);background:var(--pl)}
+    .layer-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
 
-    /* ── PRINT ── */
-    @media print {
-      .toc { display: none; }
-      .content { padding: 20px; max-width: 100%; }
-      .section { page-break-inside: avoid; }
+    /* ── SLIDE INNER LAYOUT HELPERS ── */
+    .s-inner{padding:48px 64px;height:100%;display:flex;flex-direction:column;justify-content:center}
+    .s-inner.top{justify-content:flex-start;padding-top:40px}
+    .cols2{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}
+    .cols3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
+    .mt{margin-top:auto}
+
+    /* ── SLIDE 1 title specifics ── */
+    .title-badge{
+      display:inline-flex;align-items:center;gap:8px;
+      background:rgba(79,70,229,.2);color:#a5b4fc;
+      border:1px solid rgba(99,102,241,.3);
+      font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+      padding:6px 16px;border-radius:999px;margin-bottom:24px;
+    }
+    .title-grid{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:28px}
+    .title-chip{
+      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+      color:rgba(255,255,255,.7);font-size:.75rem;font-weight:600;
+      padding:6px 16px;border-radius:999px;
     }
 
-    /* ── TOPBAR ── */
-    .topbar {
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(255,255,255,.95);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border);
-      padding: 0 52px;
-      height: 56px;
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .topbar-title { font-weight: 800; font-size: 0.95rem; color: var(--dark); }
-    .topbar-actions { display: flex; gap: 10px; }
-    .btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 7px 18px; border-radius: var(--radius-sm);
-      font-weight: 600; font-size: 0.82rem;
-      cursor: pointer; border: 1.5px solid transparent;
-      text-decoration: none; transition: all 0.2s;
-    }
-    .btn-outline { background: transparent; color: var(--primary); border-color: var(--primary); }
-    .btn-outline:hover { background: var(--primary); color: white; }
-    .btn-ghost { background: transparent; color: var(--text); border-color: var(--border); }
-    .btn-ghost:hover { background: var(--border); }
+    /* code tag */
+    code{background:var(--pl);color:var(--p);padding:1px 7px;border-radius:4px;font-size:.8em;font-family:monospace}
 
-    hr.divider { border: none; border-top: 1.5px solid var(--border); margin: 28px 0; }
+    /* table mini */
+    .mini-tbl{width:100%;border-collapse:collapse;font-size:.8rem}
+    .mini-tbl th{background:var(--p);color:white;padding:8px 12px;text-align:left;font-weight:700}
+    .mini-tbl td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+    .mini-tbl tr:last-child td{border-bottom:none}
+    .mini-tbl tr:nth-child(even) td{background:var(--bg)}
+    .type{color:var(--sec);font-family:monospace;font-size:.75rem;font-weight:600}
+
+    /* decorative circles */
+    .deco{position:absolute;border-radius:50%;filter:blur(80px);opacity:.15;pointer-events:none}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    .slide.active .anim{animation:fadeUp .5s ease forwards}
+    .slide.active .anim-2{animation:fadeUp .5s .12s ease both}
+    .slide.active .anim-3{animation:fadeUp .5s .22s ease both}
+    .slide.active .anim-4{animation:fadeUp .5s .32s ease both}
+
+    /* scrollable inner on content slides */
+    .scroll-inner{overflow-y:auto;flex:1;padding:32px 60px;padding-bottom:80px}
+    .scroll-inner::-webkit-scrollbar{width:4px}
+    .scroll-inner::-webkit-scrollbar-track{background:transparent}
+    .scroll-inner::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
   </style>
 </head>
 <body>
 
-<div class="topbar">
-  <span class="topbar-title">TicketFlow — Présentation Technique</span>
-  <div class="topbar-actions">
-    <a href="dashboard-admin.html" class="btn btn-ghost">← Dashboard</a>
-    <button class="btn btn-outline" onclick="window.print()">🖨 Imprimer</button>
+<div id="progress"></div>
+
+<div id="deck">
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 1 — TITRE
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-title active" id="s1">
+    <div class="deco" style="width:500px;height:500px;background:#4f46e5;top:-100px;right:-100px"></div>
+    <div class="deco" style="width:400px;height:400px;background:#06b6d4;bottom:-100px;left:-100px"></div>
+    <div class="s-inner" style="align-items:center;text-align:center;position:relative;z-index:1">
+      <div class="title-badge anim">🎫 Projet SaaS — Gestion de Tickets</div>
+      <h1 class="big-title anim-2" style="color:white">
+        Ticket<span style="background:linear-gradient(90deg,#818cf8,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Flow</span>
+      </h1>
+      <p class="sub anim-3" style="color:rgba(255,255,255,.6)">
+        Présentation technique — Architecture, Base de données & Cycle de vie des tickets
+      </p>
+      <div class="title-grid anim-4">
+        <span class="title-chip">HTML5 / CSS3</span>
+        <span class="title-chip">JavaScript ES6+</span>
+        <span class="title-chip">localStorage</span>
+        <span class="title-chip">Feature Flags</span>
+        <span class="title-chip">100% Front-end</span>
+        <span class="title-chip">jsPDF</span>
+      </div>
+    </div>
   </div>
-</div>
 
-<div class="layout">
+  <!-- ══════════════════════════════════════════
+       SLIDE 2 — ARCHITECTURE OVERVIEW
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-light" id="s2">
+    <div class="scroll-inner">
+      <div class="section-label anim">01 — Architecture</div>
+      <h2 class="anim-2" style="font-size:1.8rem;font-weight:800;color:var(--dark);margin-bottom:6px">Architecture du projet</h2>
+      <p class="anim-3" style="color:var(--gray);font-size:.9rem;margin-bottom:28px">Une application <strong>100 % front-end</strong> — aucun serveur, aucune base de données distante.</p>
 
-  <!-- ── SOMMAIRE ── -->
-  <nav class="toc">
-    <div class="toc-brand">
-      <h2>TicketFlow</h2>
-      <p>Documentation technique</p>
-    </div>
-    <span class="toc-section-label">Sommaire</span>
-    <a class="toc-link" href="#architecture">1. Architecture</a>
-    <a class="toc-link" href="#roles">2. Rôles & accès</a>
-    <a class="toc-link" href="#bdd">3. Base de données (tickets)</a>
-    <a class="toc-link" href="#stockage">4. Stockage localStorage</a>
-    <a class="toc-link" href="#maj-ticket">5. Mise à jour d'un ticket</a>
-    <a class="toc-link" href="#feature-flags">6. Feature Flags</a>
-    <a class="toc-link" href="#outils">7. Outils intégrés</a>
-  </nav>
+      <div class="cols2 anim-4">
+        <!-- Couches -->
+        <div>
+          <p style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:12px">Couches technologiques</p>
+          <div class="layer hi">
+            <div class="layer-icon" style="background:#ede9fe">🌐</div>
+            <div>
+              <div style="font-weight:700;font-size:.9rem">Navigateur (Client)</div>
+              <div style="font-size:.75rem;color:var(--gray)">Toute la logique s'exécute ici — aucune requête serveur</div>
+            </div>
+          </div>
+          <div style="text-align:center;color:var(--gl);font-size:1.2rem;margin:4px 0">↓</div>
+          <div class="layer hi">
+            <div class="layer-icon" style="background:#dbeafe">⚙️</div>
+            <div>
+              <div style="font-weight:700;font-size:.9rem">JavaScript Vanilla ES6+</div>
+              <div style="font-size:.75rem;color:var(--gray)">Zéro framework — DOM natif, modules, template literals</div>
+            </div>
+          </div>
+          <div style="text-align:center;color:var(--gl);font-size:1.2rem;margin:4px 0">↓</div>
+          <div class="layer hi">
+            <div class="layer-icon" style="background:#d1fae5">💾</div>
+            <div>
+              <div style="font-weight:700;font-size:.9rem">localStorage (BDD locale)</div>
+              <div style="font-size:.75rem;color:var(--gray)">Persistance JSON côté client, ~5 Mo, clés typées</div>
+            </div>
+          </div>
+        </div>
 
-  <!-- ── CONTENU ── -->
-  <div class="content">
-
-    <!-- HEADER -->
-    <div style="margin-bottom: 48px;">
-      <div style="display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#4f46e5,#06b6d4);border-radius:12px;padding:10px 18px;margin-bottom:18px;">
-        <span style="font-size:1.1rem;">🎫</span>
-        <span style="color:white;font-weight:800;font-size:1rem;">TicketFlow</span>
+        <!-- Maquette navigateur -->
+        <div>
+          <p style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:12px">Aperçu — Dashboard Admin</p>
+          <div class="browser">
+            <div class="browser-bar">
+              <div class="browser-dot" style="background:#ef4444"></div>
+              <div class="browser-dot" style="background:#f59e0b"></div>
+              <div class="browser-dot" style="background:#10b981"></div>
+              <div class="browser-url">localhost:3000/pages/dashboard-admin</div>
+            </div>
+            <div class="browser-body" style="height:240px">
+              <div class="mini-dash">
+                <div class="mini-sidebar-full">
+                  <div style="display:flex;align-items:center;gap:6px;padding:6px 4px;border-bottom:1px solid var(--border);margin-bottom:8px">
+                    <div class="mini-logo"></div>
+                    <span style="font-size:.6rem;font-weight:800;color:var(--dark)">TicketFlow</span>
+                  </div>
+                  <div style="font-size:.52rem;color:var(--gl);padding:4px;text-transform:uppercase;letter-spacing:.06em">Administration</div>
+                  <div style="font-size:.62rem;padding:6px 8px;background:#ede9fe;color:var(--p);border-radius:6px;font-weight:600">📊 Vue d'ensemble</div>
+                  <div style="font-size:.62rem;padding:6px 8px;color:var(--gray);border-radius:6px">🎫 Tous les tickets</div>
+                  <div style="font-size:.62rem;padding:6px 8px;color:var(--gray);border-radius:6px">👥 Utilisateurs</div>
+                  <div style="font-size:.62rem;padding:6px 8px;color:var(--gray);border-radius:6px">🛡 Agents</div>
+                  <div style="font-size:.52rem;color:var(--gl);padding:4px;text-transform:uppercase;letter-spacing:.06em;margin-top:4px">Paramètres</div>
+                  <div style="font-size:.62rem;padding:6px 8px;color:var(--gray);border-radius:6px">⚙️ Modules</div>
+                </div>
+                <div class="mini-main">
+                  <div class="mini-topbar">
+                    <span class="mini-topbar-title">Vue d'ensemble</span>
+                    <div style="margin-left:auto;background:var(--p);color:white;font-size:.55rem;padding:3px 8px;border-radius:4px;font-weight:700">+ Utilisateur</div>
+                  </div>
+                  <div class="mini-content">
+                    <div class="mini-stats">
+                      <div class="mini-stat"><div class="mini-stat-n">5</div><div class="mini-stat-l">Tickets</div></div>
+                      <div class="mini-stat"><div class="mini-stat-n" style="color:#f59e0b">3</div><div class="mini-stat-l">Ouverts</div></div>
+                      <div class="mini-stat"><div class="mini-stat-n" style="color:#10b981">1</div><div class="mini-stat-l">Résolus</div></div>
+                      <div class="mini-stat"><div class="mini-stat-n" style="color:#ef4444">1</div><div class="mini-stat-l">Critiques</div></div>
+                    </div>
+                    <div style="background:var(--w);border:1px solid var(--border);border-radius:6px;overflow:hidden">
+                      <div class="mini-table-row head">
+                        <span>Titre</span><span>Priorité</span><span>Statut</span><span>Date</span>
+                      </div>
+                      <div class="mini-table-row">
+                        <span style="color:var(--dark)">Erreur serveur paiement</span>
+                        <span><span class="badge b-e" style="font-size:.5rem">Critique</span></span>
+                        <span><span class="badge b-p" style="font-size:.5rem">Ouvert</span></span>
+                        <span style="color:var(--gl)">01/04</span>
+                      </div>
+                      <div class="mini-table-row">
+                        <span style="color:var(--dark)">Remboursement</span>
+                        <span><span class="badge b-w" style="font-size:.5rem">Élevé</span></span>
+                        <span><span class="badge b-w" style="font-size:.5rem">En cours</span></span>
+                        <span style="color:var(--gl)">31/03</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <h1 style="font-size:2rem;font-weight:800;color:var(--dark);margin-bottom:8px;">Présentation Technique</h1>
-      <p style="color:var(--gray);font-size:0.95rem;">Architecture, base de données tickets et cycle de mise à jour — Projet SaaS de gestion de tickets support.</p>
-    </div>
 
-    <!-- ════════════════════════════════════
-         1. ARCHITECTURE
-    ════════════════════════════════════ -->
-    <section class="section" id="architecture">
-      <div class="section-badge">01 — Architecture</div>
-      <h2>Architecture du projet</h2>
-      <p class="section-subtitle">TicketFlow est une application <strong>100 % front-end</strong> — aucun serveur, aucune base de données distante.</p>
-
-      <!-- Schéma couches -->
-      <div class="archi-grid">
-        <div class="archi-box">
-          <div class="icon" style="background:#dbeafe;">🌐</div>
-          <h4>Navigateur</h4>
-          <p>Toute la logique s'exécute dans le navigateur de l'utilisateur</p>
-        </div>
-        <div class="archi-box highlight">
-          <div class="icon" style="background:#ede9fe;">⚙️</div>
-          <h4>JavaScript Vanilla</h4>
-          <p>ES6+ pur — aucun framework (React, Vue…)</p>
-        </div>
-        <div class="archi-box">
-          <div class="icon" style="background:#d1fae5;">💾</div>
-          <h4>localStorage</h4>
-          <p>Persistance des données côté client (tickets, users, flags)</p>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">📁 Structure des fichiers</div>
-        <div class="card-body">
-          <div class="code-block">
-<span class="comment">TicketFlow/</span>
-├── <span class="key">index.html</span>               <span class="comment">← Landing page publique</span>
-├── <span class="key">cahier-des-charges.html</span>  <span class="comment">← Spécifications</span>
-├── css/
-│   ├── <span class="str">style.css</span>            <span class="comment">← Variables, boutons, cartes, formulaires</span>
-│   ├── <span class="str">auth.css</span>             <span class="comment">← Pages login / register</span>
-│   └── <span class="str">dashboard.css</span>        <span class="comment">← Layout sidebar, topbar, tables</span>
-├── js/
-│   └── <span class="func">features.js</span>         <span class="comment">← Système de feature flags (modules on/off)</span>
+      <!-- Structure fichiers -->
+      <div class="card" style="margin-top:20px">
+        <div class="card-h">📁 Structure des fichiers</div>
+        <div class="card-b">
+          <div class="json">
+<span class="jc">TicketFlow/</span>
+├── <span class="jk">index.html</span>                <span class="jc">← Landing page publique</span>
+├── css/ <span class="jk">style.css</span> · <span class="jk">auth.css</span> · <span class="jk">dashboard.css</span>
+├── js/  <span class="jf">features.js</span>            <span class="jc">← Feature flags (modules on/off)</span>
 └── pages/
-    ├── <span class="key">login.html</span>           <span class="comment">← Authentification (simulée)</span>
-    ├── <span class="key">register.html</span>        <span class="comment">← Inscription</span>
-    ├── <span class="key">dashboard-user.html</span>  <span class="comment">← Espace utilisateur</span>
-    ├── <span class="key">dashboard-agent.html</span> <span class="comment">← Espace agent</span>
-    ├── <span class="key">dashboard-admin.html</span> <span class="comment">← Panel administrateur</span>
-    ├── <span class="key">codeur-generator.html</span> <span class="comment">← Générateur message + devis PDF</span>
-    └── <span class="key">unavailable.html</span>     <span class="comment">← Page module désactivé</span>
+    ├── <span class="jk">login.html</span> · <span class="jk">register.html</span>
+    ├── <span class="jk">dashboard-user.html</span>    <span class="jc">← Espace utilisateur</span>
+    ├── <span class="jk">dashboard-agent.html</span>   <span class="jc">← Espace agent support</span>
+    ├── <span class="jk">dashboard-admin.html</span>   <span class="jc">← Panel administrateur</span>
+    └── <span class="jk">codeur-generator.html</span>  <span class="jc">← Générateur message + devis PDF</span>
           </div>
         </div>
       </div>
+    </div>
+  </div>
 
-      <div class="card">
-        <div class="card-header">🔄 Flux d'une session utilisateur</div>
-        <div class="card-body">
-          <div class="steps">
-            <div class="step">
-              <div class="step-num">1</div>
-              <div class="step-content">
-                <h4>Accès à la page de connexion</h4>
-                <p><code>login.html</code> vérifie si le module <code>login</code> est actif via <code>requireFeature('login')</code></p>
-              </div>
-            </div>
-            <div class="step">
-              <div class="step-num">2</div>
-              <div class="step-content">
-                <h4>Authentification</h4>
-                <p>Vérification de l'email + mot de passe contre les comptes de démo. La session est stockée dans <code>localStorage['tf_user']</code></p>
-              </div>
-            </div>
-            <div class="step">
-              <div class="step-num">3</div>
-              <div class="step-content">
-                <h4>Redirection selon le rôle</h4>
-                <p><strong>admin</strong> → <code>dashboard-admin.html</code> &nbsp;|&nbsp; <strong>agent</strong> → <code>dashboard-agent.html</code> &nbsp;|&nbsp; <strong>user</strong> → <code>dashboard-user.html</code></p>
-              </div>
-            </div>
-            <div class="step">
-              <div class="step-num">4</div>
-              <div class="step-content">
-                <h4>Chargement des données</h4>
-                <p>Les tickets sont lus depuis <code>localStorage['tf_tickets_&lt;email&gt;']</code> et affichés dynamiquement en JS</p>
-              </div>
-            </div>
-            <div class="step">
-              <div class="step-num">5</div>
-              <div class="step-content">
-                <h4>Interactions & persistance</h4>
-                <p>Toute modification (création, statut, message) est immédiatement écrite dans le <code>localStorage</code></p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+  <!-- ══════════════════════════════════════════
+       SLIDE 3 — RÔLES ET ACCÈS
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-light" id="s3">
+    <div class="scroll-inner">
+      <div class="section-label anim">02 — Rôles</div>
+      <h2 class="anim-2" style="font-size:1.8rem;font-weight:800;color:var(--dark);margin-bottom:6px">3 Rôles, 3 interfaces</h2>
+      <p class="anim-3" style="color:var(--gray);font-size:.9rem;margin-bottom:28px">Chaque rôle a son dashboard dédié. La redirection se fait automatiquement après connexion.</p>
 
-    <!-- ════════════════════════════════════
-         2. RÔLES
-    ════════════════════════════════════ -->
-    <section class="section" id="roles">
-      <div class="section-badge">02 — Rôles</div>
-      <h2>Rôles & accès</h2>
-      <p class="section-subtitle">3 rôles distincts avec des permissions différentes, définis à la connexion.</p>
-
-      <div class="role-grid">
+      <div class="cols3 anim-4">
         <div class="role-card admin">
-          <h4>🔴 Administrateur</h4>
-          <ul>
-            <li>Vue KPIs globaux</li>
+          <div class="role-icon">🔴</div>
+          <div style="font-weight:800;font-size:1rem;color:var(--dark)">Administrateur</div>
+          <div style="font-size:.72rem;color:#ef4444;font-weight:600;margin:4px 0">admin@ticketflow.fr</div>
+          <ul class="role-perms">
+            <li>KPIs & statistiques globales</li>
             <li>Tous les tickets</li>
-            <li>Gestion utilisateurs</li>
-            <li>Gestion agents</li>
-            <li>Activation modules (feature flags)</li>
-            <li>Paramètres système</li>
-            <li>Accès garanti même si tous les modules sont désactivés</li>
+            <li>Gestion utilisateurs / agents</li>
+            <li>Activer/désactiver les modules</li>
+            <li>Accès garanti (non verrouillable)</li>
           </ul>
         </div>
         <div class="role-card agent">
-          <h4>🟢 Agent</h4>
-          <ul>
-            <li>Voir tous les tickets</li>
+          <div class="role-icon">🟢</div>
+          <div style="font-weight:800;font-size:1rem;color:var(--dark)">Agent</div>
+          <div style="font-size:.72rem;color:#10b981;font-weight:600;margin:4px 0">agent@ticketflow.fr</div>
+          <ul class="role-perms">
+            <li>Voir tous les tickets clients</li>
             <li>Répondre aux clients</li>
             <li>Changer statut & priorité</li>
             <li>Onglet "mes tickets assignés"</li>
           </ul>
         </div>
         <div class="role-card user">
-          <h4>🔵 Utilisateur</h4>
-          <ul>
+          <div class="role-icon">🔵</div>
+          <div style="font-weight:800;font-size:1rem;color:var(--dark)">Utilisateur</div>
+          <div style="font-size:.72rem;color:#3b82f6;font-weight:600;margin:4px 0">user@ticketflow.fr</div>
+          <ul class="role-perms">
             <li>Créer des tickets</li>
             <li>Voir ses propres tickets</li>
             <li>Filtrer & rechercher</li>
@@ -487,460 +448,659 @@
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-header">🔑 Comptes de démonstration</div>
-        <div class="card-body">
-          <table class="schema-table">
-            <thead><tr><th>Rôle</th><th>Email</th><th>Mot de passe</th></tr></thead>
-            <tbody>
-              <tr><td><span class="badge badge-danger">Admin</span></td><td><code>admin@ticketflow.fr</code></td><td><code>admin123</code></td></tr>
-              <tr><td><span class="badge badge-success">Agent</span></td><td><code>agent@ticketflow.fr</code></td><td><code>agent123</code></td></tr>
-              <tr><td><span class="badge badge-primary">User</span></td><td><code>user@ticketflow.fr</code></td><td><code>user123</code></td></tr>
-            </tbody>
-          </table>
+      <!-- Maquette page login -->
+      <div style="margin-top:24px">
+        <p style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:10px">Aperçu — Page de Connexion</p>
+        <div class="browser">
+          <div class="browser-bar">
+            <div class="browser-dot" style="background:#ef4444"></div>
+            <div class="browser-dot" style="background:#f59e0b"></div>
+            <div class="browser-dot" style="background:#10b981"></div>
+            <div class="browser-url">localhost:3000/pages/login</div>
+          </div>
+          <div class="browser-body" style="height:190px">
+            <div class="mini-login">
+              <div class="mini-login-left">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+                  <div style="width:24px;height:24px;background:rgba(255,255,255,.2);border-radius:6px"></div>
+                  <span style="color:white;font-size:.75rem;font-weight:800">TicketFlow</span>
+                </div>
+                <div style="color:white;font-size:.85rem;font-weight:800;margin-bottom:8px;line-height:1.3">Bienvenue sur votre espace de support</div>
+                <div style="color:rgba(255,255,255,.7);font-size:.68rem;line-height:1.6">Gérez vos tickets, suivez vos demandes et communiquez avec votre équipe.</div>
+                <div style="margin-top:16px;display:flex;flex-direction:column;gap:6px">
+                  <div style="background:rgba(255,255,255,.1);border-radius:5px;padding:6px 10px;font-size:.62rem;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:6px"><span>⚡</span> Réponses rapides</div>
+                  <div style="background:rgba(255,255,255,.1);border-radius:5px;padding:6px 10px;font-size:.62rem;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:6px"><span>🔒</span> Sécurisé</div>
+                </div>
+              </div>
+              <div class="mini-login-right">
+                <div style="font-size:.85rem;font-weight:800;color:var(--dark);margin-bottom:4px">Se connecter</div>
+                <div style="font-size:.62rem;color:var(--gl);margin-bottom:12px">Accédez à votre espace TicketFlow</div>
+                <div class="mini-input">admin@ticketflow.fr</div>
+                <div class="mini-input">••••••••</div>
+                <div class="mini-btn">Se connecter</div>
+                <div style="margin-top:10px;padding:8px;background:var(--bg);border-radius:5px;border:1px dashed var(--border)">
+                  <div style="font-size:.58rem;font-weight:700;color:var(--dark);margin-bottom:4px">Comptes démo :</div>
+                  <div style="font-size:.56rem;color:var(--gray);display:flex;flex-direction:column;gap:2px">
+                    <div><span class="badge b-e" style="font-size:.5rem">Admin</span> admin@ticketflow.fr / admin123</div>
+                    <div><span class="badge b-ok" style="font-size:.5rem">Agent</span> agent@ticketflow.fr / agent123</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </section>
+    </div>
+  </div>
 
-    <!-- ════════════════════════════════════
-         3. BDD TICKETS
-    ════════════════════════════════════ -->
-    <section class="section" id="bdd">
-      <div class="section-badge">03 — Base de données</div>
-      <h2>Structure d'un ticket</h2>
-      <p class="section-subtitle">Chaque ticket est un objet JSON stocké dans un tableau dans le <code>localStorage</code>.</p>
+  <!-- ══════════════════════════════════════════
+       SLIDE 4 — BASE DE DONNÉES TICKETS
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-light" id="s4">
+    <div class="scroll-inner">
+      <div class="section-label anim">03 — Base de données</div>
+      <h2 class="anim-2" style="font-size:1.8rem;font-weight:800;color:var(--dark);margin-bottom:6px">Structure d'un ticket</h2>
+      <p class="anim-3" style="color:var(--gray);font-size:.9rem;margin-bottom:28px">Chaque ticket est un objet JSON. Tous les tickets d'un utilisateur sont stockés dans un seul tableau.</p>
 
-      <div class="card">
-        <div class="card-header">📋 Schéma d'un objet Ticket</div>
-        <div class="card-body">
-          <table class="schema-table">
-            <thead><tr><th>Champ</th><th>Type</th><th>Valeurs possibles</th><th>Description</th></tr></thead>
+      <div class="cols2 anim-4">
+        <div>
+          <p style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:10px">Schéma objet Ticket</p>
+          <table class="mini-tbl" style="margin-bottom:16px">
+            <thead><tr><th>Champ</th><th>Type</th><th>Valeurs</th></tr></thead>
             <tbody>
-              <tr>
-                <td><strong>id</strong> <span class="badge badge-warning" style="font-size:0.65rem;">PK</span></td>
-                <td class="type">number</td>
-                <td class="note">Date.now() à la création</td>
-                <td>Identifiant unique du ticket</td>
-              </tr>
-              <tr>
-                <td><strong>title</strong></td>
-                <td class="type">string</td>
-                <td class="note">Texte libre</td>
-                <td>Titre / résumé du problème</td>
-              </tr>
-              <tr>
-                <td><strong>category</strong></td>
-                <td class="type">string</td>
-                <td><code>Technique</code> <code>Facturation</code> <code>Compte</code> <code>Commercial</code></td>
-                <td>Catégorie du ticket</td>
-              </tr>
-              <tr>
-                <td><strong>priority</strong></td>
-                <td class="type">string</td>
-                <td>
-                  <span class="badge badge-gray">bas</span>
-                  <span class="badge badge-info">moyen</span>
-                  <span class="badge badge-warning">eleve</span>
-                  <span class="badge badge-danger">critique</span>
-                </td>
-                <td>Niveau de priorité</td>
-              </tr>
-              <tr>
-                <td><strong>status</strong></td>
-                <td class="type">string</td>
-                <td>
-                  <span class="badge badge-primary">ouvert</span>
-                  <span class="badge badge-warning">en_cours</span>
-                  <span class="badge badge-success">resolu</span>
-                  <span class="badge badge-gray">ferme</span>
-                </td>
-                <td>État actuel du ticket</td>
-              </tr>
-              <tr>
-                <td><strong>date</strong></td>
-                <td class="type">string</td>
-                <td class="note">Format YYYY-MM-DD</td>
-                <td>Date de création</td>
-              </tr>
-              <tr>
-                <td><strong>desc</strong></td>
-                <td class="type">string</td>
-                <td class="note">Texte libre</td>
-                <td>Description détaillée du problème</td>
-              </tr>
-              <tr>
-                <td><strong>messages</strong></td>
-                <td class="type">array</td>
-                <td class="note">[ { from, text, time } ]</td>
-                <td>Fil de messages entre user et agent</td>
-              </tr>
-              <tr>
-                <td><strong>userEmail</strong></td>
-                <td class="type">string</td>
-                <td class="note">email de l'auteur</td>
-                <td>Propriétaire du ticket (côté agent)</td>
-              </tr>
+              <tr><td><strong>id</strong> <span class="badge b-w" style="font-size:.58rem">PK</span></td><td class="type">number</td><td style="font-size:.72rem;color:var(--gray)">Date.now()</td></tr>
+              <tr><td><strong>title</strong></td><td class="type">string</td><td style="font-size:.72rem;color:var(--gray)">Texte libre</td></tr>
+              <tr><td><strong>category</strong></td><td class="type">string</td><td style="font-size:.68rem"><code>Technique</code> <code>Facturation</code> <code>Compte</code></td></tr>
+              <tr><td><strong>priority</strong></td><td class="type">string</td><td><span class="badge b-g" style="font-size:.56rem">bas</span> <span class="badge b-i" style="font-size:.56rem">moyen</span> <span class="badge b-w" style="font-size:.56rem">eleve</span> <span class="badge b-e" style="font-size:.56rem">critique</span></td></tr>
+              <tr><td><strong>status</strong></td><td class="type">string</td><td><span class="badge b-p" style="font-size:.56rem">ouvert</span> <span class="badge b-w" style="font-size:.56rem">en_cours</span> <span class="badge b-ok" style="font-size:.56rem">resolu</span></td></tr>
+              <tr><td><strong>date</strong></td><td class="type">string</td><td style="font-size:.72rem;color:var(--gray)">YYYY-MM-DD</td></tr>
+              <tr><td><strong>desc</strong></td><td class="type">string</td><td style="font-size:.72rem;color:var(--gray)">Description</td></tr>
+              <tr><td><strong>messages</strong></td><td class="type">array</td><td style="font-size:.72rem;color:var(--gray)">[{from, text, time}]</td></tr>
             </tbody>
           </table>
-        </div>
-      </div>
 
-      <div class="card">
-        <div class="card-header">💾 Exemple JSON d'un ticket</div>
-        <div class="card-body">
-          <div class="code-block">{
-  <span class="key">"id"</span>:       <span class="val">1712345678901</span>,
-  <span class="key">"title"</span>:    <span class="str">"Impossible de me connecter à mon compte"</span>,
-  <span class="key">"category"</span>: <span class="str">"Compte"</span>,
-  <span class="key">"priority"</span>: <span class="str">"eleve"</span>,
-  <span class="key">"status"</span>:   <span class="str">"en_cours"</span>,
-  <span class="key">"date"</span>:     <span class="str">"2026-04-05"</span>,
-  <span class="key">"desc"</span>:     <span class="str">"Depuis ce matin, impossible d'accéder à mon compte..."</span>,
-  <span class="key">"messages"</span>: [
+          <!-- Message schema -->
+          <div class="card">
+            <div class="card-h" style="font-size:.75rem">💬 Objet Message (dans messages[])</div>
+            <div class="card-b" style="padding:12px">
+              <table class="mini-tbl">
+                <thead><tr><th>Champ</th><th>Valeurs</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>from</strong></td><td style="font-size:.72rem"><code>"agent"</code> ou <code>"user"</code></td></tr>
+                  <tr><td><strong>text</strong></td><td style="font-size:.72rem;color:var(--gray)">Contenu du message</td></tr>
+                  <tr><td><strong>time</strong></td><td style="font-size:.72rem;color:var(--gray)">Format HH:MM</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <p style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:10px">Exemple JSON réel</p>
+          <div class="json">
+{
+  <span class="jk">"id"</span>: <span class="jv">1712345678901</span>,
+  <span class="jk">"title"</span>: <span class="js">"Erreur lors du paiement"</span>,
+  <span class="jk">"category"</span>: <span class="js">"Technique"</span>,
+  <span class="jk">"priority"</span>: <span class="js">"critique"</span>,
+  <span class="jk">"status"</span>: <span class="js">"en_cours"</span>,
+  <span class="jk">"date"</span>: <span class="js">"2026-04-05"</span>,
+  <span class="jk">"desc"</span>: <span class="js">"Une erreur 500 survient..."</span>,
+  <span class="jk">"messages"</span>: [
     {
-      <span class="key">"from"</span>: <span class="str">"agent"</span>,
-      <span class="key">"text"</span>: <span class="str">"Bonjour, nous avons pris en charge votre ticket."</span>,
-      <span class="key">"time"</span>: <span class="str">"10:30"</span>
+      <span class="jk">"from"</span>: <span class="js">"agent"</span>,
+      <span class="jk">"text"</span>: <span class="js">"Bonjour, ticket pris en charge."</span>,
+      <span class="jk">"time"</span>: <span class="js">"10:30"</span>
     }
   ]
-}</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">📨 Schéma d'un objet Message (dans messages[])</div>
-        <div class="card-body">
-          <table class="schema-table">
-            <thead><tr><th>Champ</th><th>Type</th><th>Valeurs</th><th>Description</th></tr></thead>
-            <tbody>
-              <tr><td><strong>from</strong></td><td class="type">string</td><td><code>"agent"</code> ou <code>"user"</code></td><td>Expéditeur du message</td></tr>
-              <tr><td><strong>text</strong></td><td class="type">string</td><td class="note">Texte libre</td><td>Contenu du message</td></tr>
-              <tr><td><strong>time</strong></td><td class="type">string</td><td class="note">Format HH:MM</td><td>Heure d'envoi</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ════════════════════════════════════
-         4. STOCKAGE LOCALSTORAGE
-    ════════════════════════════════════ -->
-    <section class="section" id="stockage">
-      <div class="section-badge">04 — Stockage</div>
-      <h2>Stockage localStorage</h2>
-      <p class="section-subtitle">Toutes les données sont persistées dans le <code>localStorage</code> du navigateur via des clés JSON.</p>
-
-      <div class="card">
-        <div class="card-header">🗂 Clés localStorage utilisées</div>
-        <div class="card-body">
-          <div class="storage-row">
-            <div class="storage-key">tf_user</div>
-            <div class="storage-desc">Session active — objet <code>{ email, name, role, avatar }</code>. Supprimé à la déconnexion.</div>
+}
           </div>
-          <div class="storage-row">
-            <div class="storage-key">tf_tickets_&lt;email&gt;</div>
-            <div class="storage-desc">Tableau JSON des tickets d'un utilisateur. Une clé par compte (ex: <code>tf_tickets_user@ticketflow.fr</code>).</div>
-          </div>
-          <div class="storage-row">
-            <div class="storage-key">tf_admin_users</div>
-            <div class="storage-desc">Liste des comptes utilisateurs gérés par l'admin. Tableau JSON d'objets <code>{ id, name, email, role, createdAt }</code>.</div>
-          </div>
-          <div class="storage-row">
-            <div class="storage-key">tf_admin_agents</div>
-            <div class="storage-desc">Liste des agents. Tableau JSON d'objets <code>{ id, name, email, specialty, tickets, resolved }</code>.</div>
-          </div>
-          <div class="storage-row">
-            <div class="storage-key">tf_features</div>
-            <div class="storage-desc">Carte des modules activés/désactivés. Objet JSON <code>{ moduleKey: boolean }</code>. Ex: <code>{ "dashboard_agent": false }</code>.</div>
-          </div>
-        </div>
-      </div>
 
-      <div class="card">
-        <div class="card-header">⚠️ Limites du stockage client</div>
-        <div class="card-body">
-          <ul style="font-size:0.85rem; color: var(--gray); display: flex; flex-direction: column; gap: 8px; padding-left: 20px; list-style: disc;">
-            <li>Les données ne sont <strong>pas partagées entre navigateurs</strong> ni entre appareils</li>
-            <li>Capacité limitée à ~5 Mo par domaine</li>
-            <li>L'authentification est simulée (pas de vrai backend)</li>
-            <li>Un vrai projet en production utiliserait une base de données SQL/NoSQL + API REST</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- ════════════════════════════════════
-         5. MISE À JOUR D'UN TICKET
-    ════════════════════════════════════ -->
-    <section class="section" id="maj-ticket">
-      <div class="section-badge">05 — Mise à jour</div>
-      <h2>Cycle de vie & mise à jour d'un ticket</h2>
-      <p class="section-subtitle">Un ticket passe par plusieurs états. Agents et utilisateurs peuvent interagir dessus.</p>
-
-      <!-- Cycle de statuts -->
-      <div class="card" style="margin-bottom: 20px;">
-        <div class="card-header">🔄 Cycle des statuts</div>
-        <div class="card-body">
-          <div class="status-cycle">
-            <div class="status-node">
-              <div class="status-circle" style="background:#ede9fe;color:#4f46e5;">Ouvert</div>
-              <span style="font-size:0.7rem;color:var(--gray);">Création</span>
-            </div>
-            <div class="status-arrow">→</div>
-            <div class="status-node">
-              <div class="status-circle" style="background:#fef3c7;color:#92400e;">En cours</div>
-              <span style="font-size:0.7rem;color:var(--gray);">Agent répond</span>
-            </div>
-            <div class="status-arrow">→</div>
-            <div class="status-node">
-              <div class="status-circle" style="background:#d1fae5;color:#065f46;">Résolu</div>
-              <span style="font-size:0.7rem;color:var(--gray);">Problème réglé</span>
-            </div>
-            <div class="status-arrow">→</div>
-            <div class="status-node">
-              <div class="status-circle" style="background:#f1f5f9;color:#64748b;">Fermé</div>
-              <span style="font-size:0.7rem;color:var(--gray);">Archivé</span>
-            </div>
-          </div>
-          <p style="font-size:0.82rem;color:var(--gray);margin-top:8px;">
-            ⚡ Transition automatique : quand un agent envoie un premier message, le statut passe automatiquement de <strong>Ouvert → En cours</strong>.
-          </p>
-        </div>
-      </div>
-
-      <!-- Création -->
-      <div class="card">
-        <div class="card-header">➕ 1. Création d'un ticket (côté utilisateur)</div>
-        <div class="card-body">
-          <div class="steps">
-            <div class="step">
-              <div class="step-num">1</div>
-              <div class="step-content">
-                <h4>L'utilisateur remplit le formulaire</h4>
-                <p>Titre, catégorie, priorité, description. Les 3 premiers champs sont obligatoires.</p>
+          <!-- Maquette ticket card dans l'interface -->
+          <div style="margin-top:16px">
+            <p style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:10px">Rendu dans l'interface (Dashboard Utilisateur)</p>
+            <div class="browser">
+              <div class="browser-bar">
+                <div class="browser-dot" style="background:#ef4444"></div>
+                <div class="browser-dot" style="background:#f59e0b"></div>
+                <div class="browser-dot" style="background:#10b981"></div>
+                <div class="browser-url">localhost:3000/pages/dashboard-user</div>
               </div>
-            </div>
-            <div class="step">
-              <div class="step-num">2</div>
-              <div class="step-content">
-                <h4>Appel à <code>submitNewTicket()</code></h4>
-                <p>Création de l'objet ticket avec <code>id: Date.now()</code>, <code>status: 'ouvert'</code>, <code>messages: []</code></p>
-              </div>
-            </div>
-            <div class="step">
-              <div class="step-num">3</div>
-              <div class="step-content">
-                <h4>Ajout en tête de tableau + sauvegarde</h4>
-                <p><code>tickets.unshift(newTicket)</code> → <code>saveTickets()</code> → <code>localStorage.setItem('tf_tickets_&lt;email&gt;', JSON.stringify(tickets))</code></p>
-              </div>
-            </div>
-            <div class="step">
-              <div class="step-num">4</div>
-              <div class="step-content">
-                <h4>Rafraîchissement de l'interface</h4>
-                <p><code>renderTickets()</code> et <code>updateStats()</code> mettent à jour l'affichage instantanément</p>
+              <div class="browser-body" style="height:180px">
+                <div class="mini-dash">
+                  <div class="mini-sidebar-full">
+                    <div style="display:flex;align-items:center;gap:6px;padding:6px 4px;border-bottom:1px solid var(--border);margin-bottom:8px"><div class="mini-logo"></div><span style="font-size:.6rem;font-weight:800">TicketFlow</span></div>
+                    <div style="font-size:.62rem;padding:6px 8px;background:#ede9fe;color:var(--p);border-radius:6px;font-weight:600">🎫 Mes tickets <span style="background:#ef4444;color:white;border-radius:999px;padding:0 5px;font-size:.5rem;margin-left:4px">2</span></div>
+                    <div style="font-size:.62rem;padding:6px 8px;color:var(--gray)">+ Nouveau ticket</div>
+                    <div style="font-size:.62rem;padding:6px 8px;color:var(--gray)">✉ Générateur</div>
+                  </div>
+                  <div class="mini-main">
+                    <div class="mini-topbar"><span class="mini-topbar-title">Mes tickets</span></div>
+                    <div class="mini-content">
+                      <div style="background:var(--w);border:1px solid var(--border);border-radius:6px;overflow:hidden">
+                        <div class="mini-table-row head"><span>Titre</span><span>Catégorie</span><span>Priorité</span><span>Statut</span></div>
+                        <div class="mini-table-row"><span style="color:var(--dark);font-size:.6rem">Erreur lors du paiement</span><span><span class="badge b-g" style="font-size:.5rem">Technique</span></span><span><span class="badge b-e" style="font-size:.5rem">Critique</span></span><span><span class="badge b-w" style="font-size:.5rem">En cours</span></span></div>
+                        <div class="mini-table-row"><span style="color:var(--dark);font-size:.6rem">Problème de facturation</span><span><span class="badge b-g" style="font-size:.5rem">Facturation</span></span><span><span class="badge b-w" style="font-size:.5rem">Moyen</span></span><span><span class="badge b-p" style="font-size:.5rem">Ouvert</span></span></div>
+                        <div class="mini-table-row"><span style="color:var(--dark);font-size:.6rem">Demande fonctionnalité</span><span><span class="badge b-g" style="font-size:.5rem">Commercial</span></span><span><span class="badge b-g" style="font-size:.5rem">Bas</span></span><span><span class="badge b-ok" style="font-size:.5rem">Résolu</span></span></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          <div class="code-block"><span class="comment">// dashboard-user.html — submitNewTicket()</span>
-<span class="key">const</span> newTicket = {
-  <span class="key">id</span>:       <span class="func">Date.now()</span>,
-  title, category, priority, desc,
-  <span class="key">status</span>:   <span class="str">'ouvert'</span>,
-  <span class="key">date</span>:     <span class="func">new Date()</span>.toISOString().<span class="func">split</span>(<span class="str">'T'</span>)[0],
-  <span class="key">messages</span>: []
-};
-tickets.<span class="func">unshift</span>(newTicket);
-<span class="func">saveTickets</span>();   <span class="comment">// → localStorage</span>
-<span class="func">renderTickets</span>(); <span class="comment">// → re-render du tableau</span>
-<span class="func">updateStats</span>();   <span class="comment">// → badges & compteurs</span></div>
         </div>
       </div>
-
-      <!-- Mise à jour statut -->
-      <div class="card">
-        <div class="card-header">✏️ 2. Mise à jour du statut (côté agent)</div>
-        <div class="card-body">
-          <div class="steps">
-            <div class="step">
-              <div class="step-num">1</div>
-              <div class="step-content">
-                <h4>L'agent clique sur "Traiter" sur un ticket</h4>
-                <p>Appel à <code>openTicket(id)</code> → ouverture de la modale avec les détails</p>
-              </div>
-            </div>
-            <div class="step">
-              <div class="step-num">2</div>
-              <div class="step-content">
-                <h4>L'agent change le statut via le <code>&lt;select&gt;</code></h4>
-                <p>Appel à <code>changeStatus()</code> → trouve le ticket par id dans <code>allTickets[]</code>, modifie <code>t.status</code></p>
-              </div>
-            </div>
-            <div class="step">
-              <div class="step-num">3</div>
-              <div class="step-content">
-                <h4>Mise à jour de l'affichage</h4>
-                <p><code>updateStats()</code> et <code>filterAgentTickets()</code> re-rendent le tableau immédiatement</p>
-              </div>
-            </div>
-          </div>
-          <div class="code-block"><span class="comment">// dashboard-agent.html — changeStatus()</span>
-<span class="key">function</span> <span class="func">changeStatus</span>() {
-  <span class="key">const</span> t = allTickets.<span class="func">find</span>(x => x.id === currentTicketId);
-  t.status = document.<span class="func">getElementById</span>(<span class="str">'modal-status-select'</span>).value;
-  <span class="func">updateStats</span>();
-  <span class="func">filterAgentTickets</span>();
-}</div>
-        </div>
-      </div>
-
-      <!-- Message agent -->
-      <div class="card">
-        <div class="card-header">💬 3. Réponse d'un agent (messagerie)</div>
-        <div class="card-body">
-          <div class="steps">
-            <div class="step">
-              <div class="step-num">1</div>
-              <div class="step-content">
-                <h4>L'agent saisit un message et clique "Envoyer"</h4>
-                <p>Appel à <code>agentReply()</code></p>
-              </div>
-            </div>
-            <div class="step">
-              <div class="step-num">2</div>
-              <div class="step-content">
-                <h4>Ajout du message dans <code>t.messages[]</code></h4>
-                <p>Objet <code>{ from: 'agent', text, time }</code> poussé dans le tableau</p>
-              </div>
-            </div>
-            <div class="step">
-              <div class="step-num">3</div>
-              <div class="step-content">
-                <h4>Transition automatique de statut</h4>
-                <p>Si le ticket était <code>'ouvert'</code>, il passe automatiquement à <code>'en_cours'</code></p>
-              </div>
-            </div>
-          </div>
-          <div class="code-block"><span class="comment">// dashboard-agent.html — agentReply()</span>
-<span class="key">const</span> time = now.<span class="func">getHours</span>() + <span class="str">':'</span> + <span class="func">String</span>(now.<span class="func">getMinutes</span>()).<span class="func">padStart</span>(2, <span class="str">'0'</span>);
-t.messages.<span class="func">push</span>({ <span class="key">from</span>: <span class="str">'agent'</span>, text, time });
-
-<span class="comment">// Transition automatique ouvert → en_cours</span>
-<span class="key">if</span> (t.status === <span class="str">'ouvert'</span>) {
-  t.status = <span class="str">'en_cours'</span>;
-  <span class="func">updateStats</span>();
-}</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ════════════════════════════════════
-         6. FEATURE FLAGS
-    ════════════════════════════════════ -->
-    <section class="section" id="feature-flags">
-      <div class="section-badge">06 — Feature Flags</div>
-      <h2>Système de Feature Flags</h2>
-      <p class="section-subtitle">L'admin peut activer ou désactiver chaque module du site en temps réel, sans rechargement.</p>
-
-      <div class="card">
-        <div class="card-header">🔀 Principe de fonctionnement</div>
-        <div class="card-body">
-          <div class="code-block"><span class="comment">// js/features.js</span>
-
-<span class="comment">// Vérifier si un module est actif</span>
-<span class="func">isEnabled</span>(<span class="str">'user_create_ticket'</span>) <span class="comment">// → true / false</span>
-
-<span class="comment">// Rediriger vers "Indisponible" si module désactivé</span>
-<span class="func">requireFeature</span>(<span class="str">'dashboard_user'</span>)
-
-<span class="comment">// Activer/désactiver un module et persister</span>
-<span class="func">toggleFeatureSave</span>(<span class="str">'agent_reply'</span>, <span class="key">false</span>)
-
-<span class="comment">// Désactiver TOUS les modules sauf login et dashboard_admin</span>
-<span class="func">setAllFeaturesSave</span>(<span class="key">false</span>)</div>
-
-          <p style="margin-top:12px;font-size:0.82rem;color:var(--gray);">
-            ⚠️ Les modules <strong>login</strong> et <strong>dashboard_admin</strong> sont <strong>verrouillés</strong> — ils ne peuvent jamais être désactivés pour garantir l'accès de l'administrateur.
-          </p>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">📦 Liste des modules disponibles</div>
-        <div class="card-body">
-          <table class="schema-table">
-            <thead><tr><th>Clé</th><th>Groupe</th><th>Par défaut</th></tr></thead>
-            <tbody>
-              <tr><td><code>landing</code></td><td>Pages publiques</td><td><span class="badge badge-success">Actif</span></td></tr>
-              <tr><td><code>login</code> 🔒</td><td>Pages publiques</td><td><span class="badge badge-success">Toujours actif</span></td></tr>
-              <tr><td><code>register</code></td><td>Pages publiques</td><td><span class="badge badge-success">Actif</span></td></tr>
-              <tr><td><code>dashboard_user</code></td><td>Espace utilisateur</td><td><span class="badge badge-success">Actif</span></td></tr>
-              <tr><td><code>user_create_ticket</code></td><td>Espace utilisateur</td><td><span class="badge badge-success">Actif</span></td></tr>
-              <tr><td><code>user_messaging</code></td><td>Espace utilisateur</td><td><span class="badge badge-gray">Inactif</span></td></tr>
-              <tr><td><code>dashboard_agent</code></td><td>Espace agent</td><td><span class="badge badge-gray">Inactif</span></td></tr>
-              <tr><td><code>agent_reply</code></td><td>Espace agent</td><td><span class="badge badge-gray">Inactif</span></td></tr>
-              <tr><td><code>dashboard_admin</code> 🔒</td><td>Panel admin</td><td><span class="badge badge-success">Toujours actif</span></td></tr>
-              <tr><td><code>codeur_generator</code></td><td>Outils</td><td><span class="badge badge-success">Actif</span></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ════════════════════════════════════
-         7. OUTILS INTÉGRÉS
-    ════════════════════════════════════ -->
-    <section class="section" id="outils">
-      <div class="section-badge">07 — Outils</div>
-      <h2>Outils intégrés</h2>
-      <p class="section-subtitle">Module additionnel intégré nativement dans le projet.</p>
-
-      <div class="card">
-        <div class="card-header">✉ Générateur Codeur.com + Devis PDF</div>
-        <div class="card-body">
-          <div class="role-grid" style="grid-template-columns: 1fr 1fr;">
-            <div class="role-card user">
-              <h4>✉ Message de candidature</h4>
-              <ul>
-                <li>4 tons de message (Pro, Chaleureux, Concis, Expert)</li>
-                <li>Génération instantanée en temps réel</li>
-                <li>Copie en 1 clic dans le presse-papiers</li>
-              </ul>
-            </div>
-            <div class="role-card agent">
-              <h4>📄 Devis PDF automatique</h4>
-              <ul>
-                <li>Lignes de prestation dynamiques</li>
-                <li>Calcul HT / TVA / TTC automatique</li>
-                <li>Aperçu en temps réel</li>
-                <li>Export PDF via <strong>jsPDF</strong> (sans serveur)</li>
-              </ul>
-            </div>
-          </div>
-          <p style="font-size:0.82rem;color:var(--gray);margin-top:8px;">
-            Accessible depuis la sidebar de tous les dashboards. Peut être désactivé via le feature flag <code>codeur_generator</code>.
-          </p>
-        </div>
-      </div>
-    </section>
-
+    </div>
   </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 5 — STOCKAGE LOCALSTORAGE
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-light" id="s5">
+    <div class="scroll-inner">
+      <div class="section-label anim">04 — Stockage</div>
+      <h2 class="anim-2" style="font-size:1.8rem;font-weight:800;color:var(--dark);margin-bottom:6px">localStorage — La "base de données"</h2>
+      <p class="anim-3" style="color:var(--gray);font-size:.9rem;margin-bottom:28px">Toutes les données sont persistées dans le navigateur sous forme de paires clé/valeur JSON.</p>
+
+      <div class="cols2 anim-4">
+        <div>
+          <p style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:12px">Clés utilisées</p>
+
+          <div class="storage-item">
+            <div class="storage-key">tf_user</div>
+            <div class="storage-val">Session active — <code>{ email, name, role, avatar }</code><br>Supprimé à la déconnexion</div>
+          </div>
+          <div class="storage-item">
+            <div class="storage-key">tf_tickets_&lt;email&gt;</div>
+            <div class="storage-val">Tableau JSON des tickets d'un utilisateur.<br><em>Ex: tf_tickets_user@ticketflow.fr</em></div>
+          </div>
+          <div class="storage-item">
+            <div class="storage-key">tf_admin_users</div>
+            <div class="storage-val">Liste des comptes utilisateurs gérés par l'admin</div>
+          </div>
+          <div class="storage-item">
+            <div class="storage-key">tf_admin_agents</div>
+            <div class="storage-val">Liste des agents de support</div>
+          </div>
+          <div class="storage-item">
+            <div class="storage-key">tf_features</div>
+            <div class="storage-val">Modules actifs/inactifs — <code>{ "dashboard_agent": false }</code></div>
+          </div>
+
+          <div style="margin-top:16px;background:#fff5f5;border:1px solid #fecaca;border-radius:8px;padding:14px">
+            <div style="font-size:.8rem;font-weight:700;color:#991b1b;margin-bottom:6px">⚠️ Limites</div>
+            <ul style="font-size:.75rem;color:#7f1d1d;padding-left:14px;list-style:disc;display:flex;flex-direction:column;gap:4px">
+              <li>Non partagé entre navigateurs / appareils</li>
+              <li>Capacité ~5 Mo par domaine</li>
+              <li>Authentification simulée (pas de vrai backend)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div>
+          <p style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:12px">Visualisation — Navigateur DevTools</p>
+          <div class="browser">
+            <div class="browser-bar">
+              <div class="browser-dot" style="background:#ef4444"></div>
+              <div class="browser-dot" style="background:#f59e0b"></div>
+              <div class="browser-dot" style="background:#10b981"></div>
+              <div class="browser-url">DevTools → Application → Local Storage</div>
+            </div>
+            <div class="browser-body" style="padding:0;background:#1e293b">
+              <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #334155">
+                <div style="padding:8px 12px;font-size:.65rem;font-weight:700;color:#94a3b8;border-right:1px solid #334155">Clé</div>
+                <div style="padding:8px 12px;font-size:.65rem;font-weight:700;color:#94a3b8">Valeur</div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #334155;background:#0f172a">
+                <div style="padding:7px 12px;font-size:.62rem;color:#93c5fd;border-right:1px solid #334155;font-family:monospace">tf_user</div>
+                <div style="padding:7px 12px;font-size:.6rem;color:#86efac;font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{"email":"admin@ticketflow.fr","role":"admin"}</div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #334155">
+                <div style="padding:7px 12px;font-size:.62rem;color:#93c5fd;border-right:1px solid #334155;font-family:monospace">tf_tickets_user@...</div>
+                <div style="padding:7px 12px;font-size:.6rem;color:#86efac;font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">[{"id":1712...,"title":"Erreur serveur"</div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #334155;background:#0f172a">
+                <div style="padding:7px 12px;font-size:.62rem;color:#93c5fd;border-right:1px solid #334155;font-family:monospace">tf_features</div>
+                <div style="padding:7px 12px;font-size:.6rem;color:#86efac;font-family:monospace">{"dashboard_agent":false,"login":true}</div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr">
+                <div style="padding:7px 12px;font-size:.62rem;color:#93c5fd;border-right:1px solid #334155;font-family:monospace">tf_admin_users</div>
+                <div style="padding:7px 12px;font-size:.6rem;color:#86efac;font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">[{"id":1,"name":"Marie Durand","role":"user"...</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="json" style="margin-top:14px">
+<span class="jc">// Lire/écrire dans le localStorage</span>
+<span class="jf">localStorage</span>.<span class="jk">setItem</span>(<span class="js">'tf_tickets_user@...'</span>, <span class="jf">JSON.stringify</span>(tickets));
+<span class="jf">localStorage</span>.<span class="jk">getItem</span>(<span class="js">'tf_tickets_user@...'</span>);  <span class="jc">→ JSON string</span>
+<span class="jf">JSON.parse</span>( ... );  <span class="jc">→ tableau JS</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 6 — MISE À JOUR D'UN TICKET
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-light" id="s6">
+    <div class="scroll-inner">
+      <div class="section-label anim">05 — Mise à jour</div>
+      <h2 class="anim-2" style="font-size:1.8rem;font-weight:800;color:var(--dark);margin-bottom:6px">Cycle de vie d'un ticket</h2>
+      <p class="anim-3" style="color:var(--gray);font-size:.9rem;margin-bottom:24px">Un ticket passe par 4 états. La transition <strong>Ouvert → En cours</strong> est automatique lors de la première réponse d'un agent.</p>
+
+      <!-- Status flow -->
+      <div class="card anim-4" style="margin-bottom:20px">
+        <div class="card-h">🔄 Cycle des statuts</div>
+        <div class="card-b" style="display:flex;align-items:center;justify-content:center;flex-wrap:nowrap;gap:0;padding:20px">
+          <div class="snode">
+            <div class="scircle" style="background:#ede9fe;color:#4f46e5">Ouvert</div>
+            <span style="font-size:.65rem;color:var(--gray)">Création</span>
+          </div>
+          <div class="sarr">→</div>
+          <div class="snode">
+            <div class="scircle" style="background:#fef3c7;color:#92400e">En cours</div>
+            <span style="font-size:.65rem;color:var(--gray)">⚡ Auto si réponse</span>
+          </div>
+          <div class="sarr">→</div>
+          <div class="snode">
+            <div class="scircle" style="background:#d1fae5;color:#065f46">Résolu</div>
+            <span style="font-size:.65rem;color:var(--gray)">Problème réglé</span>
+          </div>
+          <div class="sarr">→</div>
+          <div class="snode">
+            <div class="scircle" style="background:#f1f5f9;color:#64748b">Fermé</div>
+            <span style="font-size:.65rem;color:var(--gray)">Archivé</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="cols2">
+        <!-- Création ticket -->
+        <div class="card">
+          <div class="card-h">➕ Création (côté utilisateur)</div>
+          <div class="card-b">
+            <!-- mini maquette formulaire -->
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:12px">
+              <div style="font-size:.7rem;font-weight:700;color:var(--dark);margin-bottom:8px">Nouveau ticket</div>
+              <div style="background:var(--w);border:1px solid var(--border);border-radius:5px;height:16px;margin-bottom:5px;padding:0 8px;font-size:.6rem;color:var(--gl);display:flex;align-items:center">Titre du problème</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:5px">
+                <div style="background:var(--w);border:1px solid var(--border);border-radius:5px;height:16px;font-size:.6rem;color:var(--gl);display:flex;align-items:center;padding:0 8px">Catégorie ▾</div>
+                <div style="background:var(--w);border:1px solid var(--border);border-radius:5px;height:16px;font-size:.6rem;color:var(--gl);display:flex;align-items:center;padding:0 8px">Priorité ▾</div>
+              </div>
+              <div style="background:var(--w);border:1px solid var(--border);border-radius:5px;height:32px;margin-bottom:8px"></div>
+              <div style="background:var(--p);color:white;border-radius:5px;height:18px;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700">Soumettre le ticket</div>
+            </div>
+            <div class="json" style="font-size:.72rem">
+<span class="jk">const</span> newTicket = {
+  <span class="jk">id</span>: <span class="jf">Date.now()</span>,
+  title, category, priority, desc,
+  <span class="jk">status</span>: <span class="js">'ouvert'</span>,
+  <span class="jk">date</span>: <span class="js">'2026-04-16'</span>,
+  <span class="jk">messages</span>: []
+};
+tickets.<span class="jf">unshift</span>(newTicket);
+<span class="jf">saveTickets</span>(); <span class="jc">// → localStorage</span></div>
+          </div>
+        </div>
+
+        <!-- Réponse agent -->
+        <div class="card">
+          <div class="card-h">✏️ Réponse agent & mise à jour statut</div>
+          <div class="card-b">
+            <!-- mini maquette agent ticket detail -->
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:12px">
+              <div style="font-size:.68rem;font-weight:700;color:var(--dark);margin-bottom:8px;display:flex;align-items:center;gap:6px">
+                Erreur lors du paiement
+                <span class="badge b-w" style="font-size:.5rem">En cours</span>
+                <span class="badge b-e" style="font-size:.5rem">Critique</span>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">
+                <div>
+                  <div style="font-size:.58rem;color:var(--gl);margin-bottom:3px">Statut</div>
+                  <div style="background:var(--w);border:1px solid var(--border);border-radius:5px;height:16px;font-size:.6rem;color:var(--dark);display:flex;align-items:center;padding:0 8px">en_cours ▾</div>
+                </div>
+                <div>
+                  <div style="font-size:.58rem;color:var(--gl);margin-bottom:3px">Priorité</div>
+                  <div style="background:var(--w);border:1px solid var(--border);border-radius:5px;height:16px;font-size:.6rem;color:var(--dark);display:flex;align-items:center;padding:0 8px">critique ▾</div>
+                </div>
+              </div>
+              <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:5px;padding:6px 8px;margin-bottom:6px;font-size:.6rem;color:#166534">
+                <strong>Agent</strong> · 10:30 — Bonjour, nous avons pris en charge votre ticket.
+              </div>
+              <div style="display:flex;gap:5px">
+                <div style="flex:1;background:var(--w);border:1px solid var(--border);border-radius:5px;height:16px;font-size:.6rem;color:var(--gl);display:flex;align-items:center;padding:0 8px">Répondre au client...</div>
+                <div style="background:var(--p);color:white;border-radius:5px;width:50px;height:16px;display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:700">Envoyer</div>
+              </div>
+            </div>
+            <div class="json" style="font-size:.72rem">
+<span class="jf">function</span> <span class="jk">agentReply</span>() {
+  t.messages.<span class="jf">push</span>({
+    <span class="jk">from</span>: <span class="js">'agent'</span>, text, time
+  });
+  <span class="jc">// Transition auto ouvert→en_cours</span>
+  <span class="jk">if</span> (t.status === <span class="js">'ouvert'</span>)
+    t.status = <span class="js">'en_cours'</span>;
+}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 7 — FEATURE FLAGS
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-light" id="s7">
+    <div class="scroll-inner">
+      <div class="section-label anim">06 — Feature Flags</div>
+      <h2 class="anim-2" style="font-size:1.8rem;font-weight:800;color:var(--dark);margin-bottom:6px">Système de modules activables</h2>
+      <p class="anim-3" style="color:var(--gray);font-size:.9rem;margin-bottom:24px">L'admin peut activer ou désactiver chaque fonctionnalité du site en temps réel depuis son panel.</p>
+
+      <div class="cols2 anim-4">
+        <div>
+          <p style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:12px">Interface des modules (Dashboard Admin)</p>
+
+          <div class="browser">
+            <div class="browser-bar">
+              <div class="browser-dot" style="background:#ef4444"></div>
+              <div class="browser-dot" style="background:#f59e0b"></div>
+              <div class="browser-dot" style="background:#10b981"></div>
+              <div class="browser-url">localhost:3000/pages/dashboard-admin → Modules</div>
+            </div>
+            <div class="browser-body" style="padding:14px">
+              <div style="font-size:.6rem;font-weight:800;text-transform:uppercase;color:var(--gl);margin-bottom:8px;letter-spacing:.06em">Pages publiques</div>
+              <div class="ff-row on"><div><div style="font-size:.7rem;font-weight:700">Page d'accueil</div><div style="font-size:.6rem;color:var(--gray)">Landing page avec tarifs</div></div><div class="toggle on"></div></div>
+              <div class="ff-row locked"><div><div style="font-size:.7rem;font-weight:700">Connexion 🔒 <span style="font-size:.58rem;background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:999px">verrouillé</span></div><div style="font-size:.6rem;color:var(--gray)">Requis pour l'accès admin</div></div><div class="toggle on" style="opacity:.5;cursor:not-allowed"></div></div>
+              <div style="font-size:.6rem;font-weight:800;text-transform:uppercase;color:var(--gl);margin:8px 0;letter-spacing:.06em">Espace agent</div>
+              <div class="ff-row"><div><div style="font-size:.7rem;font-weight:700">Dashboard agent</div><div style="font-size:.6rem;color:var(--gray)">Accès au tableau de bord agent</div></div><div class="toggle off"></div></div>
+              <div class="ff-row on"><div><div style="font-size:.7rem;font-weight:700">Répondre à un ticket</div><div style="font-size:.6rem;color:var(--gray)">Zone de réponse agent</div></div><div class="toggle on"></div></div>
+              <div class="ff-row locked"><div><div style="font-size:.7rem;font-weight:700">Panel admin 🔒 <span style="font-size:.58rem;background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:999px">verrouillé</span></div><div style="font-size:.6rem;color:var(--gray)">Toujours accessible</div></div><div class="toggle on" style="opacity:.5;cursor:not-allowed"></div></div>
+              <div style="display:flex;gap:8px;margin-top:10px">
+                <div style="flex:1;background:var(--ok);color:white;border-radius:6px;height:22px;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700">✓ Tout activer</div>
+                <div style="flex:1;background:var(--err);color:white;border-radius:6px;height:22px;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700">✕ Tout désactiver</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <p style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:12px">API des feature flags</p>
+          <div class="json" style="margin-bottom:14px">
+<span class="jc">// features.js — 3 fonctions clés</span>
+
+<span class="jc">// 1. Vérifier si un module est actif</span>
+<span class="jf">isEnabled</span>(<span class="js">'user_create_ticket'</span>) <span class="jc">→ true/false</span>
+
+<span class="jc">// 2. Rediriger si module désactivé</span>
+<span class="jf">requireFeature</span>(<span class="js">'dashboard_user'</span>)
+<span class="jc">// → redirige vers unavailable.html</span>
+
+<span class="jc">// 3. Désactiver tous les modules</span>
+<span class="jf">setAllFeaturesSave</span>(<span class="jk">false</span>)
+<span class="jc">// sauf 'login' et 'dashboard_admin'</span>
+          </div>
+
+          <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:14px;margin-bottom:12px">
+            <div style="font-size:.8rem;font-weight:700;color:#166534;margin-bottom:8px">🔒 Modules verrouillés (toujours actifs)</div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:center;gap:8px;font-size:.78rem"><span class="badge b-ok">login</span> Connexion — sans ça, personne ne peut accéder au site</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:.78rem"><span class="badge b-ok">dashboard_admin</span> Panel admin — l'admin garde toujours la main</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-h" style="font-size:.75rem">📦 Liste des modules (extrait)</div>
+            <div class="card-b" style="padding:10px">
+              <table class="mini-tbl" style="font-size:.72rem">
+                <thead><tr><th>Module</th><th>Défaut</th></tr></thead>
+                <tbody>
+                  <tr><td><code>landing</code></td><td><span class="badge b-ok" style="font-size:.6rem">Actif</span></td></tr>
+                  <tr><td><code>dashboard_user</code></td><td><span class="badge b-ok" style="font-size:.6rem">Actif</span></td></tr>
+                  <tr><td><code>dashboard_agent</code></td><td><span class="badge b-g" style="font-size:.6rem">Inactif</span></td></tr>
+                  <tr><td><code>user_messaging</code></td><td><span class="badge b-g" style="font-size:.6rem">Inactif</span></td></tr>
+                  <tr><td><code>codeur_generator</code></td><td><span class="badge b-ok" style="font-size:.6rem">Actif</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 8 — OUTILS / GÉNÉRATEUR
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-light" id="s8">
+    <div class="scroll-inner">
+      <div class="section-label anim">07 — Outils intégrés</div>
+      <h2 class="anim-2" style="font-size:1.8rem;font-weight:800;color:var(--dark);margin-bottom:6px">Générateur Codeur.com + Devis PDF</h2>
+      <p class="anim-3" style="color:var(--gray);font-size:.9rem;margin-bottom:24px">Module intégré nativement — fonctionne 100% en local, sans serveur. Accessible depuis tous les dashboards.</p>
+
+      <div class="cols2 anim-4">
+        <div>
+          <p style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:10px">Aperçu — Onglet Message</p>
+          <div class="browser">
+            <div class="browser-bar">
+              <div class="browser-dot" style="background:#ef4444"></div>
+              <div class="browser-dot" style="background:#f59e0b"></div>
+              <div class="browser-dot" style="background:#10b981"></div>
+              <div class="browser-url">localhost:3000/pages/codeur-generator</div>
+            </div>
+            <div class="browser-body" style="padding:12px">
+              <div style="display:flex;gap:4px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:4px;margin-bottom:12px;width:fit-content">
+                <div style="background:var(--w);padding:5px 14px;border-radius:6px;font-size:.62rem;font-weight:700;color:var(--p);box-shadow:0 1px 3px rgba(0,0,0,.08)">✉ Message candidature</div>
+                <div style="padding:5px 14px;border-radius:6px;font-size:.62rem;font-weight:600;color:var(--gray)">📄 Devis PDF</div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px">
+                  <div style="font-size:.65rem;font-weight:700;margin-bottom:8px">Informations du projet</div>
+                  <div style="background:var(--w);border:1px solid var(--border);height:14px;border-radius:4px;margin-bottom:5px;padding:0 6px;font-size:.58rem;color:var(--gl);display:flex;align-items:center">Titre du projet codeur.com</div>
+                  <div style="background:var(--w);border:1px solid var(--border);height:14px;border-radius:4px;margin-bottom:5px;padding:0 6px;font-size:.58rem;color:var(--gl);display:flex;align-items:center">Votre nom / expertise</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:5px">
+                    <div style="background:var(--w);border:1px solid var(--border);height:14px;border-radius:4px;font-size:.58rem;color:var(--gl);display:flex;align-items:center;padding:0 6px">Délai</div>
+                    <div style="background:var(--w);border:1px solid var(--border);height:14px;border-radius:4px;font-size:.58rem;color:var(--gl);display:flex;align-items:center;padding:0 6px">Budget €</div>
+                  </div>
+                  <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">
+                    <span style="background:#ede9fe;color:var(--p);font-size:.54rem;padding:2px 8px;border-radius:999px;font-weight:700">Professionnel</span>
+                    <span style="background:var(--bg);border:1px solid var(--border);color:var(--gray);font-size:.54rem;padding:2px 8px;border-radius:999px">Chaleureux</span>
+                    <span style="background:var(--bg);border:1px solid var(--border);color:var(--gray);font-size:.54rem;padding:2px 8px;border-radius:999px">Concis</span>
+                  </div>
+                </div>
+                <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                    <div style="font-size:.65rem;font-weight:700">Message généré</div>
+                    <div style="background:var(--p);color:white;font-size:.55rem;padding:2px 6px;border-radius:4px;font-weight:700">📋 Copier</div>
+                  </div>
+                  <div style="background:var(--w);border:1px solid var(--border);border-radius:5px;padding:8px;font-size:.58rem;color:var(--dark);line-height:1.6;height:90px;overflow:hidden">
+                    Bonjour,<br><br>
+                    J'ai lu votre projet "Création site e-commerce" avec attention et je suis convaincu de pouvoir vous livrer une solution de qualité...<br><br>
+                    Cordialement,<br>Jean Dupont
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <p style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:10px">Aperçu — Onglet Devis PDF</p>
+          <div class="browser">
+            <div class="browser-bar">
+              <div class="browser-dot" style="background:#ef4444"></div>
+              <div class="browser-dot" style="background:#f59e0b"></div>
+              <div class="browser-dot" style="background:#10b981"></div>
+              <div class="browser-url">localhost:3000/pages/codeur-generator → Devis</div>
+            </div>
+            <div class="browser-body" style="padding:12px">
+              <!-- mini PDF preview -->
+              <div style="background:white;border:1px solid var(--border);border-radius:6px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08)">
+                <div style="background:linear-gradient(90deg,#4f46e5,#06b6d4);padding:10px 14px;display:flex;justify-content:space-between;align-items:center">
+                  <div style="color:white;font-size:.9rem;font-weight:900">DEVIS</div>
+                  <div style="text-align:right"><div style="color:rgba(255,255,255,.9);font-size:.6rem;font-weight:700">DEV-5678</div><div style="color:rgba(255,255,255,.6);font-size:.55rem">16/04/2026</div></div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 14px">
+                  <div style="background:var(--bg);border-radius:5px;padding:7px">
+                    <div style="font-size:.52rem;font-weight:800;text-transform:uppercase;color:var(--gl);margin-bottom:3px">ÉMETTEUR</div>
+                    <div style="font-size:.65rem;font-weight:700;color:var(--dark)">Jean Dupont</div>
+                    <div style="font-size:.58rem;color:var(--gray)">jean@mail.com</div>
+                  </div>
+                  <div style="background:var(--bg);border-radius:5px;padding:7px">
+                    <div style="font-size:.52rem;font-weight:800;text-transform:uppercase;color:var(--gl);margin-bottom:3px">CLIENT</div>
+                    <div style="font-size:.65rem;font-weight:700;color:var(--dark)">ACME Corp</div>
+                    <div style="font-size:.58rem;color:var(--gray)">contact@acme.fr</div>
+                  </div>
+                </div>
+                <div style="background:#4f46e5;color:white;font-size:.6rem;font-weight:700;padding:5px 14px">Objet : Développement site e-commerce Shopify</div>
+                <table style="width:100%;border-collapse:collapse;font-size:.6rem;margin-top:0">
+                  <thead><tr style="background:#ede9fe"><th style="padding:5px 8px;text-align:left;color:var(--p)">Prestation</th><th style="padding:5px 8px;text-align:center;color:var(--p)">Qté</th><th style="padding:5px 8px;text-align:right;color:var(--p)">P.U.</th><th style="padding:5px 8px;text-align:right;color:var(--p)">Total</th></tr></thead>
+                  <tbody>
+                    <tr><td style="padding:5px 8px;border-bottom:1px solid var(--border)">Développement front-end</td><td style="padding:5px 8px;text-align:center;border-bottom:1px solid var(--border)">1</td><td style="padding:5px 8px;text-align:right;border-bottom:1px solid var(--border)">1 200 €</td><td style="padding:5px 8px;text-align:right;font-weight:700;border-bottom:1px solid var(--border)">1 200 €</td></tr>
+                    <tr style="background:var(--bg)"><td style="padding:5px 8px">Intégration & tests</td><td style="padding:5px 8px;text-align:center">1</td><td style="padding:5px 8px;text-align:right">300 €</td><td style="padding:5px 8px;text-align:right;font-weight:700">300 €</td></tr>
+                  </tbody>
+                </table>
+                <div style="display:flex;justify-content:flex-end;padding:8px 14px">
+                  <div style="min-width:140px">
+                    <div style="display:flex;justify-content:space-between;font-size:.6rem;padding:2px 0;color:var(--gray)"><span>HT</span><span>1 500 €</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:.6rem;padding:2px 0;color:var(--gray)"><span>TVA 20%</span><span>300 €</span></div>
+                    <div style="display:flex;justify-content:space-between;font-size:.7rem;font-weight:800;color:white;background:var(--p);border-radius:4px;padding:4px 6px;margin-top:4px"><span>TTC</span><span>1 800 €</span></div>
+                  </div>
+                </div>
+              </div>
+              <div style="background:var(--p);color:white;border-radius:6px;height:24px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;margin-top:10px;cursor:pointer">⬇ Télécharger le devis en PDF</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Technologies -->
+      <div class="card" style="margin-top:16px">
+        <div class="card-h">⚡ Technologies utilisées dans ce module</div>
+        <div class="card-b" style="display:flex;gap:20px;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
+            <span style="font-size:1.3rem">📄</span>
+            <div><div style="font-weight:700;font-size:.85rem">jsPDF 2.5</div><div style="font-size:.72rem;color:var(--gray)">Génération PDF dans le navigateur</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
+            <span style="font-size:1.3rem">📊</span>
+            <div><div style="font-weight:700;font-size:.85rem">jsPDF-AutoTable</div><div style="font-size:.72rem;color:var(--gray)">Tableau formaté dans le PDF</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
+            <span style="font-size:1.3rem">📋</span>
+            <div><div style="font-weight:700;font-size:.85rem">Clipboard API</div><div style="font-size:.72rem;color:var(--gray)">Copie en 1 clic du message</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
+            <span style="font-size:1.3rem">🌐</span>
+            <div><div style="font-weight:700;font-size:.85rem">CDN Cloudflare</div><div style="font-size:.72rem;color:var(--gray)">Chargement des libs sans npm</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 9 — CONCLUSION
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-title" id="s9">
+    <div class="deco" style="width:400px;height:400px;background:#06b6d4;top:-100px;left:-100px"></div>
+    <div class="deco" style="width:500px;height:500px;background:#4f46e5;bottom:-100px;right:-100px"></div>
+    <div class="s-inner" style="align-items:center;text-align:center;position:relative;z-index:1">
+      <div class="title-badge anim">✅ Récapitulatif</div>
+      <h1 class="big-title anim-2" style="color:white;font-size:2.5rem">TicketFlow en résumé</h1>
+
+      <div class="anim-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:700px;margin:28px auto 0">
+        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:18px;text-align:center">
+          <div style="font-size:1.8rem;margin-bottom:8px">🏗</div>
+          <div style="color:white;font-weight:700;font-size:.9rem;margin-bottom:4px">Architecture</div>
+          <div style="color:rgba(255,255,255,.6);font-size:.75rem">100% front-end, JS Vanilla, localStorage</div>
+        </div>
+        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:18px;text-align:center">
+          <div style="font-size:1.8rem;margin-bottom:8px">🎫</div>
+          <div style="color:white;font-weight:700;font-size:.9rem;margin-bottom:4px">Tickets</div>
+          <div style="color:rgba(255,255,255,.6);font-size:.75rem">Cycle complet : création → réponse → résolution</div>
+        </div>
+        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:18px;text-align:center">
+          <div style="font-size:1.8rem;margin-bottom:8px">👥</div>
+          <div style="color:white;font-weight:700;font-size:.9rem;margin-bottom:4px">3 Rôles</div>
+          <div style="color:rgba(255,255,255,.6);font-size:.75rem">Admin / Agent / Utilisateur</div>
+        </div>
+        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:18px;text-align:center">
+          <div style="font-size:1.8rem;margin-bottom:8px">⚙️</div>
+          <div style="color:white;font-weight:700;font-size:.9rem;margin-bottom:4px">Feature Flags</div>
+          <div style="color:rgba(255,255,255,.6);font-size:.75rem">20+ modules activables/désactivables</div>
+        </div>
+        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:18px;text-align:center">
+          <div style="font-size:1.8rem;margin-bottom:8px">✉</div>
+          <div style="color:white;font-weight:700;font-size:.9rem;margin-bottom:4px">Générateur</div>
+          <div style="color:rgba(255,255,255,.6);font-size:.75rem">Messages codeur.com + devis PDF auto</div>
+        </div>
+        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:18px;text-align:center">
+          <div style="font-size:1.8rem;margin-bottom:8px">🔒</div>
+          <div style="color:white;font-weight:700;font-size:.9rem;margin-bottom:4px">Sécurité admin</div>
+          <div style="color:rgba(255,255,255,.6);font-size:.75rem">Accès panel garanti quels que soient les flags</div>
+        </div>
+      </div>
+
+      <div class="anim-4" style="margin-top:28px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <a href="dashboard-admin.html" style="background:var(--p);color:white;padding:10px 24px;border-radius:8px;font-weight:700;font-size:.875rem;text-decoration:none;transition:.2s">🖥 Voir le Dashboard</a>
+        <a href="codeur-generator.html" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:white;padding:10px 24px;border-radius:8px;font-weight:700;font-size:.875rem;text-decoration:none">✉ Générateur Codeur</a>
+        <button onclick="window.print()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:white;padding:10px 24px;border-radius:8px;font-weight:700;font-size:.875rem;cursor:pointer">🖨 Imprimer</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- NAVIGATION -->
+<div id="nav">
+  <button class="nav-btn" onclick="prevSlide()" title="Précédent (←)">‹</button>
+  <div class="dot-nav" id="dots"></div>
+  <span id="slide-counter">1 / 9</span>
+  <button class="nav-btn" onclick="nextSlide()" title="Suivant (→)">›</button>
 </div>
 
 <script>
-  // Mise en évidence du lien actif dans le sommaire au scroll
-  const sections = document.querySelectorAll('.section');
-  const links    = document.querySelectorAll('.toc-link');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        links.forEach(l => l.classList.remove('active'));
-        const active = document.querySelector('.toc-link[href="#' + e.target.id + '"]');
-        if (active) active.classList.add('active');
-      }
-    });
-  }, { rootMargin: '-30% 0px -60% 0px' });
-  sections.forEach(s => observer.observe(s));
+  const TOTAL = 9;
+  let current = 1;
+
+  function getSlide(n) { return document.getElementById('s' + n); }
+
+  function goTo(n) {
+    if (n < 1 || n > TOTAL) return;
+    getSlide(current).classList.remove('active');
+    getSlide(current).classList.add('out');
+    setTimeout(() => getSlide(current).classList.remove('out'), 450);
+    current = n;
+    getSlide(current).classList.add('active');
+    document.getElementById('slide-counter').textContent = current + ' / ' + TOTAL;
+    document.getElementById('progress').style.width = (current / TOTAL * 100) + '%';
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === current - 1));
+  }
+
+  function nextSlide() { goTo(current + 1); }
+  function prevSlide() { goTo(current - 1); }
+
+  // Dots
+  const dotsEl = document.getElementById('dots');
+  for (let i = 1; i <= TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 1 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    d.title = 'Slide ' + i;
+    dotsEl.appendChild(d);
+  }
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')                    { e.preventDefault(); prevSlide(); }
+  });
+
+  // Init progress
+  document.getElementById('progress').style.width = (1 / TOTAL * 100) + '%';
 </script>
 </body>
 </html>
