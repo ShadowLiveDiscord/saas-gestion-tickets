@@ -2,385 +2,403 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>TicketFlow — Présentation</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
   <style>
-    :root {
-      --p: #4f46e5; --pd: #3730a3; --pl: #ede9fe;
-      --sec: #06b6d4; --ok: #10b981; --warn: #f59e0b; --err: #ef4444;
-      --dark: #0f172a; --dark2: #1e293b; --gray: #64748b; --gl: #94a3b8;
-      --border: #e2e8f0; --bg: #f8fafc; --w: #fff;
+    :root{
+      --p:#4f46e5;--pd:#3730a3;--pl:#ede9fe;
+      --sec:#06b6d4;--ok:#10b981;--warn:#f59e0b;--err:#ef4444;
+      --dark:#0f172a;--gray:#64748b;--gl:#94a3b8;
+      --border:#e2e8f0;--bg:#f8fafc;--w:#fff;
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;}
+    html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif}
     body{background:#0f172a}
 
-    /* ── DECK ── */
+    /* ════ DECK ════ */
     #deck{position:relative;width:100%;height:100vh;overflow:hidden}
     .slide{
-      position:absolute;inset:0;
-      display:flex;flex-direction:column;
+      position:absolute;inset:0;display:flex;flex-direction:column;
       opacity:0;transform:translateX(60px);
-      transition:opacity .45s ease,transform .45s ease;
-      pointer-events:none;
+      transition:opacity .4s ease,transform .4s ease;
+      pointer-events:none;overflow:hidden;
     }
     .slide.active{opacity:1;transform:translateX(0);pointer-events:all}
     .slide.out{opacity:0;transform:translateX(-60px)}
+    @keyframes up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+    .slide.active .a1{animation:up .5s .05s both}
+    .slide.active .a2{animation:up .5s .15s both}
+    .slide.active .a3{animation:up .5s .25s both}
+    .slide.active .a4{animation:up .5s .35s both}
 
-    /* ── NAV ── */
+    /* ════ PROGRESS ════ */
+    #prog{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--p),var(--sec));transition:width .4s;z-index:1000}
+
+    /* ════ NAV ════ */
     #nav{
-      position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
-      display:flex;align-items:center;gap:12px;
-      background:rgba(15,23,42,.85);backdrop-filter:blur(12px);
-      border:1px solid rgba(255,255,255,.1);
-      border-radius:999px;padding:10px 20px;z-index:999;
+      position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+      display:flex;align-items:center;gap:10px;
+      background:rgba(15,23,42,.9);backdrop-filter:blur(12px);
+      border:1px solid rgba(255,255,255,.1);border-radius:999px;
+      padding:8px 18px;z-index:999;
     }
-    .nav-btn{
-      width:36px;height:36px;border-radius:50%;border:none;
-      background:rgba(255,255,255,.1);color:white;
-      font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
-      transition:background .2s;
-    }
-    .nav-btn:hover{background:var(--p)}
-    #slide-counter{color:rgba(255,255,255,.6);font-size:0.82rem;font-weight:600;min-width:60px;text-align:center}
-    .dot-nav{display:flex;gap:6px;align-items:center}
-    .dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.25);cursor:pointer;transition:all .2s}
-    .dot.active{background:var(--p);transform:scale(1.3)}
+    .nb{width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,255,255,.1);
+        color:white;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
+    .nb:hover{background:var(--p)}
+    #sc{color:rgba(255,255,255,.5);font-size:.78rem;font-weight:600;min-width:52px;text-align:center}
+    .dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.2);cursor:pointer;transition:.2s}
+    .dot.on{background:var(--p);transform:scale(1.4)}
 
-    /* ── PROGRESS BAR ── */
-    #progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--p),var(--sec));transition:width .4s ease;z-index:1000}
+    /* ════ SLIDE BACKGROUNDS ════ */
+    .s-light{background:var(--bg)}
+    .s-dark{background:var(--dark)}
+    .s-title{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 55%,#0c1a2e 100%)}
 
-    /* ── SLIDE LAYOUTS ── */
-    .slide-title{
-      background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#0c1a2e 100%);
-      align-items:center;justify-content:center;text-align:center;
-    }
-    .slide-light{background:var(--bg)}
-    .slide-dark{background:var(--dark)}
-    .slide-gradient{background:linear-gradient(135deg,#ede9fe 0%,#cffafe 100%)}
-    .slide-split{background:var(--w);display:grid!important;grid-template-columns:1fr 1fr}
+    /* ════ INNER LAYOUTS ════ */
+    .inner{padding:36px 56px 80px;height:100%;display:flex;flex-direction:column;overflow:hidden}
+    .inner.center{align-items:center;justify-content:center;text-align:center}
+    .row{display:flex;gap:28px;flex:1;min-height:0}
+    .col{display:flex;flex-direction:column;gap:16px;flex:1;min-width:0}
+    .col-40{flex:0 0 40%;min-width:0;display:flex;flex-direction:column;gap:16px}
+    .col-60{flex:0 0 58%;min-width:0;display:flex;flex-direction:column;gap:16px}
 
-    /* ── COMMON TEXT ── */
-    .slide-num{font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px}
-    .big-title{font-size:clamp(2rem,5vw,3.8rem);font-weight:900;line-height:1.1;margin-bottom:16px}
-    .sub{font-size:1rem;opacity:.7;max-width:600px;margin:0 auto;line-height:1.7}
-    .section-label{
-      display:inline-flex;align-items:center;gap:6px;
-      background:var(--pl);color:var(--p);
-      font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;
-      padding:4px 14px;border-radius:999px;margin-bottom:16px;
-    }
+    /* ════ TEXT ════ */
+    .label{display:inline-flex;align-items:center;gap:6px;background:var(--pl);color:var(--p);
+           font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;
+           padding:4px 14px;border-radius:999px;margin-bottom:10px}
+    .h2{font-size:1.55rem;font-weight:800;color:var(--dark);line-height:1.2;margin-bottom:4px}
+    .sub{font-size:.85rem;color:var(--gray);line-height:1.6;margin-bottom:14px}
+    .h2.white{color:white}
 
-    /* ── CARD ── */
-    .card{background:var(--w);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.06)}
-    .card-h{padding:12px 18px;border-bottom:1px solid var(--border);font-weight:700;font-size:.85rem;background:var(--bg);display:flex;align-items:center;gap:8px}
-    .card-b{padding:18px}
+    /* ════ CARD ════ */
+    .card{background:var(--w);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+    .ch{padding:10px 16px;background:var(--bg);border-bottom:1px solid var(--border);font-weight:700;font-size:.82rem;display:flex;align-items:center;gap:6px}
+    .cb{padding:14px 16px}
 
-    /* ── BADGE ── */
-    .badge{display:inline-flex;align-items:center;padding:2px 10px;border-radius:999px;font-size:.7rem;font-weight:700}
-    .b-p{background:#ede9fe;color:#4f46e5} .b-ok{background:#d1fae5;color:#065f46}
-    .b-w{background:#fef3c7;color:#92400e} .b-e{background:#fee2e2;color:#991b1b}
-    .b-i{background:#cffafe;color:#155e75} .b-g{background:#f1f5f9;color:#64748b}
+    /* ════ BADGE ════ */
+    .b{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;font-size:.68rem;font-weight:700}
+    .bp{background:#ede9fe;color:#4f46e5}.bok{background:#d1fae5;color:#065f46}
+    .bw{background:#fef3c7;color:#92400e}.be{background:#fee2e2;color:#991b1b}
+    .bi{background:#cffafe;color:#155e75}.bg_{background:#f1f5f9;color:#64748b}
 
     /* ════════════════════════════
-       MAQUETTES CSS DU SITE
+       MAQUETTES NAVIGATEUR
     ════════════════════════════ */
-
-    /* Fenêtre de navigateur */
     .browser{
-      background:#1e293b;border-radius:12px;overflow:hidden;
-      box-shadow:0 24px 60px rgba(0,0,0,.5);
-      display:flex;flex-direction:column;
+      background:#1e293b;border-radius:14px;overflow:hidden;
+      box-shadow:0 20px 60px rgba(0,0,0,.55);
+      display:flex;flex-direction:column;flex:1;min-height:0;
     }
-    .browser-bar{
-      height:36px;min-height:36px;flex-shrink:0;
-      background:#334155;display:flex;align-items:center;gap:8px;padding:0 14px;
+    .bbar{
+      height:38px;min-height:38px;flex-shrink:0;
+      background:#334155;display:flex;align-items:center;gap:7px;padding:0 14px;
     }
-    .browser-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
-    .browser-url{
-      flex:1;min-width:0;background:#1e293b;border-radius:6px;height:22px;
-      display:flex;align-items:center;padding:0 10px;margin:0 10px;
-      font-size:.68rem;color:#94a3b8;font-family:monospace;
+    .bdot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+    .burl{
+      flex:1;min-width:0;background:#1e293b;border-radius:6px;height:24px;
+      display:flex;align-items:center;padding:0 12px;margin:0 12px;
+      font-size:.7rem;color:#94a3b8;font-family:monospace;
       white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
     }
-    .browser-body{background:var(--bg);overflow:hidden;flex-shrink:0}
+    .bbody{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column}
 
-    /* Mini dashboard layout */
-    .mini-dash{display:flex;width:100%;height:100%;overflow:hidden}
-    .mini-sidebar{
-      width:56px;flex-shrink:0;background:var(--w);border-right:1px solid var(--border);
-      display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:8px;
-      overflow:hidden;
+    /* ── Dashboard layout ── */
+    .dash{display:flex;height:100%;overflow:hidden}
+    .dsb{
+      width:180px;flex-shrink:0;background:var(--w);
+      border-right:1px solid var(--border);
+      display:flex;flex-direction:column;overflow:hidden;
     }
-    .mini-sidebar-full{
-      width:140px;flex-shrink:0;background:var(--w);border-right:1px solid var(--border);
-      padding:10px 8px;display:flex;flex-direction:column;gap:4px;
-      overflow:hidden;height:100%;
+    .dsblogo{
+      padding:14px 16px 12px;border-bottom:1px solid var(--border);
+      display:flex;align-items:center;gap:10px;flex-shrink:0;
     }
-    .mini-logo{width:28px;height:28px;background:linear-gradient(135deg,#4f46e5,#06b6d4);border-radius:8px;margin-bottom:6px;flex-shrink:0}
-    .mini-nav-item{width:32px;height:32px;background:var(--bg);border-radius:6px;flex-shrink:0}
-    .mini-nav-item.act{background:#ede9fe}
-    .mini-main{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden;height:100%}
-    .mini-topbar{height:36px;min-height:36px;flex-shrink:0;background:var(--w);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 12px;gap:8px}
-    .mini-topbar-title{font-size:.65rem;font-weight:700;color:var(--dark)}
-    .mini-content{padding:12px;flex:1;overflow:hidden;min-height:0}
-    .mini-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
-    .mini-stat{background:var(--w);border:1px solid var(--border);border-radius:6px;padding:6px;text-align:center}
-    .mini-stat-n{font-size:.9rem;font-weight:800;color:var(--p)}
-    .mini-stat-l{font-size:.52rem;color:var(--gl)}
-    .mini-table-row{
-      display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;
-      padding:5px 8px;border-bottom:1px solid var(--border);align-items:center;
-      font-size:.6rem;flex-shrink:0;
+    .dsbicon{width:30px;height:30px;background:linear-gradient(135deg,#4f46e5,#06b6d4);border-radius:8px;flex-shrink:0}
+    .dsbname{font-size:.82rem;font-weight:800;color:var(--dark)}
+    .dsbnav{padding:10px 10px;display:flex;flex-direction:column;gap:3px;flex:1;overflow:hidden}
+    .dsbtitle{font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--gl);padding:6px 8px 3px}
+    .dsbitem{
+      display:flex;align-items:center;gap:8px;padding:7px 10px;
+      border-radius:7px;font-size:.75rem;font-weight:500;color:var(--gray);
     }
-    .mini-table-row > span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .mini-table-row.head{background:var(--bg);font-weight:700;color:var(--gray)}
+    .dsbitem.act{background:#ede9fe;color:var(--p);font-weight:700}
+    .dsbitem .ic{font-size:.85rem;width:18px;text-align:center;flex-shrink:0}
+    .dsbitem .bx{width:18px;height:18px;background:var(--err);border-radius:999px;font-size:.58rem;font-weight:800;color:white;display:flex;align-items:center;justify-content:center;margin-left:auto}
+    .dmain{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+    .dtop{
+      height:48px;min-height:48px;flex-shrink:0;
+      background:rgba(255,255,255,.95);border-bottom:1px solid var(--border);
+      display:flex;align-items:center;padding:0 20px;gap:12px;
+    }
+    .dtitle{font-size:.88rem;font-weight:700;color:var(--dark)}
+    .dsub{font-size:.7rem;color:var(--gl)}
+    .dcontent{padding:16px;flex:1;overflow:hidden;background:var(--bg)}
 
-    /* Mini login */
-    .mini-login{
-      display:flex;width:100%;height:100%;overflow:hidden;
+    /* stats row */
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+    .stat{background:var(--w);border:1px solid var(--border);border-radius:8px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between}
+    .statn{font-size:1.4rem;font-weight:800}
+    .statl{font-size:.65rem;color:var(--gl);margin-top:1px}
+    .stati{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.9rem}
+
+    /* table */
+    .dtbl{width:100%;background:var(--w);border:1px solid var(--border);border-radius:8px;overflow:hidden;border-collapse:collapse}
+    .dtbl th{background:var(--bg);padding:8px 12px;text-align:left;font-size:.7rem;font-weight:700;color:var(--gray);border-bottom:1px solid var(--border)}
+    .dtbl td{padding:8px 12px;font-size:.72rem;border-bottom:1px solid var(--border);vertical-align:middle}
+    .dtbl tr:last-child td{border-bottom:none}
+    .dtbl tr:nth-child(even) td{background:#fafafa}
+    .dtbtn{background:var(--p);color:white;border:none;border-radius:5px;padding:3px 10px;font-size:.62rem;font-weight:700;cursor:pointer}
+    .dtbtn.g{background:var(--bg);color:var(--gray);border:1px solid var(--border)}
+
+    /* modal overlay */
+    .modal-mock{
+      position:absolute;inset:0;background:rgba(15,23,42,.55);
+      display:flex;align-items:center;justify-content:center;
+      backdrop-filter:blur(2px);z-index:10;
     }
-    .mini-login-left{flex:1;min-width:0;overflow:hidden;background:linear-gradient(135deg,#4f46e5,#06b6d4);display:flex;flex-direction:column;justify-content:flex-start;padding:16px}
-    .mini-login-right{flex:1;min-width:0;overflow:hidden;background:var(--w);display:flex;flex-direction:column;justify-content:flex-start;padding:16px}
-    .mini-input{background:var(--bg);border:1px solid var(--border);border-radius:5px;height:18px;margin-bottom:6px;padding:0 6px;font-size:.6rem;display:flex;align-items:center;color:var(--gl)}
-    .mini-btn{background:var(--p);color:white;border-radius:5px;height:22px;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;margin-top:6px}
+    .modal-box{background:var(--w);border-radius:12px;padding:20px;width:300px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+    .modal-title{font-size:.88rem;font-weight:800;margin-bottom:12px;color:var(--dark)}
+    .minput{background:var(--bg);border:1.5px solid var(--border);border-radius:6px;height:30px;padding:0 10px;font-size:.73rem;margin-bottom:8px;display:flex;align-items:center;color:var(--gl)}
+    .mselect{background:var(--bg);border:1.5px solid var(--border);border-radius:6px;height:30px;padding:0 10px;font-size:.73rem;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;color:var(--dark)}
+    .mtarea{background:var(--bg);border:1.5px solid var(--border);border-radius:6px;height:52px;padding:8px 10px;font-size:.7rem;margin-bottom:10px;color:var(--gl)}
+    .mbtn{background:var(--p);color:white;border-radius:6px;height:32px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700}
 
-    /* Mini landing */
-    .mini-landing-hero{
-      background:linear-gradient(135deg,#0f172a,#1e1b4b);
-      padding:20px;text-align:center;
+    /* ── Login layout ── */
+    .login-split{display:flex;height:100%;overflow:hidden}
+    .login-left{
+      flex:1;min-width:0;overflow:hidden;
+      background:linear-gradient(135deg,#4f46e5,#06b6d4);
+      display:flex;flex-direction:column;justify-content:center;padding:32px;
     }
+    .login-right{flex:1;min-width:0;overflow:hidden;background:var(--w);display:flex;flex-direction:column;justify-content:center;padding:32px}
+    .login-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px}
+    .login-logo-icon{width:36px;height:36px;background:rgba(255,255,255,.2);border-radius:10px;flex-shrink:0}
+    .login-logo-name{color:white;font-size:1rem;font-weight:800}
+    .login-h{color:white;font-size:1.1rem;font-weight:800;margin-bottom:8px;line-height:1.3}
+    .login-p{color:rgba(255,255,255,.7);font-size:.78rem;line-height:1.6;margin-bottom:20px}
+    .login-feat{display:flex;flex-direction:column;gap:8px}
+    .login-fi{background:rgba(255,255,255,.1);border-radius:7px;padding:8px 12px;display:flex;align-items:center;gap:8px;font-size:.75rem;color:rgba(255,255,255,.9)}
+    .loginrh{font-size:1.15rem;font-weight:800;color:var(--dark);margin-bottom:4px}
+    .loginrp{font-size:.75rem;color:var(--gl);margin-bottom:20px}
+    .formlabel{font-size:.75rem;font-weight:600;color:var(--dark);margin-bottom:5px;display:block}
+    .forminput{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:7px;height:36px;padding:0 12px;font-size:.78rem;margin-bottom:12px;display:flex;align-items:center;color:var(--gl)}
+    .formbtn{width:100%;background:var(--p);color:white;border-radius:7px;height:38px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;margin-top:4px}
+    .demo-box{margin-top:16px;background:var(--bg);border-radius:7px;border:1px dashed var(--border);padding:10px 12px}
+    .demo-title{font-size:.7rem;font-weight:800;color:var(--dark);margin-bottom:6px}
+    .demo-row{display:flex;align-items:center;gap:6px;font-size:.68rem;color:var(--gray);margin-bottom:4px}
 
-    /* JSON block */
-    .json{
-      background:#0f172a;border-radius:8px;padding:14px 16px;
-      font-family:'Consolas','Courier New',monospace;font-size:.78rem;line-height:1.9;
-      overflow:hidden;
+    /* ── Modules panel ── */
+    .ff-section{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--gl);padding:8px 0 4px}
+    .ff-row{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:9px 12px;border:1px solid var(--border);border-radius:8px;
+      margin-bottom:5px;background:var(--w);
     }
-    .jk{color:#93c5fd} .jv{color:#86efac} .js{color:#fca5a5} .jc{color:#475569} .jf{color:#fde68a}
-
-    /* flow arrow */
-    .flow{display:flex;align-items:center;gap:0}
-    .flow-box{
-      background:var(--w);border:1.5px solid var(--border);border-radius:8px;
-      padding:10px 16px;font-size:.78rem;font-weight:600;text-align:center;
-      min-width:100px;
-    }
-    .flow-box.hi{border-color:var(--p);background:var(--pl);color:var(--p)}
-    .flow-arr{color:var(--gl);font-size:1.2rem;margin:0 6px}
-
-    /* status nodes */
-    .status-flow{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:nowrap}
-    .snode{display:flex;flex-direction:column;align-items:center;gap:6px}
-    .scircle{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;text-align:center;line-height:1.3}
-    .sarr{font-size:1.3rem;color:var(--gl);margin:0 8px;padding-bottom:22px}
-
-    /* feature toggle rows */
-    .ff-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;background:var(--w)}
     .ff-row.on{border-color:#bbf7d0;background:#f0fdf4}
     .ff-row.locked{border-color:#fde68a;background:#fffbeb}
-    .toggle{width:38px;height:22px;border-radius:999px;position:relative;cursor:pointer;transition:.2s}
-    .toggle.on{background:#10b981} .toggle.off{background:#e2e8f0}
-    .toggle::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;background:white;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
-    .toggle.on::after{left:19px}
+    .ff-row.off{background:#fafafa}
+    .ff-name{font-size:.76rem;font-weight:700;color:var(--dark)}
+    .ff-desc{font-size:.65rem;color:var(--gl)}
+    .toggle{width:40px;height:23px;border-radius:999px;position:relative;flex-shrink:0}
+    .toggle.on{background:#10b981}.toggle.off{background:#e2e8f0}
+    .toggle.locked{background:#10b981;opacity:.5;cursor:not-allowed}
+    .toggle::after{content:'';position:absolute;top:3px;left:3px;width:17px;height:17px;background:white;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+    .toggle.on::after,.toggle.locked::after{left:20px}
 
-    /* storage viz */
-    .storage-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--w);border:1px solid var(--border);border-radius:8px;margin-bottom:6px}
-    .storage-key{font-family:monospace;font-size:.78rem;font-weight:700;color:var(--p);min-width:180px;flex-shrink:0}
-    .storage-val{font-size:.75rem;color:var(--gray);line-height:1.6}
+    /* ── Agent ticket view ── */
+    .msg-agent{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;margin-bottom:8px}
+    .msg-user{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 14px;margin-bottom:8px;align-self:flex-end}
+    .msg-from{font-size:.65rem;font-weight:700;margin-bottom:3px}
+    .msg-text{font-size:.75rem;color:var(--dark);line-height:1.5}
+    .msg-time{font-size:.6rem;color:var(--gl);margin-top:3px}
 
-    /* role cards */
-    .role-card{background:var(--w);border:1.5px solid var(--border);border-radius:12px;padding:20px;text-align:center}
-    .role-card.admin{border-color:#fecaca;background:#fff5f5}
-    .role-card.agent{border-color:#a7f3d0;background:#f0fdf4}
-    .role-card.user{border-color:#bfdbfe;background:#eff6ff}
-    .role-icon{font-size:2rem;margin-bottom:10px}
-    .role-perms{text-align:left;font-size:.75rem;color:var(--gray);margin-top:10px;display:flex;flex-direction:column;gap:4px}
-    .role-perms li{display:flex;align-items:center;gap:6px}
-    .role-perms li::before{content:'✓';color:var(--ok);font-weight:800;font-size:.7rem}
+    /* ── PDF preview ── */
+    .pdf-doc{background:white;border-radius:8px;overflow:hidden;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,.12)}
+    .pdf-header{background:linear-gradient(90deg,#4f46e5,#06b6d4);padding:14px 20px;display:flex;justify-content:space-between;align-items:center}
+    .pdf-title{color:white;font-size:1.4rem;font-weight:900}
+    .pdf-num{color:rgba(255,255,255,.85);font-size:.72rem;font-weight:700}
+    .pdf-date{color:rgba(255,255,255,.6);font-size:.65rem;margin-top:2px}
+    .pdf-body{padding:16px 20px}
+    .pdf-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+    .pdf-box{background:#f8fafc;border-radius:7px;padding:10px 12px}
+    .pdf-box-label{font-size:.6rem;font-weight:800;text-transform:uppercase;color:var(--gl);margin-bottom:5px;letter-spacing:.06em}
+    .pdf-box-name{font-size:.85rem;font-weight:800;color:var(--dark);margin-bottom:2px}
+    .pdf-box-email{font-size:.7rem;color:var(--gray)}
+    .pdf-objet{background:#4f46e5;color:white;padding:7px 14px;border-radius:6px;font-size:.75rem;font-weight:700;margin-bottom:12px}
+    .pdf-tbl{width:100%;border-collapse:collapse;font-size:.72rem;margin-bottom:12px}
+    .pdf-tbl th{background:#ede9fe;color:#4f46e5;padding:7px 10px;text-align:left;font-weight:700}
+    .pdf-tbl td{padding:7px 10px;border-bottom:1px solid var(--border)}
+    .pdf-tbl tr:last-child td{border-bottom:none}
+    .pdf-tbl tr:nth-child(even) td{background:#fafafa}
+    .pdf-totals{display:flex;justify-content:flex-end}
+    .pdf-tot-box{min-width:180px}
+    .pdf-tot-line{display:flex;justify-content:space-between;font-size:.73rem;padding:3px 0;color:var(--gray)}
+    .pdf-tot-ttc{display:flex;justify-content:space-between;font-size:.85rem;font-weight:800;color:white;background:var(--p);border-radius:6px;padding:6px 10px;margin-top:5px}
 
-    /* archi layers */
-    .layer{
-      background:var(--w);border:1.5px solid var(--border);border-radius:10px;
-      padding:14px 20px;display:flex;align-items:center;gap:14px;
-      margin-bottom:8px;transition:.2s;
-    }
+    /* status flow */
+    .sflow{display:flex;align-items:center;justify-content:center;gap:0;padding:20px 0}
+    .snode{display:flex;flex-direction:column;align-items:center;gap:6px}
+    .scircle{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;text-align:center;line-height:1.3}
+    .sarr{font-size:1.5rem;color:var(--gl);margin:0 10px;padding-bottom:24px}
+
+    /* code block */
+    .code{background:#0f172a;border-radius:8px;padding:14px 16px;font-family:monospace;font-size:.78rem;line-height:1.8;overflow:hidden}
+    .ck{color:#93c5fd}.cv{color:#86efac}.cs{color:#fca5a5}.cc{color:#475569}.cf{color:#fde68a}
+
+    /* layer */
+    .layer{background:var(--w);border:1.5px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:12px;margin-bottom:8px}
     .layer.hi{border-color:var(--p);background:var(--pl)}
-    .layer-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+    .layericon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
 
-    /* ── SLIDE INNER LAYOUT HELPERS ── */
-    .s-inner{padding:48px 64px;height:100%;display:flex;flex-direction:column;justify-content:center}
-    .s-inner.top{justify-content:flex-start;padding-top:40px}
-    .cols2{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}
-    .cols3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
-    .mt{margin-top:auto}
+    /* role card */
+    .rcards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px}
+    .rcard{background:var(--w);border:1.5px solid var(--border);border-radius:12px;padding:18px}
+    .rcard.admin{border-color:#fecaca;background:#fff5f5}
+    .rcard.agent{border-color:#a7f3d0;background:#f0fdf4}
+    .rcard.user{border-color:#bfdbfe;background:#eff6ff}
+    .ricon{font-size:1.8rem;margin-bottom:8px}
+    .rname{font-weight:800;font-size:.95rem;color:var(--dark);margin-bottom:3px}
+    .remail{font-size:.7rem;font-weight:600;margin-bottom:10px}
+    .rperms{font-size:.72rem;color:var(--gray);display:flex;flex-direction:column;gap:4px}
+    .rperms li{display:flex;align-items:center;gap:5px}
+    .rperms li::before{content:'✓';color:var(--ok);font-weight:800;font-size:.65rem;flex-shrink:0}
 
-    /* ── SLIDE 1 title specifics ── */
-    .title-badge{
-      display:inline-flex;align-items:center;gap:8px;
-      background:rgba(79,70,229,.2);color:#a5b4fc;
-      border:1px solid rgba(99,102,241,.3);
-      font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-      padding:6px 16px;border-radius:999px;margin-bottom:24px;
-    }
-    .title-grid{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:28px}
-    .title-chip{
-      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
-      color:rgba(255,255,255,.7);font-size:.75rem;font-weight:600;
-      padding:6px 16px;border-radius:999px;
-    }
+    /* storage */
+    .stitem{display:flex;gap:12px;padding:10px 14px;background:var(--w);border:1px solid var(--border);border-radius:8px;margin-bottom:6px}
+    .stkey{font-family:monospace;font-size:.78rem;font-weight:700;color:var(--p);min-width:190px;flex-shrink:0}
+    .stval{font-size:.75rem;color:var(--gray);line-height:1.6}
 
-    /* code tag */
-    code{background:var(--pl);color:var(--p);padding:1px 7px;border-radius:4px;font-size:.8em;font-family:monospace}
+    /* mini tbl */
+    .mtbl{width:100%;border-collapse:collapse;font-size:.78rem}
+    .mtbl th{background:var(--p);color:white;padding:8px 12px;text-align:left;font-weight:700}
+    .mtbl td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+    .mtbl tr:last-child td{border-bottom:none}
+    .mtbl tr:nth-child(even) td{background:var(--bg)}
+    .type{color:var(--sec);font-family:monospace;font-size:.73rem;font-weight:600}
+    code{background:var(--pl);color:var(--p);padding:1px 6px;border-radius:4px;font-size:.8em;font-family:monospace}
 
-    /* table mini */
-    .mini-tbl{width:100%;border-collapse:collapse;font-size:.8rem}
-    .mini-tbl th{background:var(--p);color:white;padding:8px 12px;text-align:left;font-weight:700}
-    .mini-tbl td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:top}
-    .mini-tbl tr:last-child td{border-bottom:none}
-    .mini-tbl tr:nth-child(even) td{background:var(--bg)}
-    .type{color:var(--sec);font-family:monospace;font-size:.75rem;font-weight:600}
+    /* scrollable content */
+    .scroll{overflow-y:auto;flex:1;min-height:0;padding-bottom:60px}
+    .scroll::-webkit-scrollbar{width:4px}
+    .scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 
-    /* decorative circles */
-    .deco{position:absolute;border-radius:50%;filter:blur(80px);opacity:.15;pointer-events:none}
-
-    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-    .slide.active .anim{animation:fadeUp .5s ease forwards}
-    .slide.active .anim-2{animation:fadeUp .5s .12s ease both}
-    .slide.active .anim-3{animation:fadeUp .5s .22s ease both}
-    .slide.active .anim-4{animation:fadeUp .5s .32s ease both}
-
-    /* scrollable inner on content slides */
-    .scroll-inner{overflow-y:auto;flex:1;padding:32px 60px;padding-bottom:80px}
-    .scroll-inner::-webkit-scrollbar{width:4px}
-    .scroll-inner::-webkit-scrollbar-track{background:transparent}
-    .scroll-inner::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+    /* title slide specifics */
+    .tbadge{display:inline-flex;align-items:center;gap:8px;background:rgba(79,70,229,.2);color:#a5b4fc;border:1px solid rgba(99,102,241,.3);font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:6px 18px;border-radius:999px;margin-bottom:22px}
+    .ttitle{font-size:clamp(2.5rem,6vw,4.5rem);font-weight:900;color:white;line-height:1.08;margin-bottom:16px}
+    .tgrid{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:28px}
+    .tchip{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);color:rgba(255,255,255,.75);font-size:.78rem;font-weight:600;padding:7px 18px;border-radius:999px}
+    .deco{position:absolute;border-radius:50%;filter:blur(90px);opacity:.13;pointer-events:none}
   </style>
 </head>
 <body>
-
-<div id="progress"></div>
+<div id="prog"></div>
 
 <div id="deck">
 
-  <!-- ══════════════════════════════════════════
-       SLIDE 1 — TITRE
-  ══════════════════════════════════════════ -->
-  <div class="slide slide-title active" id="s1">
-    <div class="deco" style="width:500px;height:500px;background:#4f46e5;top:-100px;right:-100px"></div>
-    <div class="deco" style="width:400px;height:400px;background:#06b6d4;bottom:-100px;left:-100px"></div>
-    <div class="s-inner" style="align-items:center;text-align:center;position:relative;z-index:1">
-      <div class="title-badge anim">🎫 Projet SaaS — Gestion de Tickets</div>
-      <h1 class="big-title anim-2" style="color:white">
-        Ticket<span style="background:linear-gradient(90deg,#818cf8,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Flow</span>
-      </h1>
-      <p class="sub anim-3" style="color:rgba(255,255,255,.6)">
-        Présentation technique — Architecture, Base de données & Cycle de vie des tickets
+  <!-- ═══════════════════════════════ SLIDE 1 — TITRE ═══════════════════════════════ -->
+  <div class="slide s-title active" id="s1">
+    <div class="deco" style="width:600px;height:600px;background:#4f46e5;top:-200px;right:-150px"></div>
+    <div class="deco" style="width:450px;height:450px;background:#06b6d4;bottom:-150px;left:-100px"></div>
+    <div class="inner center" style="position:relative;z-index:1;padding-bottom:80px">
+      <div class="tbadge a1">🎫 Projet SaaS — Gestion de Tickets Support</div>
+      <h1 class="ttitle a2">Ticket<span style="background:linear-gradient(90deg,#818cf8,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Flow</span></h1>
+      <p class="a3" style="color:rgba(255,255,255,.6);font-size:1rem;max-width:580px;line-height:1.7">
+        Présentation technique — Architecture, Base de données &amp; Cycle de vie des tickets
       </p>
-      <div class="title-grid anim-4">
-        <span class="title-chip">HTML5 / CSS3</span>
-        <span class="title-chip">JavaScript ES6+</span>
-        <span class="title-chip">localStorage</span>
-        <span class="title-chip">Feature Flags</span>
-        <span class="title-chip">100% Front-end</span>
-        <span class="title-chip">jsPDF</span>
+      <div class="tgrid a4">
+        <span class="tchip">HTML5 / CSS3</span>
+        <span class="tchip">JavaScript ES6+</span>
+        <span class="tchip">localStorage</span>
+        <span class="tchip">Feature Flags</span>
+        <span class="tchip">100 % Front-end</span>
+        <span class="tchip">jsPDF</span>
       </div>
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════
-       SLIDE 2 — ARCHITECTURE OVERVIEW
-  ══════════════════════════════════════════ -->
-  <div class="slide slide-light" id="s2">
-    <div class="scroll-inner">
-      <div class="section-label anim">01 — Architecture</div>
-      <h2 class="anim-2" style="font-size:1.8rem;font-weight:800;color:var(--dark);margin-bottom:6px">Architecture du projet</h2>
-      <p class="anim-3" style="color:var(--gray);font-size:.9rem;margin-bottom:28px">Une application <strong>100 % front-end</strong> — aucun serveur, aucune base de données distante.</p>
+  <!-- ═══════════════════════════════ SLIDE 2 — ARCHITECTURE ═══════════════════════════════ -->
+  <div class="slide s-light" id="s2">
+    <div class="inner" style="padding-bottom:80px">
+      <div class="a1"><div class="label">01 — Architecture</div></div>
+      <div class="h2 a2">Architecture du projet</div>
+      <p class="sub a3">Application <strong>100 % front-end</strong> — aucun serveur, aucune base de données distante.</p>
 
-      <div class="cols2 anim-4">
-        <!-- Couches -->
-        <div>
-          <p style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:12px">Couches technologiques</p>
+      <div class="row a4">
+        <!-- Couches + structure -->
+        <div class="col-40">
           <div class="layer hi">
-            <div class="layer-icon" style="background:#ede9fe">🌐</div>
-            <div>
-              <div style="font-weight:700;font-size:.9rem">Navigateur (Client)</div>
-              <div style="font-size:.75rem;color:var(--gray)">Toute la logique s'exécute ici — aucune requête serveur</div>
-            </div>
+            <div class="layericon" style="background:#ede9fe">🌐</div>
+            <div><div style="font-weight:700;font-size:.88rem">Navigateur (Client)</div><div style="font-size:.73rem;color:var(--gray)">Toute la logique s'exécute ici</div></div>
           </div>
-          <div style="text-align:center;color:var(--gl);font-size:1.2rem;margin:4px 0">↓</div>
+          <div style="text-align:center;color:var(--gl);font-size:1.3rem">↓</div>
           <div class="layer hi">
-            <div class="layer-icon" style="background:#dbeafe">⚙️</div>
-            <div>
-              <div style="font-weight:700;font-size:.9rem">JavaScript Vanilla ES6+</div>
-              <div style="font-size:.75rem;color:var(--gray)">Zéro framework — DOM natif, modules, template literals</div>
-            </div>
+            <div class="layericon" style="background:#dbeafe">⚙️</div>
+            <div><div style="font-weight:700;font-size:.88rem">JavaScript Vanilla ES6+</div><div style="font-size:.73rem;color:var(--gray)">Zéro framework — DOM natif, modules</div></div>
           </div>
-          <div style="text-align:center;color:var(--gl);font-size:1.2rem;margin:4px 0">↓</div>
+          <div style="text-align:center;color:var(--gl);font-size:1.3rem">↓</div>
           <div class="layer hi">
-            <div class="layer-icon" style="background:#d1fae5">💾</div>
-            <div>
-              <div style="font-weight:700;font-size:.9rem">localStorage (BDD locale)</div>
-              <div style="font-size:.75rem;color:var(--gray)">Persistance JSON côté client, ~5 Mo, clés typées</div>
-            </div>
+            <div class="layericon" style="background:#d1fae5">💾</div>
+            <div><div style="font-weight:700;font-size:.88rem">localStorage (BDD locale)</div><div style="font-size:.73rem;color:var(--gray)">Persistance JSON côté client, ~5 Mo</div></div>
+          </div>
+          <div class="code" style="margin-top:8px">
+<span class="cc">TicketFlow/</span>
+├── <span class="ck">css/</span> style · auth · dashboard
+├── <span class="ck">js/</span> <span class="cf">features.js</span>
+└── <span class="ck">pages/</span>
+    ├── login · register
+    ├── <span class="cf">dashboard-user.html</span>
+    ├── <span class="cf">dashboard-agent.html</span>
+    └── <span class="cf">dashboard-admin.html</span>
           </div>
         </div>
 
-        <!-- Maquette navigateur -->
-        <div>
-          <p style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:12px">Aperçu — Dashboard Admin</p>
+        <!-- Maquette dashboard admin -->
+        <div class="col-60">
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:8px">📸 Dashboard Administrateur</div>
           <div class="browser">
-            <div class="browser-bar">
-              <div class="browser-dot" style="background:#ef4444"></div>
-              <div class="browser-dot" style="background:#f59e0b"></div>
-              <div class="browser-dot" style="background:#10b981"></div>
-              <div class="browser-url">localhost:3000/pages/dashboard-admin</div>
+            <div class="bbar">
+              <div class="bdot" style="background:#ef4444"></div>
+              <div class="bdot" style="background:#f59e0b"></div>
+              <div class="bdot" style="background:#10b981"></div>
+              <div class="burl">localhost:3000/pages/dashboard-admin</div>
             </div>
-            <div class="browser-body" style="height:240px;display:flex;flex-direction:column">
-              <div class="mini-dash" style="flex:1;min-height:0">
-                <div class="mini-sidebar-full">
-                  <div style="display:flex;align-items:center;gap:6px;padding:6px 4px;border-bottom:1px solid var(--border);margin-bottom:8px">
-                    <div class="mini-logo"></div>
-                    <span style="font-size:.6rem;font-weight:800;color:var(--dark)">TicketFlow</span>
+            <div class="bbody">
+              <div class="dash">
+                <div class="dsb">
+                  <div class="dsblogo"><div class="dsbicon"></div><span class="dsbname">TicketFlow</span></div>
+                  <div class="dsbnav">
+                    <div class="dsbtitle">Administration</div>
+                    <div class="dsbitem act"><span class="ic">📊</span> Vue d'ensemble</div>
+                    <div class="dsbitem"><span class="ic">🎫</span> Tous les tickets <div class="bx">5</div></div>
+                    <div class="dsbitem"><span class="ic">👥</span> Utilisateurs</div>
+                    <div class="dsbitem"><span class="ic">🛡</span> Agents</div>
+                    <div class="dsbtitle">Paramètres</div>
+                    <div class="dsbitem"><span class="ic">⚙️</span> Modules</div>
+                    <div class="dsbitem"><span class="ic">✉</span> Générateur</div>
+                    <div class="dsbitem" style="color:var(--err)"><span class="ic">→</span> Déconnexion</div>
                   </div>
-                  <div style="font-size:.52rem;color:var(--gl);padding:4px;text-transform:uppercase;letter-spacing:.06em">Administration</div>
-                  <div style="font-size:.62rem;padding:6px 8px;background:#ede9fe;color:var(--p);border-radius:6px;font-weight:600">📊 Vue d'ensemble</div>
-                  <div style="font-size:.62rem;padding:6px 8px;color:var(--gray);border-radius:6px">🎫 Tous les tickets</div>
-                  <div style="font-size:.62rem;padding:6px 8px;color:var(--gray);border-radius:6px">👥 Utilisateurs</div>
-                  <div style="font-size:.62rem;padding:6px 8px;color:var(--gray);border-radius:6px">🛡 Agents</div>
-                  <div style="font-size:.52rem;color:var(--gl);padding:4px;text-transform:uppercase;letter-spacing:.06em;margin-top:4px">Paramètres</div>
-                  <div style="font-size:.62rem;padding:6px 8px;color:var(--gray);border-radius:6px">⚙️ Modules</div>
                 </div>
-                <div class="mini-main">
-                  <div class="mini-topbar">
-                    <span class="mini-topbar-title">Vue d'ensemble</span>
-                    <div style="margin-left:auto;background:var(--p);color:white;font-size:.55rem;padding:3px 8px;border-radius:4px;font-weight:700">+ Utilisateur</div>
+                <div class="dmain">
+                  <div class="dtop">
+                    <div><div class="dtitle">Vue d'ensemble</div><div class="dsub">Tableau de bord administrateur</div></div>
+                    <div style="margin-left:auto;background:var(--p);color:white;border-radius:6px;padding:6px 14px;font-size:.72rem;font-weight:700">+ Utilisateur</div>
                   </div>
-                  <div class="mini-content">
-                    <div class="mini-stats">
-                      <div class="mini-stat"><div class="mini-stat-n">5</div><div class="mini-stat-l">Tickets</div></div>
-                      <div class="mini-stat"><div class="mini-stat-n" style="color:#f59e0b">3</div><div class="mini-stat-l">Ouverts</div></div>
-                      <div class="mini-stat"><div class="mini-stat-n" style="color:#10b981">1</div><div class="mini-stat-l">Résolus</div></div>
-                      <div class="mini-stat"><div class="mini-stat-n" style="color:#ef4444">1</div><div class="mini-stat-l">Critiques</div></div>
+                  <div class="dcontent">
+                    <div class="stats">
+                      <div class="stat"><div><div class="statn" style="color:var(--p)">5</div><div class="statl">Total tickets</div></div><div class="stati" style="background:#dbeafe">🎫</div></div>
+                      <div class="stat"><div><div class="statn" style="color:var(--warn)">3</div><div class="statl">Ouverts</div></div><div class="stati" style="background:#fef3c7">⚠️</div></div>
+                      <div class="stat"><div><div class="statn" style="color:var(--ok)">1</div><div class="statl">Résolus</div></div><div class="stati" style="background:#d1fae5">✅</div></div>
+                      <div class="stat"><div><div class="statn" style="color:var(--err)">1</div><div class="statl">Critiques</div></div><div class="stati" style="background:#fee2e2">🔴</div></div>
                     </div>
-                    <div style="background:var(--w);border:1px solid var(--border);border-radius:6px;overflow:hidden">
-                      <div class="mini-table-row head">
-                        <span>Titre</span><span>Priorité</span><span>Statut</span><span>Date</span>
-                      </div>
-                      <div class="mini-table-row">
-                        <span style="color:var(--dark)">Erreur serveur paiement</span>
-                        <span><span class="badge b-e" style="font-size:.5rem">Critique</span></span>
-                        <span><span class="badge b-p" style="font-size:.5rem">Ouvert</span></span>
-                        <span style="color:var(--gl)">01/04</span>
-                      </div>
-                      <div class="mini-table-row">
-                        <span style="color:var(--dark)">Remboursement</span>
-                        <span><span class="badge b-w" style="font-size:.5rem">Élevé</span></span>
-                        <span><span class="badge b-w" style="font-size:.5rem">En cours</span></span>
-                        <span style="color:var(--gl)">31/03</span>
-                      </div>
-                    </div>
+                    <table class="dtbl">
+                      <thead><tr><th>#</th><th>Titre</th><th>Priorité</th><th>Statut</th><th>Date</th><th>Actions</th></tr></thead>
+                      <tbody>
+                        <tr><td style="color:var(--gl)">#101</td><td>Erreur serveur lors du paiement</td><td><span class="b be">Critique</span></td><td><span class="b bp">Ouvert</span></td><td style="color:var(--gl)">01/04</td><td><button class="dtbtn">Traiter</button></td></tr>
+                        <tr><td style="color:var(--gl)">#102</td><td>Demande de remboursement</td><td><span class="b bw">Élevé</span></td><td><span class="b bw">En cours</span></td><td style="color:var(--gl)">31/03</td><td><button class="dtbtn">Traiter</button></td></tr>
+                        <tr><td style="color:var(--gl)">#103</td><td>Mot de passe oublié</td><td><span class="b bg_">Bas</span></td><td><span class="b bok">Résolu</span></td><td style="color:var(--gl)">29/03</td><td><button class="dtbtn g">Voir</button></td></tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
@@ -388,110 +406,183 @@
           </div>
         </div>
       </div>
-
-      <!-- Structure fichiers -->
-      <div class="card" style="margin-top:20px">
-        <div class="card-h">📁 Structure des fichiers</div>
-        <div class="card-b">
-          <div class="json">
-<span class="jc">TicketFlow/</span>
-├── <span class="jk">index.html</span>                <span class="jc">← Landing page publique</span>
-├── css/ <span class="jk">style.css</span> · <span class="jk">auth.css</span> · <span class="jk">dashboard.css</span>
-├── js/  <span class="jf">features.js</span>            <span class="jc">← Feature flags (modules on/off)</span>
-└── pages/
-    ├── <span class="jk">login.html</span> · <span class="jk">register.html</span>
-    ├── <span class="jk">dashboard-user.html</span>    <span class="jc">← Espace utilisateur</span>
-    ├── <span class="jk">dashboard-agent.html</span>   <span class="jc">← Espace agent support</span>
-    ├── <span class="jk">dashboard-admin.html</span>   <span class="jc">← Panel administrateur</span>
-    └── <span class="jk">codeur-generator.html</span>  <span class="jc">← Générateur message + devis PDF</span>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════
-       SLIDE 3 — RÔLES ET ACCÈS
-  ══════════════════════════════════════════ -->
-  <div class="slide slide-light" id="s3">
-    <div class="scroll-inner">
-      <div class="section-label anim">02 — Rôles</div>
-      <h2 class="anim-2" style="font-size:1.8rem;font-weight:800;color:var(--dark);margin-bottom:6px">3 Rôles, 3 interfaces</h2>
-      <p class="anim-3" style="color:var(--gray);font-size:.9rem;margin-bottom:28px">Chaque rôle a son dashboard dédié. La redirection se fait automatiquement après connexion.</p>
+  <!-- ═══════════════════════════════ SLIDE 3 — RÔLES ═══════════════════════════════ -->
+  <div class="slide s-light" id="s3">
+    <div class="inner" style="padding-bottom:80px">
+      <div class="a1"><div class="label">02 — Rôles &amp; Accès</div></div>
+      <div class="h2 a2">3 Rôles, 3 interfaces différentes</div>
 
-      <div class="cols3 anim-4">
-        <div class="role-card admin">
-          <div class="role-icon">🔴</div>
-          <div style="font-weight:800;font-size:1rem;color:var(--dark)">Administrateur</div>
-          <div style="font-size:.72rem;color:#ef4444;font-weight:600;margin:4px 0">admin@ticketflow.fr</div>
-          <ul class="role-perms">
-            <li>KPIs & statistiques globales</li>
+      <div class="rcards a3">
+        <div class="rcard admin">
+          <div class="ricon">🔴</div>
+          <div class="rname">Administrateur</div>
+          <div class="remail" style="color:#ef4444">admin@ticketflow.fr / admin123</div>
+          <ul class="rperms">
+            <li>KPIs &amp; statistiques globales</li>
             <li>Tous les tickets</li>
-            <li>Gestion utilisateurs / agents</li>
+            <li>Gestion utilisateurs &amp; agents</li>
             <li>Activer/désactiver les modules</li>
             <li>Accès garanti (non verrouillable)</li>
           </ul>
         </div>
-        <div class="role-card agent">
-          <div class="role-icon">🟢</div>
-          <div style="font-weight:800;font-size:1rem;color:var(--dark)">Agent</div>
-          <div style="font-size:.72rem;color:#10b981;font-weight:600;margin:4px 0">agent@ticketflow.fr</div>
-          <ul class="role-perms">
+        <div class="rcard agent">
+          <div class="ricon">🟢</div>
+          <div class="rname">Agent Support</div>
+          <div class="remail" style="color:#10b981">agent@ticketflow.fr / agent123</div>
+          <ul class="rperms">
             <li>Voir tous les tickets clients</li>
             <li>Répondre aux clients</li>
-            <li>Changer statut & priorité</li>
+            <li>Changer statut &amp; priorité</li>
             <li>Onglet "mes tickets assignés"</li>
           </ul>
         </div>
-        <div class="role-card user">
-          <div class="role-icon">🔵</div>
-          <div style="font-weight:800;font-size:1rem;color:var(--dark)">Utilisateur</div>
-          <div style="font-size:.72rem;color:#3b82f6;font-weight:600;margin:4px 0">user@ticketflow.fr</div>
-          <ul class="role-perms">
+        <div class="rcard user">
+          <div class="ricon">🔵</div>
+          <div class="rname">Utilisateur</div>
+          <div class="remail" style="color:#3b82f6">user@ticketflow.fr / user123</div>
+          <ul class="rperms">
             <li>Créer des tickets</li>
             <li>Voir ses propres tickets</li>
-            <li>Filtrer & rechercher</li>
+            <li>Filtrer &amp; rechercher</li>
             <li>Messagerie avec l'agent</li>
             <li>Modifier son profil</li>
           </ul>
         </div>
       </div>
 
-      <!-- Maquette page login -->
-      <div style="margin-top:24px">
-        <p style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:10px">Aperçu — Page de Connexion</p>
+      <!-- Maquette login -->
+      <div class="a4" style="flex:1;min-height:0;display:flex;flex-direction:column">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:8px">📸 Page de connexion — Redirection automatique selon le rôle</div>
         <div class="browser">
-          <div class="browser-bar">
-            <div class="browser-dot" style="background:#ef4444"></div>
-            <div class="browser-dot" style="background:#f59e0b"></div>
-            <div class="browser-dot" style="background:#10b981"></div>
-            <div class="browser-url">localhost:3000/pages/login</div>
+          <div class="bbar">
+            <div class="bdot" style="background:#ef4444"></div>
+            <div class="bdot" style="background:#f59e0b"></div>
+            <div class="bdot" style="background:#10b981"></div>
+            <div class="burl">localhost:3000/pages/login</div>
           </div>
-          <div class="browser-body" style="height:190px;display:flex;flex-direction:column">
-            <div class="mini-login" style="flex:1;min-height:0">
-              <div class="mini-login-left">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
-                  <div style="width:24px;height:24px;background:rgba(255,255,255,.2);border-radius:6px"></div>
-                  <span style="color:white;font-size:.75rem;font-weight:800">TicketFlow</span>
-                </div>
-                <div style="color:white;font-size:.85rem;font-weight:800;margin-bottom:8px;line-height:1.3">Bienvenue sur votre espace de support</div>
-                <div style="color:rgba(255,255,255,.7);font-size:.68rem;line-height:1.6">Gérez vos tickets, suivez vos demandes et communiquez avec votre équipe.</div>
-                <div style="margin-top:16px;display:flex;flex-direction:column;gap:6px">
-                  <div style="background:rgba(255,255,255,.1);border-radius:5px;padding:6px 10px;font-size:.62rem;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:6px"><span>⚡</span> Réponses rapides</div>
-                  <div style="background:rgba(255,255,255,.1);border-radius:5px;padding:6px 10px;font-size:.62rem;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:6px"><span>🔒</span> Sécurisé</div>
+          <div class="bbody">
+            <div class="login-split">
+              <div class="login-left">
+                <div class="login-logo"><div class="login-logo-icon"></div><span class="login-logo-name">TicketFlow</span></div>
+                <div class="login-h">Bienvenue sur votre<br>espace de support</div>
+                <div class="login-p">Gérez vos tickets, suivez vos demandes et communiquez avec votre équipe en toute simplicité.</div>
+                <div class="login-feat">
+                  <div class="login-fi">⚡ Réponses rapides et suivi en temps réel</div>
+                  <div class="login-fi">🔒 Sécurisé et confidentiel</div>
+                  <div class="login-fi">📊 Tableau de bord personnalisé par rôle</div>
                 </div>
               </div>
-              <div class="mini-login-right">
-                <div style="font-size:.85rem;font-weight:800;color:var(--dark);margin-bottom:4px">Se connecter</div>
-                <div style="font-size:.62rem;color:var(--gl);margin-bottom:12px">Accédez à votre espace TicketFlow</div>
-                <div class="mini-input">admin@ticketflow.fr</div>
-                <div class="mini-input">••••••••</div>
-                <div class="mini-btn">Se connecter</div>
-                <div style="margin-top:10px;padding:8px;background:var(--bg);border-radius:5px;border:1px dashed var(--border)">
-                  <div style="font-size:.58rem;font-weight:700;color:var(--dark);margin-bottom:4px">Comptes démo :</div>
-                  <div style="font-size:.56rem;color:var(--gray);display:flex;flex-direction:column;gap:2px">
-                    <div><span class="badge b-e" style="font-size:.5rem">Admin</span> admin@ticketflow.fr / admin123</div>
-                    <div><span class="badge b-ok" style="font-size:.5rem">Agent</span> agent@ticketflow.fr / agent123</div>
+              <div class="login-right">
+                <div class="loginrh">Se connecter</div>
+                <div class="loginrp">Accédez à votre espace TicketFlow</div>
+                <label class="formlabel">Adresse email</label>
+                <div class="forminput">admin@ticketflow.fr</div>
+                <label class="formlabel">Mot de passe</label>
+                <div class="forminput">••••••••</div>
+                <div class="formbtn">Se connecter</div>
+                <div class="demo-box">
+                  <div class="demo-title">Comptes de démonstration :</div>
+                  <div class="demo-row"><span class="b be" style="font-size:.6rem">Admin</span> admin@ticketflow.fr / <strong>admin123</strong></div>
+                  <div class="demo-row"><span class="b bok" style="font-size:.6rem">Agent</span> agent@ticketflow.fr / <strong>agent123</strong></div>
+                  <div class="demo-row"><span class="b bp" style="font-size:.6rem">User</span> user@ticketflow.fr / <strong>user123</strong></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ SLIDE 4 — BDD TICKETS ═══════════════════════════════ -->
+  <div class="slide s-light" id="s4">
+    <div class="inner" style="padding-bottom:80px">
+      <div class="a1"><div class="label">03 — Base de données</div></div>
+      <div class="h2 a2">Structure d'un ticket (objet JSON)</div>
+
+      <div class="row a3" style="align-items:stretch">
+        <div class="col-40">
+          <div class="card" style="flex:1">
+            <div class="ch">📋 Schéma Ticket</div>
+            <div class="cb" style="padding:10px">
+              <table class="mtbl">
+                <thead><tr><th>Champ</th><th>Type</th><th>Valeurs</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>id</strong> <span class="b bw" style="font-size:.58rem">PK</span></td><td class="type">number</td><td style="font-size:.68rem;color:var(--gray)">Date.now()</td></tr>
+                  <tr><td><strong>title</strong></td><td class="type">string</td><td style="font-size:.68rem;color:var(--gray)">Texte libre</td></tr>
+                  <tr><td><strong>category</strong></td><td class="type">string</td><td><code style="font-size:.65rem">Technique</code> <code style="font-size:.65rem">Facturation</code></td></tr>
+                  <tr><td><strong>priority</strong></td><td class="type">string</td><td><span class="b bg_" style="font-size:.58rem">bas</span> <span class="b bi" style="font-size:.58rem">moyen</span> <span class="b bw" style="font-size:.58rem">eleve</span> <span class="b be" style="font-size:.58rem">critique</span></td></tr>
+                  <tr><td><strong>status</strong></td><td class="type">string</td><td><span class="b bp" style="font-size:.58rem">ouvert</span> <span class="b bw" style="font-size:.58rem">en_cours</span> <span class="b bok" style="font-size:.58rem">resolu</span></td></tr>
+                  <tr><td><strong>date</strong></td><td class="type">string</td><td style="font-size:.68rem;color:var(--gray)">YYYY-MM-DD</td></tr>
+                  <tr><td><strong>desc</strong></td><td class="type">string</td><td style="font-size:.68rem;color:var(--gray)">Description</td></tr>
+                  <tr><td><strong>messages</strong></td><td class="type">array</td><td style="font-size:.68rem;color:var(--gray)">[{from,text,time}]</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="code">
+{
+  <span class="ck">"id"</span>: <span class="cv">1712345678901</span>,
+  <span class="ck">"title"</span>: <span class="cs">"Erreur lors du paiement"</span>,
+  <span class="ck">"priority"</span>: <span class="cs">"critique"</span>,
+  <span class="ck">"status"</span>: <span class="cs">"en_cours"</span>,
+  <span class="ck">"messages"</span>: [{
+    <span class="ck">"from"</span>: <span class="cs">"agent"</span>,
+    <span class="ck">"text"</span>: <span class="cs">"Ticket pris en charge."</span>,
+    <span class="ck">"time"</span>: <span class="cs">"10:30"</span>
+  }]
+}
+          </div>
+        </div>
+
+        <!-- Maquette Dashboard Utilisateur avec tickets -->
+        <div class="col-60">
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:8px">📸 Dashboard Utilisateur — Liste des tickets</div>
+          <div class="browser">
+            <div class="bbar">
+              <div class="bdot" style="background:#ef4444"></div>
+              <div class="bdot" style="background:#f59e0b"></div>
+              <div class="bdot" style="background:#10b981"></div>
+              <div class="burl">localhost:3000/pages/dashboard-user</div>
+            </div>
+            <div class="bbody">
+              <div class="dash">
+                <div class="dsb">
+                  <div class="dsblogo"><div class="dsbicon"></div><span class="dsbname">TicketFlow</span></div>
+                  <div class="dsbnav">
+                    <div class="dsbtitle">Menu</div>
+                    <div class="dsbitem act"><span class="ic">🎫</span> Mes tickets <div class="bx">2</div></div>
+                    <div class="dsbitem"><span class="ic">+</span> Nouveau ticket</div>
+                    <div class="dsbtitle">Outils</div>
+                    <div class="dsbitem"><span class="ic">✉</span> Générateur</div>
+                    <div class="dsbtitle">Compte</div>
+                    <div class="dsbitem"><span class="ic">☯</span> Mon profil</div>
+                    <div class="dsbitem" style="color:var(--err)"><span class="ic">←</span> Déconnexion</div>
+                  </div>
+                </div>
+                <div class="dmain">
+                  <div class="dtop">
+                    <div><div class="dtitle">Mes tickets</div><div class="dsub">Gérez vos demandes de support</div></div>
+                    <div style="margin-left:auto;background:var(--p);color:white;border-radius:6px;padding:6px 14px;font-size:.72rem;font-weight:700">+ Nouveau ticket</div>
+                  </div>
+                  <div class="dcontent">
+                    <div class="stats" style="grid-template-columns:repeat(4,1fr)">
+                      <div class="stat"><div><div class="statn" style="color:var(--p)">3</div><div class="statl">Total</div></div><div class="stati" style="background:#dbeafe">T</div></div>
+                      <div class="stat"><div><div class="statn" style="color:var(--warn)">2</div><div class="statl">Actifs</div></div><div class="stati" style="background:#fef3c7">🔔</div></div>
+                      <div class="stat"><div><div class="statn" style="color:var(--ok)">1</div><div class="statl">Résolus</div></div><div class="stati" style="background:#d1fae5">✓</div></div>
+                      <div class="stat"><div><div class="statn" style="color:var(--err)">0</div><div class="statl">Critiques</div></div><div class="stati" style="background:#fee2e2">!</div></div>
+                    </div>
+                    <table class="dtbl">
+                      <thead><tr><th>#</th><th>Titre</th><th>Catégorie</th><th>Priorité</th><th>Statut</th><th>Date</th><th>Action</th></tr></thead>
+                      <tbody>
+                        <tr><td style="color:var(--gl)">#1</td><td>Impossible de me connecter</td><td><span class="b bg_">Compte</span></td><td><span class="b bw">Élevé</span></td><td><span class="b bw">En cours</span></td><td style="color:var(--gl)">28/03</td><td><button class="dtbtn g">Voir</button></td></tr>
+                        <tr><td style="color:var(--gl)">#2</td><td>Problème de facturation</td><td><span class="b bg_">Facturation</span></td><td><span class="b bi">Moyen</span></td><td><span class="b bp">Ouvert</span></td><td style="color:var(--gl)">30/03</td><td><button class="dtbtn g">Voir</button></td></tr>
+                        <tr><td style="color:var(--gl)">#3</td><td>Demande de fonctionnalité</td><td><span class="b bg_">Commercial</span></td><td><span class="b bg_">Bas</span></td><td><span class="b bok">Résolu</span></td><td style="color:var(--gl)">15/03</td><td><button class="dtbtn g">Voir</button></td></tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
@@ -502,95 +593,386 @@
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════
-       SLIDE 4 — BASE DE DONNÉES TICKETS
-  ══════════════════════════════════════════ -->
-  <div class="slide slide-light" id="s4">
-    <div class="scroll-inner">
-      <div class="section-label anim">03 — Base de données</div>
-      <h2 class="anim-2" style="font-size:1.8rem;font-weight:800;color:var(--dark);margin-bottom:6px">Structure d'un ticket</h2>
-      <p class="anim-3" style="color:var(--gray);font-size:.9rem;margin-bottom:28px">Chaque ticket est un objet JSON. Tous les tickets d'un utilisateur sont stockés dans un seul tableau.</p>
+  <!-- ═══════════════════════════════ SLIDE 5 — CREATION TICKET ═══════════════════════════════ -->
+  <div class="slide s-light" id="s5">
+    <div class="inner" style="padding-bottom:80px">
+      <div class="a1"><div class="label">04 — Création de ticket</div></div>
+      <div class="h2 a2">Soumettre un nouveau ticket</div>
 
-      <div class="cols2 anim-4">
-        <div>
-          <p style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:10px">Schéma objet Ticket</p>
-          <table class="mini-tbl" style="margin-bottom:16px">
-            <thead><tr><th>Champ</th><th>Type</th><th>Valeurs</th></tr></thead>
-            <tbody>
-              <tr><td><strong>id</strong> <span class="badge b-w" style="font-size:.58rem">PK</span></td><td class="type">number</td><td style="font-size:.72rem;color:var(--gray)">Date.now()</td></tr>
-              <tr><td><strong>title</strong></td><td class="type">string</td><td style="font-size:.72rem;color:var(--gray)">Texte libre</td></tr>
-              <tr><td><strong>category</strong></td><td class="type">string</td><td style="font-size:.68rem"><code>Technique</code> <code>Facturation</code> <code>Compte</code></td></tr>
-              <tr><td><strong>priority</strong></td><td class="type">string</td><td><span class="badge b-g" style="font-size:.56rem">bas</span> <span class="badge b-i" style="font-size:.56rem">moyen</span> <span class="badge b-w" style="font-size:.56rem">eleve</span> <span class="badge b-e" style="font-size:.56rem">critique</span></td></tr>
-              <tr><td><strong>status</strong></td><td class="type">string</td><td><span class="badge b-p" style="font-size:.56rem">ouvert</span> <span class="badge b-w" style="font-size:.56rem">en_cours</span> <span class="badge b-ok" style="font-size:.56rem">resolu</span></td></tr>
-              <tr><td><strong>date</strong></td><td class="type">string</td><td style="font-size:.72rem;color:var(--gray)">YYYY-MM-DD</td></tr>
-              <tr><td><strong>desc</strong></td><td class="type">string</td><td style="font-size:.72rem;color:var(--gray)">Description</td></tr>
-              <tr><td><strong>messages</strong></td><td class="type">array</td><td style="font-size:.72rem;color:var(--gray)">[{from, text, time}]</td></tr>
-            </tbody>
-          </table>
+      <div class="row a3">
+        <div class="col-60">
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:8px">📸 Formulaire de création (modal)</div>
+          <div class="browser">
+            <div class="bbar">
+              <div class="bdot" style="background:#ef4444"></div>
+              <div class="bdot" style="background:#f59e0b"></div>
+              <div class="bdot" style="background:#10b981"></div>
+              <div class="burl">localhost:3000/pages/dashboard-user → Nouveau ticket</div>
+            </div>
+            <div class="bbody" style="position:relative">
+              <!-- Dashboard flou en fond -->
+              <div class="dash" style="opacity:.35;filter:blur(1px)">
+                <div class="dsb"><div class="dsblogo"><div class="dsbicon"></div><span class="dsbname">TicketFlow</span></div><div class="dsbnav"><div class="dsbitem act">🎫 Mes tickets</div></div></div>
+                <div class="dmain"><div class="dtop"><div class="dtitle">Mes tickets</div></div><div class="dcontent" style="background:var(--bg)"></div></div>
+              </div>
+              <!-- Modal par dessus -->
+              <div class="modal-mock">
+                <div class="modal-box">
+                  <div class="modal-title">✨ Nouveau ticket de support</div>
+                  <div class="minput">Titre du problème *</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                    <div class="mselect"><span>Catégorie</span><span>▾</span></div>
+                    <div class="mselect"><span>Priorité</span><span>▾</span></div>
+                  </div>
+                  <div class="mtarea">Description détaillée du problème...</div>
+                  <div class="mbtn">Soumettre le ticket</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-          <!-- Message schema -->
+        <div class="col-40">
           <div class="card">
-            <div class="card-h" style="font-size:.75rem">💬 Objet Message (dans messages[])</div>
-            <div class="card-b" style="padding:12px">
-              <table class="mini-tbl">
-                <thead><tr><th>Champ</th><th>Valeurs</th></tr></thead>
+            <div class="ch">⚡ Code — submitNewTicket()</div>
+            <div class="cb" style="padding:10px">
+              <div class="code">
+<span class="ck">const</span> newTicket = {
+  <span class="ck">id</span>: <span class="cf">Date.now()</span>,
+  title, category,
+  priority, desc,
+  <span class="ck">status</span>: <span class="cs">'ouvert'</span>,
+  <span class="ck">date</span>: <span class="cs">'2026-04-16'</span>,
+  <span class="ck">messages</span>: []
+};
+
+tickets.<span class="cf">unshift</span>(newTicket);
+<span class="cf">saveTickets</span>();
+<span class="cc">// → localStorage.setItem(
+//     'tf_tickets_user@...',
+//     JSON.stringify(tickets)
+//   )</span>
+<span class="cf">renderTickets</span>();
+<span class="cf">updateStats</span>();
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="ch">🔄 Cycle des statuts</div>
+            <div class="cb">
+              <div class="sflow" style="gap:6px;padding:10px 0">
+                <div class="snode"><div class="scircle" style="width:60px;height:60px;background:#ede9fe;color:#4f46e5;font-size:.65rem">Ouvert</div><div style="font-size:.62rem;color:var(--gray)">Création</div></div>
+                <div class="sarr" style="font-size:1.1rem;padding-bottom:20px">→</div>
+                <div class="snode"><div class="scircle" style="width:60px;height:60px;background:#fef3c7;color:#92400e;font-size:.65rem">En cours</div><div style="font-size:.62rem;color:var(--gray)">⚡ Auto</div></div>
+                <div class="sarr" style="font-size:1.1rem;padding-bottom:20px">→</div>
+                <div class="snode"><div class="scircle" style="width:60px;height:60px;background:#d1fae5;color:#065f46;font-size:.65rem">Résolu</div><div style="font-size:.62rem;color:var(--gray)">Réglé</div></div>
+                <div class="sarr" style="font-size:1.1rem;padding-bottom:20px">→</div>
+                <div class="snode"><div class="scircle" style="width:60px;height:60px;background:#f1f5f9;color:#64748b;font-size:.65rem">Fermé</div><div style="font-size:.62rem;color:var(--gray)">Archivé</div></div>
+              </div>
+              <div style="font-size:.75rem;color:var(--gray);background:#fffbeb;border:1px solid #fde68a;border-radius:7px;padding:8px 12px">
+                ⚡ <strong>Transition auto :</strong> quand un agent envoie un premier message, le statut passe automatiquement <strong>Ouvert → En cours</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ SLIDE 6 — AGENT ═══════════════════════════════ -->
+  <div class="slide s-light" id="s6">
+    <div class="inner" style="padding-bottom:80px">
+      <div class="a1"><div class="label">05 — Réponse agent</div></div>
+      <div class="h2 a2">Traitement d'un ticket côté agent</div>
+
+      <div class="row a3">
+        <div class="col-60">
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:8px">📸 Dashboard Agent — Traitement d'un ticket</div>
+          <div class="browser">
+            <div class="bbar">
+              <div class="bdot" style="background:#ef4444"></div>
+              <div class="bdot" style="background:#f59e0b"></div>
+              <div class="bdot" style="background:#10b981"></div>
+              <div class="burl">localhost:3000/pages/dashboard-agent → Traiter ticket #101</div>
+            </div>
+            <div class="bbody" style="position:relative">
+              <div class="dash" style="opacity:.3;filter:blur(1px)">
+                <div class="dsb"><div class="dsblogo"><div class="dsbicon"></div><span class="dsbname">TicketFlow</span></div><div class="dsbnav"><div class="dsbitem act">🎫 Tous les tickets</div><div class="dsbitem">🔖 Mes tickets</div></div></div>
+                <div class="dmain"><div class="dtop"><div class="dtitle">Tous les tickets</div></div><div class="dcontent"></div></div>
+              </div>
+              <div class="modal-mock">
+                <div class="modal-box" style="width:340px">
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+                    <div style="font-weight:800;font-size:.88rem;color:var(--dark);flex:1">Erreur serveur lors du paiement</div>
+                  </div>
+                  <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">
+                    <span class="b bw">En cours</span>
+                    <span class="b be">Critique</span>
+                    <span class="b bg_">Technique</span>
+                  </div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+                    <div>
+                      <div style="font-size:.65rem;color:var(--gl);margin-bottom:3px">Statut</div>
+                      <div class="mselect" style="height:28px;font-size:.7rem"><span>En cours</span><span>▾</span></div>
+                    </div>
+                    <div>
+                      <div style="font-size:.65rem;color:var(--gl);margin-bottom:3px">Priorité</div>
+                      <div class="mselect" style="height:28px;font-size:.7rem"><span>Critique</span><span>▾</span></div>
+                    </div>
+                  </div>
+                  <div style="font-size:.72rem;color:var(--gray);background:var(--bg);border-radius:6px;padding:8px 10px;margin-bottom:10px;line-height:1.5">
+                    Une erreur 500 survient à chaque tentative de paiement depuis hier soir...
+                  </div>
+                  <div class="msg-agent"><div class="msg-from" style="color:#065f46">Agent Support</div><div class="msg-text">Bonjour, nous avons pris en charge votre ticket. Pouvez-vous nous donner plus de détails sur votre navigateur ?</div><div class="msg-time">10:30</div></div>
+                  <div style="display:flex;gap:8px;margin-top:4px">
+                    <div class="minput" style="flex:1;margin-bottom:0;height:32px;font-size:.7rem">Répondre au client...</div>
+                    <div style="background:var(--p);color:white;border-radius:6px;padding:0 14px;height:32px;display:flex;align-items:center;font-size:.72rem;font-weight:700">Envoyer</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-40">
+          <div class="card">
+            <div class="ch">✏️ Code — agentReply()</div>
+            <div class="cb" style="padding:10px">
+              <div class="code">
+<span class="ck">function</span> <span class="cf">agentReply</span>() {
+  <span class="ck">const</span> time = now.<span class="cf">getHours</span>()
+    + <span class="cs">':'</span>
+    + <span class="cf">String</span>(minutes)
+      .<span class="cf">padStart</span>(2,<span class="cs">'0'</span>);
+
+  t.messages.<span class="cf">push</span>({
+    <span class="ck">from</span>: <span class="cs">'agent'</span>,
+    text, time
+  });
+
+  <span class="cc">// Transition auto</span>
+  <span class="ck">if</span> (t.status===<span class="cs">'ouvert'</span>)
+    t.status = <span class="cs">'en_cours'</span>;
+
+  <span class="cf">updateStats</span>();
+  <span class="cf">filterAgentTickets</span>();
+}
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="ch">🔄 changeStatus()</div>
+            <div class="cb" style="padding:10px">
+              <div class="code">
+<span class="ck">function</span> <span class="cf">changeStatus</span>() {
+  <span class="ck">const</span> t = allTickets
+    .<span class="cf">find</span>(x=>x.id===currentId);
+
+  t.status = document
+    .<span class="cf">getElementById</span>(
+      <span class="cs">'modal-status-select'</span>
+    ).value;
+
+  <span class="cf">updateStats</span>();
+  <span class="cf">filterAgentTickets</span>();
+}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ SLIDE 7 — FEATURE FLAGS ═══════════════════════════════ -->
+  <div class="slide s-light" id="s7">
+    <div class="inner" style="padding-bottom:80px">
+      <div class="a1"><div class="label">06 — Feature Flags</div></div>
+      <div class="h2 a2">Modules activables/désactivables</div>
+
+      <div class="row a3">
+        <div class="col-60">
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:8px">📸 Panel Admin — Gestion des modules</div>
+          <div class="browser">
+            <div class="bbar">
+              <div class="bdot" style="background:#ef4444"></div>
+              <div class="bdot" style="background:#f59e0b"></div>
+              <div class="bdot" style="background:#10b981"></div>
+              <div class="burl">localhost:3000/pages/dashboard-admin → Modules du site</div>
+            </div>
+            <div class="bbody">
+              <div class="dash">
+                <div class="dsb">
+                  <div class="dsblogo"><div class="dsbicon"></div><span class="dsbname">TicketFlow</span></div>
+                  <div class="dsbnav">
+                    <div class="dsbitem"><span class="ic">📊</span> Vue d'ensemble</div>
+                    <div class="dsbitem"><span class="ic">🎫</span> Tickets</div>
+                    <div class="dsbtitle">Paramètres</div>
+                    <div class="dsbitem act"><span class="ic">⚙️</span> Modules du site</div>
+                    <div class="dsbitem"><span class="ic">🔧</span> Paramètres</div>
+                  </div>
+                </div>
+                <div class="dmain">
+                  <div class="dtop"><div><div class="dtitle">Modules du site</div><div class="dsub">Activez ou désactivez les fonctionnalités</div></div>
+                    <div style="display:flex;gap:8px;margin-left:auto">
+                      <div style="background:var(--ok);color:white;border-radius:6px;padding:5px 12px;font-size:.7rem;font-weight:700">✓ Tout activer</div>
+                      <div style="background:var(--err);color:white;border-radius:6px;padding:5px 12px;font-size:.7rem;font-weight:700">✕ Tout désactiver</div>
+                    </div>
+                  </div>
+                  <div class="dcontent" style="overflow-y:auto">
+                    <div class="ff-section">Pages publiques</div>
+                    <div class="ff-row on">
+                      <div><div class="ff-name">Page d'accueil <span class="b bok" style="font-size:.6rem">Actif</span></div><div class="ff-desc">Landing page avec tarifs et fonctionnalités</div></div>
+                      <div class="toggle on"></div>
+                    </div>
+                    <div class="ff-row locked">
+                      <div><div class="ff-name">Connexion 🔒 <span style="font-size:.6rem;background:#fef3c7;color:#92400e;padding:1px 7px;border-radius:999px;font-weight:700">verrouillé</span></div><div class="ff-desc">Requis — sans ça l'admin ne peut pas se connecter</div></div>
+                      <div class="toggle locked"></div>
+                    </div>
+                    <div class="ff-section">Espace agent</div>
+                    <div class="ff-row off">
+                      <div><div class="ff-name">Dashboard agent <span class="b bg_" style="font-size:.6rem">Inactif</span></div><div class="ff-desc">Accès au tableau de bord des agents</div></div>
+                      <div class="toggle off"></div>
+                    </div>
+                    <div class="ff-row on">
+                      <div><div class="ff-name">Répondre à un ticket <span class="b bok" style="font-size:.6rem">Actif</span></div><div class="ff-desc">Zone de réponse dans la fiche ticket</div></div>
+                      <div class="toggle on"></div>
+                    </div>
+                    <div class="ff-section">Panel administrateur</div>
+                    <div class="ff-row locked">
+                      <div><div class="ff-name">Panel administrateur 🔒 <span style="font-size:.6rem;background:#fef3c7;color:#92400e;padding:1px 7px;border-radius:999px;font-weight:700">verrouillé</span></div><div class="ff-desc">L'admin garde toujours accès à son panel</div></div>
+                      <div class="toggle locked"></div>
+                    </div>
+                    <div class="ff-section">Outils</div>
+                    <div class="ff-row on">
+                      <div><div class="ff-name">Générateur Codeur.com <span class="b bok" style="font-size:.6rem">Actif</span></div><div class="ff-desc">Messages de candidature + devis PDF</div></div>
+                      <div class="toggle on"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-40">
+          <div class="card">
+            <div class="ch">⚡ API features.js</div>
+            <div class="cb" style="padding:10px">
+              <div class="code">
+<span class="cc">// Vérifier si actif</span>
+<span class="cf">isEnabled</span>(<span class="cs">'user_create_ticket'</span>)
+<span class="cc">// → true / false</span>
+
+<span class="cc">// Rediriger si désactivé</span>
+<span class="cf">requireFeature</span>(<span class="cs">'dashboard_user'</span>)
+<span class="cc">// → unavailable.html</span>
+
+<span class="cc">// Désactiver tout (sauf lock)</span>
+<span class="cf">setAllFeaturesSave</span>(<span class="ck">false</span>)
+<span class="cc">// sauf 'login' + 'dashboard_admin'</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;padding:16px">
+            <div style="font-weight:800;font-size:.88rem;color:#166534;margin-bottom:10px">🔒 Modules toujours actifs</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;align-items:center;gap:8px;background:white;border-radius:7px;padding:8px 12px;border:1px solid #bbf7d0">
+                <span class="b bok">login</span>
+                <span style="font-size:.75rem;color:var(--gray)">Sans ça, personne ne peut se connecter</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;background:white;border-radius:7px;padding:8px 12px;border:1px solid #bbf7d0">
+                <span class="b bok">dashboard_admin</span>
+                <span style="font-size:.75rem;color:var(--gray)">L'admin garde toujours la main</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="ch">📦 Modules disponibles (extrait)</div>
+            <div class="cb" style="padding:10px">
+              <table class="mtbl" style="font-size:.72rem">
+                <thead><tr><th>Clé</th><th>Défaut</th></tr></thead>
                 <tbody>
-                  <tr><td><strong>from</strong></td><td style="font-size:.72rem"><code>"agent"</code> ou <code>"user"</code></td></tr>
-                  <tr><td><strong>text</strong></td><td style="font-size:.72rem;color:var(--gray)">Contenu du message</td></tr>
-                  <tr><td><strong>time</strong></td><td style="font-size:.72rem;color:var(--gray)">Format HH:MM</td></tr>
+                  <tr><td><code>landing</code></td><td><span class="b bok" style="font-size:.6rem">Actif</span></td></tr>
+                  <tr><td><code>dashboard_user</code></td><td><span class="b bok" style="font-size:.6rem">Actif</span></td></tr>
+                  <tr><td><code>dashboard_agent</code></td><td><span class="b bg_" style="font-size:.6rem">Inactif</span></td></tr>
+                  <tr><td><code>user_messaging</code></td><td><span class="b bg_" style="font-size:.6rem">Inactif</span></td></tr>
+                  <tr><td><code>codeur_generator</code></td><td><span class="b bok" style="font-size:.6rem">Actif</span></td></tr>
                 </tbody>
               </table>
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
 
-        <div>
-          <p style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:10px">Exemple JSON réel</p>
-          <div class="json">
-{
-  <span class="jk">"id"</span>: <span class="jv">1712345678901</span>,
-  <span class="jk">"title"</span>: <span class="js">"Erreur lors du paiement"</span>,
-  <span class="jk">"category"</span>: <span class="js">"Technique"</span>,
-  <span class="jk">"priority"</span>: <span class="js">"critique"</span>,
-  <span class="jk">"status"</span>: <span class="js">"en_cours"</span>,
-  <span class="jk">"date"</span>: <span class="js">"2026-04-05"</span>,
-  <span class="jk">"desc"</span>: <span class="js">"Une erreur 500 survient..."</span>,
-  <span class="jk">"messages"</span>: [
-    {
-      <span class="jk">"from"</span>: <span class="js">"agent"</span>,
-      <span class="jk">"text"</span>: <span class="js">"Bonjour, ticket pris en charge."</span>,
-      <span class="jk">"time"</span>: <span class="js">"10:30"</span>
-    }
-  ]
-}
-          </div>
+  <!-- ═══════════════════════════════ SLIDE 8 — GÉNÉRATEUR ═══════════════════════════════ -->
+  <div class="slide s-light" id="s8">
+    <div class="inner" style="padding-bottom:80px">
+      <div class="a1"><div class="label">07 — Outils intégrés</div></div>
+      <div class="h2 a2">Générateur Codeur.com + Devis PDF</div>
 
-          <!-- Maquette ticket card dans l'interface -->
-          <div style="margin-top:16px">
-            <p style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:10px">Rendu dans l'interface (Dashboard Utilisateur)</p>
-            <div class="browser">
-              <div class="browser-bar">
-                <div class="browser-dot" style="background:#ef4444"></div>
-                <div class="browser-dot" style="background:#f59e0b"></div>
-                <div class="browser-dot" style="background:#10b981"></div>
-                <div class="browser-url">localhost:3000/pages/dashboard-user</div>
-              </div>
-              <div class="browser-body" style="height:180px;display:flex;flex-direction:column">
-                <div class="mini-dash" style="flex:1;min-height:0">
-                  <div class="mini-sidebar-full">
-                    <div style="display:flex;align-items:center;gap:6px;padding:6px 4px;border-bottom:1px solid var(--border);margin-bottom:8px"><div class="mini-logo"></div><span style="font-size:.6rem;font-weight:800">TicketFlow</span></div>
-                    <div style="font-size:.62rem;padding:6px 8px;background:#ede9fe;color:var(--p);border-radius:6px;font-weight:600">🎫 Mes tickets <span style="background:#ef4444;color:white;border-radius:999px;padding:0 5px;font-size:.5rem;margin-left:4px">2</span></div>
-                    <div style="font-size:.62rem;padding:6px 8px;color:var(--gray)">+ Nouveau ticket</div>
-                    <div style="font-size:.62rem;padding:6px 8px;color:var(--gray)">✉ Générateur</div>
+      <div class="row a3">
+        <!-- Onglet message -->
+        <div class="col" style="flex:1">
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:8px">📸 Onglet — Message de candidature</div>
+          <div class="browser">
+            <div class="bbar">
+              <div class="bdot" style="background:#ef4444"></div>
+              <div class="bdot" style="background:#f59e0b"></div>
+              <div class="bdot" style="background:#10b981"></div>
+              <div class="burl">localhost:3000/pages/codeur-generator</div>
+            </div>
+            <div class="bbody">
+              <div style="padding:16px;background:var(--bg);flex:1;overflow:hidden;display:flex;flex-direction:column;gap:12px">
+                <!-- Tabs -->
+                <div style="display:flex;gap:4px;background:var(--w);border:1px solid var(--border);border-radius:10px;padding:5px;width:fit-content">
+                  <div style="background:var(--p);color:white;padding:7px 18px;border-radius:7px;font-size:.78rem;font-weight:700">✉ Message candidature</div>
+                  <div style="padding:7px 18px;border-radius:7px;font-size:.78rem;font-weight:600;color:var(--gray)">📄 Devis PDF</div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;min-height:0">
+                  <!-- Formulaire -->
+                  <div class="card">
+                    <div class="ch">Informations du projet</div>
+                    <div class="cb">
+                      <div style="font-size:.72rem;color:var(--gray);margin-bottom:4px;font-weight:600">Titre du projet (codeur.com)</div>
+                      <div class="minput">Création site e-commerce Shopify</div>
+                      <div style="font-size:.72rem;color:var(--gray);margin-bottom:4px;font-weight:600">Ton expertise</div>
+                      <div class="minput">Développeur web full-stack React</div>
+                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                        <div>
+                          <div style="font-size:.68rem;color:var(--gray);margin-bottom:4px;font-weight:600">Délai</div>
+                          <div class="minput">2 semaines</div>
+                        </div>
+                        <div>
+                          <div style="font-size:.68rem;color:var(--gray);margin-bottom:4px;font-weight:600">Budget (€)</div>
+                          <div class="minput">1500</div>
+                        </div>
+                      </div>
+                      <div style="font-size:.7rem;color:var(--gray);margin-bottom:6px;font-weight:600;margin-top:4px">Ton du message</div>
+                      <div style="display:flex;gap:5px;flex-wrap:wrap">
+                        <span style="background:#ede9fe;color:var(--p);font-size:.68rem;padding:3px 10px;border-radius:999px;font-weight:700">Professionnel</span>
+                        <span style="background:var(--bg);border:1px solid var(--border);color:var(--gray);font-size:.68rem;padding:3px 10px;border-radius:999px">Chaleureux</span>
+                        <span style="background:var(--bg);border:1px solid var(--border);color:var(--gray);font-size:.68rem;padding:3px 10px;border-radius:999px">Concis</span>
+                        <span style="background:var(--bg);border:1px solid var(--border);color:var(--gray);font-size:.68rem;padding:3px 10px;border-radius:999px">Expert</span>
+                      </div>
+                    </div>
                   </div>
-                  <div class="mini-main">
-                    <div class="mini-topbar"><span class="mini-topbar-title">Mes tickets</span></div>
-                    <div class="mini-content">
-                      <div style="background:var(--w);border:1px solid var(--border);border-radius:6px;overflow:hidden">
-                        <div class="mini-table-row head"><span>Titre</span><span>Catégorie</span><span>Priorité</span><span>Statut</span></div>
-                        <div class="mini-table-row"><span style="color:var(--dark);font-size:.6rem">Erreur lors du paiement</span><span><span class="badge b-g" style="font-size:.5rem">Technique</span></span><span><span class="badge b-e" style="font-size:.5rem">Critique</span></span><span><span class="badge b-w" style="font-size:.5rem">En cours</span></span></div>
-                        <div class="mini-table-row"><span style="color:var(--dark);font-size:.6rem">Problème de facturation</span><span><span class="badge b-g" style="font-size:.5rem">Facturation</span></span><span><span class="badge b-w" style="font-size:.5rem">Moyen</span></span><span><span class="badge b-p" style="font-size:.5rem">Ouvert</span></span></div>
-                        <div class="mini-table-row"><span style="color:var(--dark);font-size:.6rem">Demande fonctionnalité</span><span><span class="badge b-g" style="font-size:.5rem">Commercial</span></span><span><span class="badge b-g" style="font-size:.5rem">Bas</span></span><span><span class="badge b-ok" style="font-size:.5rem">Résolu</span></span></div>
+                  <!-- Message généré -->
+                  <div class="card">
+                    <div class="ch" style="justify-content:space-between">Message généré <div style="background:var(--p);color:white;border-radius:5px;padding:3px 10px;font-size:.65rem;font-weight:700">📋 Copier</div></div>
+                    <div class="cb">
+                      <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:7px;padding:12px;font-size:.75rem;color:var(--dark);line-height:1.7;height:160px;overflow:hidden">
+                        Bonjour,<br><br>
+                        J'ai lu votre projet <strong>"Création site e-commerce Shopify"</strong> avec attention et je suis convaincu de pouvoir vous livrer une solution de qualité dans les délais.<br><br>
+                        Fort de mon expérience en tant que <strong>Développeur web full-stack React</strong>, je propose une approche rigoureuse : cadrage précis, développements itératifs et communication transparente.<br><br>
+                        Je peux réaliser ce projet en <strong>2 semaines</strong> pour un budget de <strong>1 500 € HT</strong>.<br><br>
+                        Cordialement,<br>Jean Dupont
                       </div>
                     </div>
                   </div>
@@ -599,280 +981,47 @@
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- ══════════════════════════════════════════
-       SLIDE 5 — STOCKAGE LOCALSTORAGE
-  ══════════════════════════════════════════ -->
-  <div class="slide slide-light" id="s5">
-    <div class="scroll-inner">
-      <div class="section-label anim">04 — Stockage</div>
-      <h2 class="anim-2" style="font-size:1.8rem;font-weight:800;color:var(--dark);margin-bottom:6px">localStorage — La "base de données"</h2>
-      <p class="anim-3" style="color:var(--gray);font-size:.9rem;margin-bottom:28px">Toutes les données sont persistées dans le navigateur sous forme de paires clé/valeur JSON.</p>
-
-      <div class="cols2 anim-4">
-        <div>
-          <p style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:12px">Clés utilisées</p>
-
-          <div class="storage-item">
-            <div class="storage-key">tf_user</div>
-            <div class="storage-val">Session active — <code>{ email, name, role, avatar }</code><br>Supprimé à la déconnexion</div>
-          </div>
-          <div class="storage-item">
-            <div class="storage-key">tf_tickets_&lt;email&gt;</div>
-            <div class="storage-val">Tableau JSON des tickets d'un utilisateur.<br><em>Ex: tf_tickets_user@ticketflow.fr</em></div>
-          </div>
-          <div class="storage-item">
-            <div class="storage-key">tf_admin_users</div>
-            <div class="storage-val">Liste des comptes utilisateurs gérés par l'admin</div>
-          </div>
-          <div class="storage-item">
-            <div class="storage-key">tf_admin_agents</div>
-            <div class="storage-val">Liste des agents de support</div>
-          </div>
-          <div class="storage-item">
-            <div class="storage-key">tf_features</div>
-            <div class="storage-val">Modules actifs/inactifs — <code>{ "dashboard_agent": false }</code></div>
-          </div>
-
-          <div style="margin-top:16px;background:#fff5f5;border:1px solid #fecaca;border-radius:8px;padding:14px">
-            <div style="font-size:.8rem;font-weight:700;color:#991b1b;margin-bottom:6px">⚠️ Limites</div>
-            <ul style="font-size:.75rem;color:#7f1d1d;padding-left:14px;list-style:disc;display:flex;flex-direction:column;gap:4px">
-              <li>Non partagé entre navigateurs / appareils</li>
-              <li>Capacité ~5 Mo par domaine</li>
-              <li>Authentification simulée (pas de vrai backend)</li>
-            </ul>
-          </div>
-        </div>
-
-        <div>
-          <p style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:12px">Visualisation — Navigateur DevTools</p>
+        <!-- Devis PDF -->
+        <div class="col" style="flex:1">
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:8px">📸 Onglet — Devis PDF généré (aperçu)</div>
           <div class="browser">
-            <div class="browser-bar">
-              <div class="browser-dot" style="background:#ef4444"></div>
-              <div class="browser-dot" style="background:#f59e0b"></div>
-              <div class="browser-dot" style="background:#10b981"></div>
-              <div class="browser-url">DevTools → Application → Local Storage</div>
+            <div class="bbar">
+              <div class="bdot" style="background:#ef4444"></div>
+              <div class="bdot" style="background:#f59e0b"></div>
+              <div class="bdot" style="background:#10b981"></div>
+              <div class="burl">localhost:3000/pages/codeur-generator → Devis</div>
             </div>
-            <div class="browser-body" style="padding:0;background:#1e293b">
-              <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #334155">
-                <div style="padding:8px 12px;font-size:.65rem;font-weight:700;color:#94a3b8;border-right:1px solid #334155">Clé</div>
-                <div style="padding:8px 12px;font-size:.65rem;font-weight:700;color:#94a3b8">Valeur</div>
-              </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #334155;background:#0f172a">
-                <div style="padding:7px 12px;font-size:.62rem;color:#93c5fd;border-right:1px solid #334155;font-family:monospace">tf_user</div>
-                <div style="padding:7px 12px;font-size:.6rem;color:#86efac;font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{"email":"admin@ticketflow.fr","role":"admin"}</div>
-              </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #334155">
-                <div style="padding:7px 12px;font-size:.62rem;color:#93c5fd;border-right:1px solid #334155;font-family:monospace">tf_tickets_user@...</div>
-                <div style="padding:7px 12px;font-size:.6rem;color:#86efac;font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">[{"id":1712...,"title":"Erreur serveur"</div>
-              </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #334155;background:#0f172a">
-                <div style="padding:7px 12px;font-size:.62rem;color:#93c5fd;border-right:1px solid #334155;font-family:monospace">tf_features</div>
-                <div style="padding:7px 12px;font-size:.6rem;color:#86efac;font-family:monospace">{"dashboard_agent":false,"login":true}</div>
-              </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr">
-                <div style="padding:7px 12px;font-size:.62rem;color:#93c5fd;border-right:1px solid #334155;font-family:monospace">tf_admin_users</div>
-                <div style="padding:7px 12px;font-size:.6rem;color:#86efac;font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">[{"id":1,"name":"Marie Durand","role":"user"...</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="json" style="margin-top:14px">
-<span class="jc">// Lire/écrire dans le localStorage</span>
-<span class="jf">localStorage</span>.<span class="jk">setItem</span>(<span class="js">'tf_tickets_user@...'</span>, <span class="jf">JSON.stringify</span>(tickets));
-<span class="jf">localStorage</span>.<span class="jk">getItem</span>(<span class="js">'tf_tickets_user@...'</span>);  <span class="jc">→ JSON string</span>
-<span class="jf">JSON.parse</span>( ... );  <span class="jc">→ tableau JS</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════════════════
-       SLIDE 6 — MISE À JOUR D'UN TICKET
-  ══════════════════════════════════════════ -->
-  <div class="slide slide-light" id="s6">
-    <div class="scroll-inner">
-      <div class="section-label anim">05 — Mise à jour</div>
-      <h2 class="anim-2" style="font-size:1.8rem;font-weight:800;color:var(--dark);margin-bottom:6px">Cycle de vie d'un ticket</h2>
-      <p class="anim-3" style="color:var(--gray);font-size:.9rem;margin-bottom:24px">Un ticket passe par 4 états. La transition <strong>Ouvert → En cours</strong> est automatique lors de la première réponse d'un agent.</p>
-
-      <!-- Status flow -->
-      <div class="card anim-4" style="margin-bottom:20px">
-        <div class="card-h">🔄 Cycle des statuts</div>
-        <div class="card-b" style="display:flex;align-items:center;justify-content:center;flex-wrap:nowrap;gap:0;padding:20px">
-          <div class="snode">
-            <div class="scircle" style="background:#ede9fe;color:#4f46e5">Ouvert</div>
-            <span style="font-size:.65rem;color:var(--gray)">Création</span>
-          </div>
-          <div class="sarr">→</div>
-          <div class="snode">
-            <div class="scircle" style="background:#fef3c7;color:#92400e">En cours</div>
-            <span style="font-size:.65rem;color:var(--gray)">⚡ Auto si réponse</span>
-          </div>
-          <div class="sarr">→</div>
-          <div class="snode">
-            <div class="scircle" style="background:#d1fae5;color:#065f46">Résolu</div>
-            <span style="font-size:.65rem;color:var(--gray)">Problème réglé</span>
-          </div>
-          <div class="sarr">→</div>
-          <div class="snode">
-            <div class="scircle" style="background:#f1f5f9;color:#64748b">Fermé</div>
-            <span style="font-size:.65rem;color:var(--gray)">Archivé</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="cols2">
-        <!-- Création ticket -->
-        <div class="card">
-          <div class="card-h">➕ Création (côté utilisateur)</div>
-          <div class="card-b">
-            <!-- mini maquette formulaire -->
-            <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:12px">
-              <div style="font-size:.7rem;font-weight:700;color:var(--dark);margin-bottom:8px">Nouveau ticket</div>
-              <div style="background:var(--w);border:1px solid var(--border);border-radius:5px;height:16px;margin-bottom:5px;padding:0 8px;font-size:.6rem;color:var(--gl);display:flex;align-items:center">Titre du problème</div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:5px">
-                <div style="background:var(--w);border:1px solid var(--border);border-radius:5px;height:16px;font-size:.6rem;color:var(--gl);display:flex;align-items:center;padding:0 8px">Catégorie ▾</div>
-                <div style="background:var(--w);border:1px solid var(--border);border-radius:5px;height:16px;font-size:.6rem;color:var(--gl);display:flex;align-items:center;padding:0 8px">Priorité ▾</div>
-              </div>
-              <div style="background:var(--w);border:1px solid var(--border);border-radius:5px;height:32px;margin-bottom:8px"></div>
-              <div style="background:var(--p);color:white;border-radius:5px;height:18px;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700">Soumettre le ticket</div>
-            </div>
-            <div class="json" style="font-size:.72rem">
-<span class="jk">const</span> newTicket = {
-  <span class="jk">id</span>: <span class="jf">Date.now()</span>,
-  title, category, priority, desc,
-  <span class="jk">status</span>: <span class="js">'ouvert'</span>,
-  <span class="jk">date</span>: <span class="js">'2026-04-16'</span>,
-  <span class="jk">messages</span>: []
-};
-tickets.<span class="jf">unshift</span>(newTicket);
-<span class="jf">saveTickets</span>(); <span class="jc">// → localStorage</span></div>
-          </div>
-        </div>
-
-        <!-- Réponse agent -->
-        <div class="card">
-          <div class="card-h">✏️ Réponse agent & mise à jour statut</div>
-          <div class="card-b">
-            <!-- mini maquette agent ticket detail -->
-            <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:12px">
-              <div style="font-size:.68rem;font-weight:700;color:var(--dark);margin-bottom:8px;display:flex;align-items:center;gap:6px">
-                Erreur lors du paiement
-                <span class="badge b-w" style="font-size:.5rem">En cours</span>
-                <span class="badge b-e" style="font-size:.5rem">Critique</span>
-              </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">
-                <div>
-                  <div style="font-size:.58rem;color:var(--gl);margin-bottom:3px">Statut</div>
-                  <div style="background:var(--w);border:1px solid var(--border);border-radius:5px;height:16px;font-size:.6rem;color:var(--dark);display:flex;align-items:center;padding:0 8px">en_cours ▾</div>
+            <div class="bbody" style="padding:14px;background:var(--bg);gap:12px">
+              <div class="pdf-doc">
+                <div class="pdf-header">
+                  <div><div class="pdf-title">DEVIS</div></div>
+                  <div style="text-align:right"><div class="pdf-num">DEV-5678</div><div class="pdf-date">Le 16/04/2026 — Validité : 30 jours</div></div>
                 </div>
-                <div>
-                  <div style="font-size:.58rem;color:var(--gl);margin-bottom:3px">Priorité</div>
-                  <div style="background:var(--w);border:1px solid var(--border);border-radius:5px;height:16px;font-size:.6rem;color:var(--dark);display:flex;align-items:center;padding:0 8px">critique ▾</div>
+                <div class="pdf-body">
+                  <div class="pdf-row">
+                    <div class="pdf-box"><div class="pdf-box-label">Émetteur</div><div class="pdf-box-name">Jean Dupont</div><div class="pdf-box-email">jean@mail.com — SIRET 123 456 789</div></div>
+                    <div class="pdf-box"><div class="pdf-box-label">Client</div><div class="pdf-box-name">ACME Corp</div><div class="pdf-box-email">contact@acme.fr</div></div>
+                  </div>
+                  <div class="pdf-objet">Objet : Développement site e-commerce Shopify</div>
+                  <table class="pdf-tbl">
+                    <thead><tr><th>Prestation / Description</th><th style="text-align:center">Qté</th><th style="text-align:right">P.U. HT</th><th style="text-align:right">Total HT</th></tr></thead>
+                    <tbody>
+                      <tr><td>Développement front-end (React)</td><td style="text-align:center">1</td><td style="text-align:right">1 200,00 €</td><td style="text-align:right;font-weight:700">1 200,00 €</td></tr>
+                      <tr><td>Intégration Shopify & configuration</td><td style="text-align:center">1</td><td style="text-align:right">800,00 €</td><td style="text-align:right;font-weight:700">800,00 €</td></tr>
+                      <tr><td>Tests, recette & mise en ligne</td><td style="text-align:center">1</td><td style="text-align:right">300,00 €</td><td style="text-align:right;font-weight:700">300,00 €</td></tr>
+                    </tbody>
+                  </table>
+                  <div class="pdf-totals">
+                    <div class="pdf-tot-box">
+                      <div class="pdf-tot-line"><span>Total HT</span><span>2 300,00 €</span></div>
+                      <div class="pdf-tot-line"><span>TVA (20 %)</span><span>460,00 €</span></div>
+                      <div class="pdf-tot-ttc"><span>TOTAL TTC</span><span>2 760,00 €</span></div>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:5px;padding:6px 8px;margin-bottom:6px;font-size:.6rem;color:#166534">
-                <strong>Agent</strong> · 10:30 — Bonjour, nous avons pris en charge votre ticket.
-              </div>
-              <div style="display:flex;gap:5px">
-                <div style="flex:1;background:var(--w);border:1px solid var(--border);border-radius:5px;height:16px;font-size:.6rem;color:var(--gl);display:flex;align-items:center;padding:0 8px">Répondre au client...</div>
-                <div style="background:var(--p);color:white;border-radius:5px;width:50px;height:16px;display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:700">Envoyer</div>
-              </div>
-            </div>
-            <div class="json" style="font-size:.72rem">
-<span class="jf">function</span> <span class="jk">agentReply</span>() {
-  t.messages.<span class="jf">push</span>({
-    <span class="jk">from</span>: <span class="js">'agent'</span>, text, time
-  });
-  <span class="jc">// Transition auto ouvert→en_cours</span>
-  <span class="jk">if</span> (t.status === <span class="js">'ouvert'</span>)
-    t.status = <span class="js">'en_cours'</span>;
-}</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════════════════
-       SLIDE 7 — FEATURE FLAGS
-  ══════════════════════════════════════════ -->
-  <div class="slide slide-light" id="s7">
-    <div class="scroll-inner">
-      <div class="section-label anim">06 — Feature Flags</div>
-      <h2 class="anim-2" style="font-size:1.8rem;font-weight:800;color:var(--dark);margin-bottom:6px">Système de modules activables</h2>
-      <p class="anim-3" style="color:var(--gray);font-size:.9rem;margin-bottom:24px">L'admin peut activer ou désactiver chaque fonctionnalité du site en temps réel depuis son panel.</p>
-
-      <div class="cols2 anim-4">
-        <div>
-          <p style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:12px">Interface des modules (Dashboard Admin)</p>
-
-          <div class="browser">
-            <div class="browser-bar">
-              <div class="browser-dot" style="background:#ef4444"></div>
-              <div class="browser-dot" style="background:#f59e0b"></div>
-              <div class="browser-dot" style="background:#10b981"></div>
-              <div class="browser-url">localhost:3000/pages/dashboard-admin → Modules</div>
-            </div>
-            <div class="browser-body" style="padding:14px">
-              <div style="font-size:.6rem;font-weight:800;text-transform:uppercase;color:var(--gl);margin-bottom:8px;letter-spacing:.06em">Pages publiques</div>
-              <div class="ff-row on"><div><div style="font-size:.7rem;font-weight:700">Page d'accueil</div><div style="font-size:.6rem;color:var(--gray)">Landing page avec tarifs</div></div><div class="toggle on"></div></div>
-              <div class="ff-row locked"><div><div style="font-size:.7rem;font-weight:700">Connexion 🔒 <span style="font-size:.58rem;background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:999px">verrouillé</span></div><div style="font-size:.6rem;color:var(--gray)">Requis pour l'accès admin</div></div><div class="toggle on" style="opacity:.5;cursor:not-allowed"></div></div>
-              <div style="font-size:.6rem;font-weight:800;text-transform:uppercase;color:var(--gl);margin:8px 0;letter-spacing:.06em">Espace agent</div>
-              <div class="ff-row"><div><div style="font-size:.7rem;font-weight:700">Dashboard agent</div><div style="font-size:.6rem;color:var(--gray)">Accès au tableau de bord agent</div></div><div class="toggle off"></div></div>
-              <div class="ff-row on"><div><div style="font-size:.7rem;font-weight:700">Répondre à un ticket</div><div style="font-size:.6rem;color:var(--gray)">Zone de réponse agent</div></div><div class="toggle on"></div></div>
-              <div class="ff-row locked"><div><div style="font-size:.7rem;font-weight:700">Panel admin 🔒 <span style="font-size:.58rem;background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:999px">verrouillé</span></div><div style="font-size:.6rem;color:var(--gray)">Toujours accessible</div></div><div class="toggle on" style="opacity:.5;cursor:not-allowed"></div></div>
-              <div style="display:flex;gap:8px;margin-top:10px">
-                <div style="flex:1;background:var(--ok);color:white;border-radius:6px;height:22px;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700">✓ Tout activer</div>
-                <div style="flex:1;background:var(--err);color:white;border-radius:6px;height:22px;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700">✕ Tout désactiver</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <p style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:12px">API des feature flags</p>
-          <div class="json" style="margin-bottom:14px">
-<span class="jc">// features.js — 3 fonctions clés</span>
-
-<span class="jc">// 1. Vérifier si un module est actif</span>
-<span class="jf">isEnabled</span>(<span class="js">'user_create_ticket'</span>) <span class="jc">→ true/false</span>
-
-<span class="jc">// 2. Rediriger si module désactivé</span>
-<span class="jf">requireFeature</span>(<span class="js">'dashboard_user'</span>)
-<span class="jc">// → redirige vers unavailable.html</span>
-
-<span class="jc">// 3. Désactiver tous les modules</span>
-<span class="jf">setAllFeaturesSave</span>(<span class="jk">false</span>)
-<span class="jc">// sauf 'login' et 'dashboard_admin'</span>
-          </div>
-
-          <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:14px;margin-bottom:12px">
-            <div style="font-size:.8rem;font-weight:700;color:#166534;margin-bottom:8px">🔒 Modules verrouillés (toujours actifs)</div>
-            <div style="display:flex;flex-direction:column;gap:6px">
-              <div style="display:flex;align-items:center;gap:8px;font-size:.78rem"><span class="badge b-ok">login</span> Connexion — sans ça, personne ne peut accéder au site</div>
-              <div style="display:flex;align-items:center;gap:8px;font-size:.78rem"><span class="badge b-ok">dashboard_admin</span> Panel admin — l'admin garde toujours la main</div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-h" style="font-size:.75rem">📦 Liste des modules (extrait)</div>
-            <div class="card-b" style="padding:10px">
-              <table class="mini-tbl" style="font-size:.72rem">
-                <thead><tr><th>Module</th><th>Défaut</th></tr></thead>
-                <tbody>
-                  <tr><td><code>landing</code></td><td><span class="badge b-ok" style="font-size:.6rem">Actif</span></td></tr>
-                  <tr><td><code>dashboard_user</code></td><td><span class="badge b-ok" style="font-size:.6rem">Actif</span></td></tr>
-                  <tr><td><code>dashboard_agent</code></td><td><span class="badge b-g" style="font-size:.6rem">Inactif</span></td></tr>
-                  <tr><td><code>user_messaging</code></td><td><span class="badge b-g" style="font-size:.6rem">Inactif</span></td></tr>
-                  <tr><td><code>codeur_generator</code></td><td><span class="badge b-ok" style="font-size:.6rem">Actif</span></td></tr>
-                </tbody>
-              </table>
+              <div style="background:var(--p);color:white;border-radius:8px;height:36px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;cursor:pointer;margin-top:10px">⬇ Télécharger le devis en PDF</div>
             </div>
           </div>
         </div>
@@ -880,236 +1029,84 @@ tickets.<span class="jf">unshift</span>(newTicket);
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════
-       SLIDE 8 — OUTILS / GÉNÉRATEUR
-  ══════════════════════════════════════════ -->
-  <div class="slide slide-light" id="s8">
-    <div class="scroll-inner">
-      <div class="section-label anim">07 — Outils intégrés</div>
-      <h2 class="anim-2" style="font-size:1.8rem;font-weight:800;color:var(--dark);margin-bottom:6px">Générateur Codeur.com + Devis PDF</h2>
-      <p class="anim-3" style="color:var(--gray);font-size:.9rem;margin-bottom:24px">Module intégré nativement — fonctionne 100% en local, sans serveur. Accessible depuis tous les dashboards.</p>
-
-      <div class="cols2 anim-4">
-        <div>
-          <p style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:10px">Aperçu — Onglet Message</p>
-          <div class="browser">
-            <div class="browser-bar">
-              <div class="browser-dot" style="background:#ef4444"></div>
-              <div class="browser-dot" style="background:#f59e0b"></div>
-              <div class="browser-dot" style="background:#10b981"></div>
-              <div class="browser-url">localhost:3000/pages/codeur-generator</div>
-            </div>
-            <div class="browser-body" style="padding:12px">
-              <div style="display:flex;gap:4px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:4px;margin-bottom:12px;width:fit-content">
-                <div style="background:var(--w);padding:5px 14px;border-radius:6px;font-size:.62rem;font-weight:700;color:var(--p);box-shadow:0 1px 3px rgba(0,0,0,.08)">✉ Message candidature</div>
-                <div style="padding:5px 14px;border-radius:6px;font-size:.62rem;font-weight:600;color:var(--gray)">📄 Devis PDF</div>
-              </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-                <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px">
-                  <div style="font-size:.65rem;font-weight:700;margin-bottom:8px">Informations du projet</div>
-                  <div style="background:var(--w);border:1px solid var(--border);height:14px;border-radius:4px;margin-bottom:5px;padding:0 6px;font-size:.58rem;color:var(--gl);display:flex;align-items:center">Titre du projet codeur.com</div>
-                  <div style="background:var(--w);border:1px solid var(--border);height:14px;border-radius:4px;margin-bottom:5px;padding:0 6px;font-size:.58rem;color:var(--gl);display:flex;align-items:center">Votre nom / expertise</div>
-                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:5px">
-                    <div style="background:var(--w);border:1px solid var(--border);height:14px;border-radius:4px;font-size:.58rem;color:var(--gl);display:flex;align-items:center;padding:0 6px">Délai</div>
-                    <div style="background:var(--w);border:1px solid var(--border);height:14px;border-radius:4px;font-size:.58rem;color:var(--gl);display:flex;align-items:center;padding:0 6px">Budget €</div>
-                  </div>
-                  <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">
-                    <span style="background:#ede9fe;color:var(--p);font-size:.54rem;padding:2px 8px;border-radius:999px;font-weight:700">Professionnel</span>
-                    <span style="background:var(--bg);border:1px solid var(--border);color:var(--gray);font-size:.54rem;padding:2px 8px;border-radius:999px">Chaleureux</span>
-                    <span style="background:var(--bg);border:1px solid var(--border);color:var(--gray);font-size:.54rem;padding:2px 8px;border-radius:999px">Concis</span>
-                  </div>
-                </div>
-                <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px">
-                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-                    <div style="font-size:.65rem;font-weight:700">Message généré</div>
-                    <div style="background:var(--p);color:white;font-size:.55rem;padding:2px 6px;border-radius:4px;font-weight:700">📋 Copier</div>
-                  </div>
-                  <div style="background:var(--w);border:1px solid var(--border);border-radius:5px;padding:8px;font-size:.58rem;color:var(--dark);line-height:1.6;height:90px;overflow:hidden">
-                    Bonjour,<br><br>
-                    J'ai lu votre projet "Création site e-commerce" avec attention et je suis convaincu de pouvoir vous livrer une solution de qualité...<br><br>
-                    Cordialement,<br>Jean Dupont
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <p style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:10px">Aperçu — Onglet Devis PDF</p>
-          <div class="browser">
-            <div class="browser-bar">
-              <div class="browser-dot" style="background:#ef4444"></div>
-              <div class="browser-dot" style="background:#f59e0b"></div>
-              <div class="browser-dot" style="background:#10b981"></div>
-              <div class="browser-url">localhost:3000/pages/codeur-generator → Devis</div>
-            </div>
-            <div class="browser-body" style="padding:12px">
-              <!-- mini PDF preview -->
-              <div style="background:white;border:1px solid var(--border);border-radius:6px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08)">
-                <div style="background:linear-gradient(90deg,#4f46e5,#06b6d4);padding:10px 14px;display:flex;justify-content:space-between;align-items:center">
-                  <div style="color:white;font-size:.9rem;font-weight:900">DEVIS</div>
-                  <div style="text-align:right"><div style="color:rgba(255,255,255,.9);font-size:.6rem;font-weight:700">DEV-5678</div><div style="color:rgba(255,255,255,.6);font-size:.55rem">16/04/2026</div></div>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 14px">
-                  <div style="background:var(--bg);border-radius:5px;padding:7px">
-                    <div style="font-size:.52rem;font-weight:800;text-transform:uppercase;color:var(--gl);margin-bottom:3px">ÉMETTEUR</div>
-                    <div style="font-size:.65rem;font-weight:700;color:var(--dark)">Jean Dupont</div>
-                    <div style="font-size:.58rem;color:var(--gray)">jean@mail.com</div>
-                  </div>
-                  <div style="background:var(--bg);border-radius:5px;padding:7px">
-                    <div style="font-size:.52rem;font-weight:800;text-transform:uppercase;color:var(--gl);margin-bottom:3px">CLIENT</div>
-                    <div style="font-size:.65rem;font-weight:700;color:var(--dark)">ACME Corp</div>
-                    <div style="font-size:.58rem;color:var(--gray)">contact@acme.fr</div>
-                  </div>
-                </div>
-                <div style="background:#4f46e5;color:white;font-size:.6rem;font-weight:700;padding:5px 14px">Objet : Développement site e-commerce Shopify</div>
-                <table style="width:100%;border-collapse:collapse;font-size:.6rem;margin-top:0">
-                  <thead><tr style="background:#ede9fe"><th style="padding:5px 8px;text-align:left;color:var(--p)">Prestation</th><th style="padding:5px 8px;text-align:center;color:var(--p)">Qté</th><th style="padding:5px 8px;text-align:right;color:var(--p)">P.U.</th><th style="padding:5px 8px;text-align:right;color:var(--p)">Total</th></tr></thead>
-                  <tbody>
-                    <tr><td style="padding:5px 8px;border-bottom:1px solid var(--border)">Développement front-end</td><td style="padding:5px 8px;text-align:center;border-bottom:1px solid var(--border)">1</td><td style="padding:5px 8px;text-align:right;border-bottom:1px solid var(--border)">1 200 €</td><td style="padding:5px 8px;text-align:right;font-weight:700;border-bottom:1px solid var(--border)">1 200 €</td></tr>
-                    <tr style="background:var(--bg)"><td style="padding:5px 8px">Intégration & tests</td><td style="padding:5px 8px;text-align:center">1</td><td style="padding:5px 8px;text-align:right">300 €</td><td style="padding:5px 8px;text-align:right;font-weight:700">300 €</td></tr>
-                  </tbody>
-                </table>
-                <div style="display:flex;justify-content:flex-end;padding:8px 14px">
-                  <div style="min-width:140px">
-                    <div style="display:flex;justify-content:space-between;font-size:.6rem;padding:2px 0;color:var(--gray)"><span>HT</span><span>1 500 €</span></div>
-                    <div style="display:flex;justify-content:space-between;font-size:.6rem;padding:2px 0;color:var(--gray)"><span>TVA 20%</span><span>300 €</span></div>
-                    <div style="display:flex;justify-content:space-between;font-size:.7rem;font-weight:800;color:white;background:var(--p);border-radius:4px;padding:4px 6px;margin-top:4px"><span>TTC</span><span>1 800 €</span></div>
-                  </div>
-                </div>
-              </div>
-              <div style="background:var(--p);color:white;border-radius:6px;height:24px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;margin-top:10px;cursor:pointer">⬇ Télécharger le devis en PDF</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Technologies -->
-      <div class="card" style="margin-top:16px">
-        <div class="card-h">⚡ Technologies utilisées dans ce module</div>
-        <div class="card-b" style="display:flex;gap:20px;flex-wrap:wrap">
-          <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
-            <span style="font-size:1.3rem">📄</span>
-            <div><div style="font-weight:700;font-size:.85rem">jsPDF 2.5</div><div style="font-size:.72rem;color:var(--gray)">Génération PDF dans le navigateur</div></div>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
-            <span style="font-size:1.3rem">📊</span>
-            <div><div style="font-weight:700;font-size:.85rem">jsPDF-AutoTable</div><div style="font-size:.72rem;color:var(--gray)">Tableau formaté dans le PDF</div></div>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
-            <span style="font-size:1.3rem">📋</span>
-            <div><div style="font-weight:700;font-size:.85rem">Clipboard API</div><div style="font-size:.72rem;color:var(--gray)">Copie en 1 clic du message</div></div>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
-            <span style="font-size:1.3rem">🌐</span>
-            <div><div style="font-weight:700;font-size:.85rem">CDN Cloudflare</div><div style="font-size:.72rem;color:var(--gray)">Chargement des libs sans npm</div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════════════════
-       SLIDE 9 — CONCLUSION
-  ══════════════════════════════════════════ -->
-  <div class="slide slide-title" id="s9">
-    <div class="deco" style="width:400px;height:400px;background:#06b6d4;top:-100px;left:-100px"></div>
-    <div class="deco" style="width:500px;height:500px;background:#4f46e5;bottom:-100px;right:-100px"></div>
-    <div class="s-inner" style="align-items:center;text-align:center;position:relative;z-index:1">
-      <div class="title-badge anim">✅ Récapitulatif</div>
-      <h1 class="big-title anim-2" style="color:white;font-size:2.5rem">TicketFlow en résumé</h1>
-
-      <div class="anim-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:700px;margin:28px auto 0">
-        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:18px;text-align:center">
+  <!-- ═══════════════════════════════ SLIDE 9 — CONCLUSION ═══════════════════════════════ -->
+  <div class="slide s-title" id="s9">
+    <div class="deco" style="width:500px;height:500px;background:#06b6d4;top:-150px;left:-100px"></div>
+    <div class="deco" style="width:600px;height:600px;background:#4f46e5;bottom:-200px;right:-150px"></div>
+    <div class="inner center" style="position:relative;z-index:1;padding-bottom:80px">
+      <div class="tbadge a1">✅ Récapitulatif</div>
+      <h1 class="ttitle a2" style="font-size:2.5rem">TicketFlow en résumé</h1>
+      <div class="a3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:750px;margin:24px auto 0">
+        <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:18px;text-align:center">
           <div style="font-size:1.8rem;margin-bottom:8px">🏗</div>
-          <div style="color:white;font-weight:700;font-size:.9rem;margin-bottom:4px">Architecture</div>
-          <div style="color:rgba(255,255,255,.6);font-size:.75rem">100% front-end, JS Vanilla, localStorage</div>
+          <div style="color:white;font-weight:700;margin-bottom:4px">Architecture</div>
+          <div style="color:rgba(255,255,255,.55);font-size:.75rem">100% front-end, JS Vanilla, localStorage</div>
         </div>
-        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:18px;text-align:center">
+        <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:18px;text-align:center">
           <div style="font-size:1.8rem;margin-bottom:8px">🎫</div>
-          <div style="color:white;font-weight:700;font-size:.9rem;margin-bottom:4px">Tickets</div>
-          <div style="color:rgba(255,255,255,.6);font-size:.75rem">Cycle complet : création → réponse → résolution</div>
+          <div style="color:white;font-weight:700;margin-bottom:4px">Tickets JSON</div>
+          <div style="color:rgba(255,255,255,.55);font-size:.75rem">Création → Réponse → Résolution</div>
         </div>
-        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:18px;text-align:center">
+        <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:18px;text-align:center">
           <div style="font-size:1.8rem;margin-bottom:8px">👥</div>
-          <div style="color:white;font-weight:700;font-size:.9rem;margin-bottom:4px">3 Rôles</div>
-          <div style="color:rgba(255,255,255,.6);font-size:.75rem">Admin / Agent / Utilisateur</div>
+          <div style="color:white;font-weight:700;margin-bottom:4px">3 Rôles</div>
+          <div style="color:rgba(255,255,255,.55);font-size:.75rem">Admin / Agent / Utilisateur</div>
         </div>
-        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:18px;text-align:center">
+        <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:18px;text-align:center">
           <div style="font-size:1.8rem;margin-bottom:8px">⚙️</div>
-          <div style="color:white;font-weight:700;font-size:.9rem;margin-bottom:4px">Feature Flags</div>
-          <div style="color:rgba(255,255,255,.6);font-size:.75rem">20+ modules activables/désactivables</div>
+          <div style="color:white;font-weight:700;margin-bottom:4px">Feature Flags</div>
+          <div style="color:rgba(255,255,255,.55);font-size:.75rem">20+ modules activables</div>
         </div>
-        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:18px;text-align:center">
+        <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:18px;text-align:center">
           <div style="font-size:1.8rem;margin-bottom:8px">✉</div>
-          <div style="color:white;font-weight:700;font-size:.9rem;margin-bottom:4px">Générateur</div>
-          <div style="color:rgba(255,255,255,.6);font-size:.75rem">Messages codeur.com + devis PDF auto</div>
+          <div style="color:white;font-weight:700;margin-bottom:4px">Générateur</div>
+          <div style="color:rgba(255,255,255,.55);font-size:.75rem">Messages codeur.com + devis PDF</div>
         </div>
-        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:18px;text-align:center">
+        <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:18px;text-align:center">
           <div style="font-size:1.8rem;margin-bottom:8px">🔒</div>
-          <div style="color:white;font-weight:700;font-size:.9rem;margin-bottom:4px">Sécurité admin</div>
-          <div style="color:rgba(255,255,255,.6);font-size:.75rem">Accès panel garanti quels que soient les flags</div>
+          <div style="color:white;font-weight:700;margin-bottom:4px">Admin sécurisé</div>
+          <div style="color:rgba(255,255,255,.55);font-size:.75rem">Accès garanti quels que soient les flags</div>
         </div>
       </div>
-
-      <div class="anim-4" style="margin-top:28px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-        <a href="dashboard-admin.html" style="background:var(--p);color:white;padding:10px 24px;border-radius:8px;font-weight:700;font-size:.875rem;text-decoration:none;transition:.2s">🖥 Voir le Dashboard</a>
-        <a href="codeur-generator.html" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:white;padding:10px 24px;border-radius:8px;font-weight:700;font-size:.875rem;text-decoration:none">✉ Générateur Codeur</a>
-        <button onclick="window.print()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:white;padding:10px 24px;border-radius:8px;font-weight:700;font-size:.875rem;cursor:pointer">🖨 Imprimer</button>
+      <div class="a4" style="margin-top:28px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <a href="dashboard-admin.html" style="background:var(--p);color:white;padding:11px 26px;border-radius:9px;font-weight:700;font-size:.875rem;text-decoration:none">🖥 Voir le Dashboard</a>
+        <a href="codeur-generator.html" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:white;padding:11px 26px;border-radius:9px;font-weight:700;font-size:.875rem;text-decoration:none">✉ Générateur</a>
+        <button onclick="window.print()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:white;padding:11px 26px;border-radius:9px;font-weight:700;font-size:.875rem;cursor:pointer">🖨 Imprimer</button>
       </div>
     </div>
   </div>
 
 </div><!-- /deck -->
 
-<!-- NAVIGATION -->
 <div id="nav">
-  <button class="nav-btn" onclick="prevSlide()" title="Précédent (←)">‹</button>
-  <div class="dot-nav" id="dots"></div>
-  <span id="slide-counter">1 / 9</span>
-  <button class="nav-btn" onclick="nextSlide()" title="Suivant (→)">›</button>
+  <button class="nb" onclick="prev()" title="← Précédent">‹</button>
+  <div id="dots" style="display:flex;gap:6px;align-items:center"></div>
+  <span id="sc">1 / 9</span>
+  <button class="nb" onclick="next()" title="Suivant →">›</button>
 </div>
 
 <script>
-  const TOTAL = 9;
-  let current = 1;
-
-  function getSlide(n) { return document.getElementById('s' + n); }
-
-  function goTo(n) {
-    if (n < 1 || n > TOTAL) return;
-    getSlide(current).classList.remove('active');
-    getSlide(current).classList.add('out');
-    setTimeout(() => getSlide(current).classList.remove('out'), 450);
-    current = n;
-    getSlide(current).classList.add('active');
-    document.getElementById('slide-counter').textContent = current + ' / ' + TOTAL;
-    document.getElementById('progress').style.width = (current / TOTAL * 100) + '%';
-    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === current - 1));
+  const N=9; let c=1;
+  const get=n=>document.getElementById('s'+n);
+  function go(n){
+    if(n<1||n>N) return;
+    get(c).classList.remove('active');
+    get(c).classList.add('out');
+    setTimeout(()=>get(c).classList.remove('out'),450);
+    c=n;
+    get(c).classList.add('active');
+    document.getElementById('sc').textContent=c+' / '+N;
+    document.getElementById('prog').style.width=(c/N*100)+'%';
+    document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===c-1));
   }
-
-  function nextSlide() { goTo(current + 1); }
-  function prevSlide() { goTo(current - 1); }
-
-  // Dots
-  const dotsEl = document.getElementById('dots');
-  for (let i = 1; i <= TOTAL; i++) {
-    const d = document.createElement('div');
-    d.className = 'dot' + (i === 1 ? ' active' : '');
-    d.onclick = () => goTo(i);
-    d.title = 'Slide ' + i;
-    dotsEl.appendChild(d);
-  }
-
-  // Keyboard
-  document.addEventListener('keydown', e => {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); nextSlide(); }
-    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')                    { e.preventDefault(); prevSlide(); }
+  function next(){go(c+1)} function prev(){go(c-1)}
+  const dots=document.getElementById('dots');
+  for(let i=1;i<=N;i++){const d=document.createElement('div');d.className='dot'+(i===1?' on':'');d.onclick=()=>go(i);d.title='Slide '+i;dots.appendChild(d)}
+  document.addEventListener('keydown',e=>{
+    if(['ArrowRight','ArrowDown',' '].includes(e.key)){e.preventDefault();next()}
+    if(['ArrowLeft','ArrowUp'].includes(e.key)){e.preventDefault();prev()}
   });
-
-  // Init progress
-  document.getElementById('progress').style.width = (1 / TOTAL * 100) + '%';
+  document.getElementById('prog').style.width=(1/N*100)+'%';
 </script>
 </body>
 </html>
