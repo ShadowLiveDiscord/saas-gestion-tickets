@@ -91,32 +91,40 @@
     .browser{
       background:#1e293b;border-radius:12px;overflow:hidden;
       box-shadow:0 24px 60px rgba(0,0,0,.5);
+      display:flex;flex-direction:column;
     }
     .browser-bar{
-      height:36px;background:#334155;display:flex;align-items:center;gap:8px;padding:0 14px;
+      height:36px;min-height:36px;flex-shrink:0;
+      background:#334155;display:flex;align-items:center;gap:8px;padding:0 14px;
     }
-    .browser-dot{width:11px;height:11px;border-radius:50%}
+    .browser-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
     .browser-url{
-      flex:1;background:#1e293b;border-radius:6px;height:22px;
+      flex:1;min-width:0;background:#1e293b;border-radius:6px;height:22px;
       display:flex;align-items:center;padding:0 10px;margin:0 10px;
       font-size:.68rem;color:#94a3b8;font-family:monospace;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
     }
-    .browser-body{background:var(--bg);overflow:hidden}
+    .browser-body{background:var(--bg);overflow:hidden;flex-shrink:0}
 
     /* Mini dashboard layout */
-    .mini-dash{display:flex;height:100%}
+    .mini-dash{display:flex;width:100%;height:100%;overflow:hidden}
     .mini-sidebar{
-      width:56px;background:var(--w);border-right:1px solid var(--border);
+      width:56px;flex-shrink:0;background:var(--w);border-right:1px solid var(--border);
       display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:8px;
+      overflow:hidden;
     }
-    .mini-sidebar-full{width:140px;background:var(--w);border-right:1px solid var(--border);padding:10px 8px;display:flex;flex-direction:column;gap:4px}
-    .mini-logo{width:28px;height:28px;background:linear-gradient(135deg,#4f46e5,#06b6d4);border-radius:8px;margin-bottom:6px}
-    .mini-nav-item{width:32px;height:32px;background:var(--bg);border-radius:6px}
+    .mini-sidebar-full{
+      width:140px;flex-shrink:0;background:var(--w);border-right:1px solid var(--border);
+      padding:10px 8px;display:flex;flex-direction:column;gap:4px;
+      overflow:hidden;height:100%;
+    }
+    .mini-logo{width:28px;height:28px;background:linear-gradient(135deg,#4f46e5,#06b6d4);border-radius:8px;margin-bottom:6px;flex-shrink:0}
+    .mini-nav-item{width:32px;height:32px;background:var(--bg);border-radius:6px;flex-shrink:0}
     .mini-nav-item.act{background:#ede9fe}
-    .mini-main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-    .mini-topbar{height:36px;background:var(--w);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 12px;gap:8px}
+    .mini-main{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden;height:100%}
+    .mini-topbar{height:36px;min-height:36px;flex-shrink:0;background:var(--w);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 12px;gap:8px}
     .mini-topbar-title{font-size:.65rem;font-weight:700;color:var(--dark)}
-    .mini-content{padding:12px;flex:1;overflow:hidden}
+    .mini-content{padding:12px;flex:1;overflow:hidden;min-height:0}
     .mini-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
     .mini-stat{background:var(--w);border:1px solid var(--border);border-radius:6px;padding:6px;text-align:center}
     .mini-stat-n{font-size:.9rem;font-weight:800;color:var(--p)}
@@ -124,16 +132,17 @@
     .mini-table-row{
       display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;
       padding:5px 8px;border-bottom:1px solid var(--border);align-items:center;
-      font-size:.6rem;
+      font-size:.6rem;flex-shrink:0;
     }
+    .mini-table-row > span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .mini-table-row.head{background:var(--bg);font-weight:700;color:var(--gray)}
 
     /* Mini login */
     .mini-login{
-      display:flex;height:100%;
+      display:flex;width:100%;height:100%;overflow:hidden;
     }
-    .mini-login-left{flex:1;background:linear-gradient(135deg,#4f46e5,#06b6d4);display:flex;flex-direction:column;justify-content:center;padding:20px}
-    .mini-login-right{flex:1;background:var(--w);display:flex;flex-direction:column;justify-content:center;padding:20px}
+    .mini-login-left{flex:1;min-width:0;overflow:hidden;background:linear-gradient(135deg,#4f46e5,#06b6d4);display:flex;flex-direction:column;justify-content:flex-start;padding:16px}
+    .mini-login-right{flex:1;min-width:0;overflow:hidden;background:var(--w);display:flex;flex-direction:column;justify-content:flex-start;padding:16px}
     .mini-input{background:var(--bg);border:1px solid var(--border);border-radius:5px;height:18px;margin-bottom:6px;padding:0 6px;font-size:.6rem;display:flex;align-items:center;color:var(--gl)}
     .mini-btn{background:var(--p);color:white;border-radius:5px;height:22px;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;margin-top:6px}
 
@@ -328,8 +337,8 @@
               <div class="browser-dot" style="background:#10b981"></div>
               <div class="browser-url">localhost:3000/pages/dashboard-admin</div>
             </div>
-            <div class="browser-body" style="height:240px">
-              <div class="mini-dash">
+            <div class="browser-body" style="height:240px;display:flex;flex-direction:column">
+              <div class="mini-dash" style="flex:1;min-height:0">
                 <div class="mini-sidebar-full">
                   <div style="display:flex;align-items:center;gap:6px;padding:6px 4px;border-bottom:1px solid var(--border);margin-bottom:8px">
                     <div class="mini-logo"></div>
@@ -458,8 +467,8 @@
             <div class="browser-dot" style="background:#10b981"></div>
             <div class="browser-url">localhost:3000/pages/login</div>
           </div>
-          <div class="browser-body" style="height:190px">
-            <div class="mini-login">
+          <div class="browser-body" style="height:190px;display:flex;flex-direction:column">
+            <div class="mini-login" style="flex:1;min-height:0">
               <div class="mini-login-left">
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
                   <div style="width:24px;height:24px;background:rgba(255,255,255,.2);border-radius:6px"></div>
@@ -566,8 +575,8 @@
                 <div class="browser-dot" style="background:#10b981"></div>
                 <div class="browser-url">localhost:3000/pages/dashboard-user</div>
               </div>
-              <div class="browser-body" style="height:180px">
-                <div class="mini-dash">
+              <div class="browser-body" style="height:180px;display:flex;flex-direction:column">
+                <div class="mini-dash" style="flex:1;min-height:0">
                   <div class="mini-sidebar-full">
                     <div style="display:flex;align-items:center;gap:6px;padding:6px 4px;border-bottom:1px solid var(--border);margin-bottom:8px"><div class="mini-logo"></div><span style="font-size:.6rem;font-weight:800">TicketFlow</span></div>
                     <div style="font-size:.62rem;padding:6px 8px;background:#ede9fe;color:var(--p);border-radius:6px;font-weight:600">🎫 Mes tickets <span style="background:#ef4444;color:white;border-radius:999px;padding:0 5px;font-size:.5rem;margin-left:4px">2</span></div>
