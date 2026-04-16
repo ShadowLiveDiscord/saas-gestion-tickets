@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Présentation Technique — TicketFlow</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #3730a3;
+      --primary-light: #ede9fe;
+      --secondary: #06b6d4;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --dark: #0f172a;
+      --dark-2: #1e293b;
+      --gray: #64748b;
+      --gray-light: #94a3b8;
+      --border: #e2e8f0;
+      --bg: #f8fafc;
+      --white: #ffffff;
+      --text: #1e293b;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow: 0 4px 6px -1px rgba(0,0,0,.07);
+      --shadow-md: 0 10px 15px -3px rgba(0,0,0,.1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    /* ── LAYOUT ── */
+    .layout { display: flex; min-height: 100vh; }
+
+    /* ── TOC SIDEBAR ── */
+    .toc {
+      width: 250px; flex-shrink: 0;
+      background: var(--white);
+      border-right: 1px solid var(--border);
+      position: sticky; top: 0; height: 100vh;
+      overflow-y: auto; padding: 28px 0;
+    }
+    .toc-brand { padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+    .toc-brand h2 { font-size: 0.95rem; font-weight: 800; color: var(--dark); }
+    .toc-brand p  { font-size: 0.72rem; color: var(--gray-light); margin-top: 2px; }
+    .toc-link {
+      display: block; padding: 7px 20px;
+      font-size: 0.82rem; font-weight: 500; color: var(--gray);
+      text-decoration: none;
+      border-left: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .toc-link:hover { color: var(--primary); background: var(--primary-light); border-left-color: var(--primary); }
+    .toc-link.active { color: var(--primary); font-weight: 700; border-left-color: var(--primary); background: var(--primary-light); }
+    .toc-section-label {
+      font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: .08em; color: var(--gray-light);
+      padding: 12px 20px 4px;
+    }
+
+    /* ── CONTENT ── */
+    .content { flex: 1; max-width: 860px; padding: 48px 52px; }
+
+    /* ── SECTIONS ── */
+    .section { margin-bottom: 64px; }
+    .section-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--primary-light); color: var(--primary);
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .06em; padding: 4px 12px; border-radius: 999px;
+      margin-bottom: 10px;
+    }
+    .section h2 {
+      font-size: 1.6rem; font-weight: 800; color: var(--dark);
+      margin-bottom: 6px;
+    }
+    .section-subtitle {
+      font-size: 0.9rem; color: var(--gray); margin-bottom: 28px;
+      border-bottom: 1.5px solid var(--border); padding-bottom: 16px;
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .card-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 700; font-size: 0.9rem;
+      display: flex; align-items: center; gap: 8px;
+      background: var(--bg);
+    }
+    .card-body { padding: 20px; }
+
+    /* ── DIAGRAM ── */
+    .archi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .archi-box {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      text-align: center;
+      position: relative;
+    }
+    .archi-box.highlight { border-color: var(--primary); background: var(--primary-light); }
+    .archi-box .icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+      margin: 0 auto 10px;
+    }
+    .archi-box h4 { font-size: 0.9rem; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+    .archi-box p  { font-size: 0.78rem; color: var(--gray); }
+
+    .flow-arrow {
+      display: flex; align-items: center; justify-content: center;
+      color: var(--primary); font-size: 1.4rem; font-weight: 800;
+      margin: 8px 0;
+    }
+
+    /* ── SCHEMA BDD ── */
+    .schema-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .schema-table th {
+      background: var(--primary);
+      color: white;
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 700;
+    }
+    .schema-table th:first-child { border-radius: 6px 0 0 0; }
+    .schema-table th:last-child  { border-radius: 0 6px 0 0; }
+    .schema-table td {
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .schema-table tr:last-child td { border-bottom: none; }
+    .schema-table tr:nth-child(even) td { background: #f8fafc; }
+    .schema-table .type  { color: var(--secondary); font-family: monospace; font-weight: 600; font-size: 0.8rem; }
+    .schema-table .key   { color: var(--warning); font-weight: 700; }
+    .schema-table .note  { color: var(--gray); font-size: 0.78rem; }
+
+    /* ── CODE BLOCK ── */
+    .code-block {
+      background: var(--dark);
+      color: #e2e8f0;
+      border-radius: var(--radius-sm);
+      padding: 18px 20px;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.82rem;
+      line-height: 1.8;
+      overflow-x: auto;
+      margin-bottom: 16px;
+    }
+    .code-block .comment { color: #64748b; }
+    .code-block .key     { color: #93c5fd; }
+    .code-block .val     { color: #86efac; }
+    .code-block .func    { color: #fde68a; }
+    .code-block .str     { color: #fca5a5; }
+
+    /* ── FLOW STEPS ── */
+    .steps { display: flex; flex-direction: column; gap: 0; }
+    .step {
+      display: flex; gap: 16px;
+      padding: 16px 0;
+      border-left: 2px solid var(--border);
+      padding-left: 24px;
+      position: relative;
+    }
+    .step:last-child { border-left-color: transparent; }
+    .step-num {
+      position: absolute; left: -14px; top: 16px;
+      width: 26px; height: 26px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      font-size: 0.75rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-content h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 3px; color: var(--dark); }
+    .step-content p  { font-size: 0.82rem; color: var(--gray); }
+    .step-content code {
+      background: var(--primary-light);
+      color: var(--primary);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      font-family: monospace;
+    }
+
+    /* ── BADGES ── */
+    .badge {
+      display: inline-flex; align-items: center;
+      padding: 2px 10px; border-radius: 999px;
+      font-size: 0.72rem; font-weight: 700;
+    }
+    .badge-primary { background: #ede9fe; color: var(--primary); }
+    .badge-success { background: #d1fae5; color: #065f46; }
+    .badge-warning { background: #fef3c7; color: #92400e; }
+    .badge-danger  { background: #fee2e2; color: #991b1b; }
+    .badge-info    { background: #cffafe; color: #155e75; }
+    .badge-gray    { background: #f1f5f9; color: var(--gray); }
+
+    /* ── ROLE TABLE ── */
+    .role-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+    .role-card {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+    .role-card.admin  { border-color: #fecaca; background: #fff5f5; }
+    .role-card.agent  { border-color: #a7f3d0; background: #f0fdf4; }
+    .role-card.user   { border-color: #bfdbfe; background: #eff6ff; }
+    .role-card h4 { font-size: 0.875rem; font-weight: 700; margin-bottom: 8px; }
+    .role-card ul { padding-left: 14px; font-size: 0.8rem; color: var(--gray); list-style: disc; display: flex; flex-direction: column; gap: 3px; }
+
+    /* ── STORAGE VIZ ── */
+    .storage-row {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 12px 16px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 8px;
+    }
+    .storage-key {
+      font-family: monospace;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--primary);
+      min-width: 200px;
+    }
+    .storage-desc { font-size: 0.82rem; color: var(--gray); }
+
+    /* ── STATUS CYCLE ── */
+    .status-cycle {
+      display: flex; align-items: center; gap: 10px;
+      flex-wrap: wrap;
+      margin: 16px 0;
+    }
+    .status-node {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+    }
+    .status-circle {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; font-weight: 700; text-align: center; line-height: 1.2;
+    }
+    .status-arrow { font-size: 1.2rem; color: var(--gray-light); padding-bottom: 20px; }
+
+    /* ── PRINT ── */
+    @media print {
+      .toc { display: none; }
+      .content { padding: 20px; max-width: 100%; }
+      .section { page-break-inside: avoid; }
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 52px;
+      height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .topbar-title { font-weight: 800; font-size: 0.95rem; color: var(--dark); }
+    .topbar-actions { display: flex; gap: 10px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 18px; border-radius: var(--radius-sm);
+      font-weight: 600; font-size: 0.82rem;
+      cursor: pointer; border: 1.5px solid transparent;
+      text-decoration: none; transition: all 0.2s;
+    }
+    .btn-outline { background: transparent; color: var(--primary); border-color: var(--primary); }
+    .btn-outline:hover { background: var(--primary); color: white; }
+    .btn-ghost { background: transparent; color: var(--text); border-color: var(--border); }
+    .btn-ghost:hover { background: var(--border); }
+
+    hr.divider { border: none; border-top: 1.5px solid var(--border); margin: 28px 0; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="topbar-title">TicketFlow — Présentation Technique</span>
+  <div class="topbar-actions">
+    <a href="dashboard-admin.html" class="btn btn-ghost">← Dashboard</a>
+    <button class="btn btn-outline" onclick="window.print()">🖨 Imprimer</button>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- ── SOMMAIRE ── -->
+  <nav class="toc">
+    <div class="toc-brand">
+      <h2>TicketFlow</h2>
+      <p>Documentation technique</p>
+    </div>
+    <span class="toc-section-label">Sommaire</span>
+    <a class="toc-link" href="#architecture">1. Architecture</a>
+    <a class="toc-link" href="#roles">2. Rôles & accès</a>
+    <a class="toc-link" href="#bdd">3. Base de données (tickets)</a>
+    <a class="toc-link" href="#stockage">4. Stockage localStorage</a>
+    <a class="toc-link" href="#maj-ticket">5. Mise à jour d'un ticket</a>
+    <a class="toc-link" href="#feature-flags">6. Feature Flags</a>
+    <a class="toc-link" href="#outils">7. Outils intégrés</a>
+  </nav>
+
+  <!-- ── CONTENU ── -->
+  <div class="content">
+
+    <!-- HEADER -->
+    <div style="margin-bottom: 48px;">
+      <div style="display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#4f46e5,#06b6d4);border-radius:12px;padding:10px 18px;margin-bottom:18px;">
+        <span style="font-size:1.1rem;">🎫</span>
+        <span style="color:white;font-weight:800;font-size:1rem;">TicketFlow</span>
+      </div>
+      <h1 style="font-size:2rem;font-weight:800;color:var(--dark);margin-bottom:8px;">Présentation Technique</h1>
+      <p style="color:var(--gray);font-size:0.95rem;">Architecture, base de données tickets et cycle de mise à jour — Projet SaaS de gestion de tickets support.</p>
+    </div>
+
+    <!-- ════════════════════════════════════
+         1. ARCHITECTURE
+    ════════════════════════════════════ -->
+    <section class="section" id="architecture">
+      <div class="section-badge">01 — Architecture</div>
+      <h2>Architecture du projet</h2>
+      <p class="section-subtitle">TicketFlow est une application <strong>100 % front-end</strong> — aucun serveur, aucune base de données distante.</p>
+
+      <!-- Schéma couches -->
+      <div class="archi-grid">
+        <div class="archi-box">
+          <div class="icon" style="background:#dbeafe;">🌐</div>
+          <h4>Navigateur</h4>
+          <p>Toute la logique s'exécute dans le navigateur de l'utilisateur</p>
+        </div>
+        <div class="archi-box highlight">
+          <div class="icon" style="background:#ede9fe;">⚙️</div>
+          <h4>JavaScript Vanilla</h4>
+          <p>ES6+ pur — aucun framework (React, Vue…)</p>
+        </div>
+        <div class="archi-box">
+          <div class="icon" style="background:#d1fae5;">💾</div>
+          <h4>localStorage</h4>
+          <p>Persistance des données côté client (tickets, users, flags)</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">📁 Structure des fichiers</div>
+        <div class="card-body">
+          <div class="code-block">
+<span class="comment">TicketFlow/</span>
+├── <span class="key">index.html</span>               <span class="comment">← Landing page publique</span>
+├── <span class="key">cahier-des-charges.html</span>  <span class="comment">← Spécifications</span>
+├── css/
+│   ├── <span class="str">style.css</span>            <span class="comment">← Variables, boutons, cartes, formulaires</span>
+│   ├── <span class="str">auth.css</span>             <span class="comment">← Pages login / register</span>
+│   └── <span class="str">dashboard.css</span>        <span class="comment">← Layout sidebar, topbar, tables</span>
+├── js/
+│   └── <span class="func">features.js</span>         <span class="comment">← Système de feature flags (modules on/off)</span>
+└── pages/
+    ├── <span class="key">login.html</span>           <span class="comment">← Authentification (simulée)</span>
+    ├── <span class="key">register.html</span>        <span class="comment">← Inscription</span>
+    ├── <span class="key">dashboard-user.html</span>  <span class="comment">← Espace utilisateur</span>
+    ├── <span class="key">dashboard-agent.html</span> <span class="comment">← Espace agent</span>
+    ├── <span class="key">dashboard-admin.html</span> <span class="comment">← Panel administrateur</span>
+    ├── <span class="key">codeur-generator.html</span> <span class="comment">← Générateur message + devis PDF</span>
+    └── <span class="key">unavailable.html</span>     <span class="comment">← Page module désactivé</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">🔄 Flux d'une session utilisateur</div>
+        <div class="card-body">
+          <div class="steps">
+            <div class="step">
+              <div class="step-num">1</div>
+              <div class="step-content">
+                <h4>Accès à la page de connexion</h4>
+                <p><code>login.html</code> vérifie si le module <code>login</code> est actif via <code>requireFeature('login')</code></p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">2</div>
+              <div class="step-content">
+                <h4>Authentification</h4>
+                <p>Vérification de l'email + mot de passe contre les comptes de démo. La session est stockée dans <code>localStorage['tf_user']</code></p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">3</div>
+              <div class="step-content">
+                <h4>Redirection selon le rôle</h4>
+                <p><strong>admin</strong> → <code>dashboard-admin.html</code> &nbsp;|&nbsp; <strong>agent</strong> → <code>dashboard-agent.html</code> &nbsp;|&nbsp; <strong>user</strong> → <code>dashboard-user.html</code></p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">4</div>
+              <div class="step-content">
+                <h4>Chargement des données</h4>
+                <p>Les tickets sont lus depuis <code>localStorage['tf_tickets_&lt;email&gt;']</code> et affichés dynamiquement en JS</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">5</div>
+              <div class="step-content">
+                <h4>Interactions & persistance</h4>
+                <p>Toute modification (création, statut, message) est immédiatement écrite dans le <code>localStorage</code></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════
+         2. RÔLES
+    ════════════════════════════════════ -->
+    <section class="section" id="roles">
+      <div class="section-badge">02 — Rôles</div>
+      <h2>Rôles & accès</h2>
+      <p class="section-subtitle">3 rôles distincts avec des permissions différentes, définis à la connexion.</p>
+
+      <div class="role-grid">
+        <div class="role-card admin">
+          <h4>🔴 Administrateur</h4>
+          <ul>
+            <li>Vue KPIs globaux</li>
+            <li>Tous les tickets</li>
+            <li>Gestion utilisateurs</li>
+            <li>Gestion agents</li>
+            <li>Activation modules (feature flags)</li>
+            <li>Paramètres système</li>
+            <li>Accès garanti même si tous les modules sont désactivés</li>
+          </ul>
+        </div>
+        <div class="role-card agent">
+          <h4>🟢 Agent</h4>
+          <ul>
+            <li>Voir tous les tickets</li>
+            <li>Répondre aux clients</li>
+            <li>Changer statut & priorité</li>
+            <li>Onglet "mes tickets assignés"</li>
+          </ul>
+        </div>
+        <div class="role-card user">
+          <h4>🔵 Utilisateur</h4>
+          <ul>
+            <li>Créer des tickets</li>
+            <li>Voir ses propres tickets</li>
+            <li>Filtrer & rechercher</li>
+            <li>Messagerie avec l'agent</li>
+            <li>Modifier son profil</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">🔑 Comptes de démonstration</div>
+        <div class="card-body">
+          <table class="schema-table">
+            <thead><tr><th>Rôle</th><th>Email</th><th>Mot de passe</th></tr></thead>
+            <tbody>
+              <tr><td><span class="badge badge-danger">Admin</span></td><td><code>admin@ticketflow.fr</code></td><td><code>admin123</code></td></tr>
+              <tr><td><span class="badge badge-success">Agent</span></td><td><code>agent@ticketflow.fr</code></td><td><code>agent123</code></td></tr>
+              <tr><td><span class="badge badge-primary">User</span></td><td><code>user@ticketflow.fr</code></td><td><code>user123</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════
+         3. BDD TICKETS
+    ════════════════════════════════════ -->
+    <section class="section" id="bdd">
+      <div class="section-badge">03 — Base de données</div>
+      <h2>Structure d'un ticket</h2>
+      <p class="section-subtitle">Chaque ticket est un objet JSON stocké dans un tableau dans le <code>localStorage</code>.</p>
+
+      <div class="card">
+        <div class="card-header">📋 Schéma d'un objet Ticket</div>
+        <div class="card-body">
+          <table class="schema-table">
+            <thead><tr><th>Champ</th><th>Type</th><th>Valeurs possibles</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>id</strong> <span class="badge badge-warning" style="font-size:0.65rem;">PK</span></td>
+                <td class="type">number</td>
+                <td class="note">Date.now() à la création</td>
+                <td>Identifiant unique du ticket</td>
+              </tr>
+              <tr>
+                <td><strong>title</strong></td>
+                <td class="type">string</td>
+                <td class="note">Texte libre</td>
+                <td>Titre / résumé du problème</td>
+              </tr>
+              <tr>
+                <td><strong>category</strong></td>
+                <td class="type">string</td>
+                <td><code>Technique</code> <code>Facturation</code> <code>Compte</code> <code>Commercial</code></td>
+                <td>Catégorie du ticket</td>
+              </tr>
+              <tr>
+                <td><strong>priority</strong></td>
+                <td class="type">string</td>
+                <td>
+                  <span class="badge badge-gray">bas</span>
+                  <span class="badge badge-info">moyen</span>
+                  <span class="badge badge-warning">eleve</span>
+                  <span class="badge badge-danger">critique</span>
+                </td>
+                <td>Niveau de priorité</td>
+              </tr>
+              <tr>
+                <td><strong>status</strong></td>
+                <td class="type">string</td>
+                <td>
+                  <span class="badge badge-primary">ouvert</span>
+                  <span class="badge badge-warning">en_cours</span>
+                  <span class="badge badge-success">resolu</span>
+                  <span class="badge badge-gray">ferme</span>
+                </td>
+                <td>État actuel du ticket</td>
+              </tr>
+              <tr>
+                <td><strong>date</strong></td>
+                <td class="type">string</td>
+                <td class="note">Format YYYY-MM-DD</td>
+                <td>Date de création</td>
+              </tr>
+              <tr>
+                <td><strong>desc</strong></td>
+                <td class="type">string</td>
+                <td class="note">Texte libre</td>
+                <td>Description détaillée du problème</td>
+              </tr>
+              <tr>
+                <td><strong>messages</strong></td>
+                <td class="type">array</td>
+                <td class="note">[ { from, text, time } ]</td>
+                <td>Fil de messages entre user et agent</td>
+              </tr>
+              <tr>
+                <td><strong>userEmail</strong></td>
+                <td class="type">string</td>
+                <td class="note">email de l'auteur</td>
+                <td>Propriétaire du ticket (côté agent)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">💾 Exemple JSON d'un ticket</div>
+        <div class="card-body">
+          <div class="code-block">{
+  <span class="key">"id"</span>:       <span class="val">1712345678901</span>,
+  <span class="key">"title"</span>:    <span class="str">"Impossible de me connecter à mon compte"</span>,
+  <span class="key">"category"</span>: <span class="str">"Compte"</span>,
+  <span class="key">"priority"</span>: <span class="str">"eleve"</span>,
+  <span class="key">"status"</span>:   <span class="str">"en_cours"</span>,
+  <span class="key">"date"</span>:     <span class="str">"2026-04-05"</span>,
+  <span class="key">"desc"</span>:     <span class="str">"Depuis ce matin, impossible d'accéder à mon compte..."</span>,
+  <span class="key">"messages"</span>: [
+    {
+      <span class="key">"from"</span>: <span class="str">"agent"</span>,
+      <span class="key">"text"</span>: <span class="str">"Bonjour, nous avons pris en charge votre ticket."</span>,
+      <span class="key">"time"</span>: <span class="str">"10:30"</span>
+    }
+  ]
+}</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">📨 Schéma d'un objet Message (dans messages[])</div>
+        <div class="card-body">
+          <table class="schema-table">
+            <thead><tr><th>Champ</th><th>Type</th><th>Valeurs</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><strong>from</strong></td><td class="type">string</td><td><code>"agent"</code> ou <code>"user"</code></td><td>Expéditeur du message</td></tr>
+              <tr><td><strong>text</strong></td><td class="type">string</td><td class="note">Texte libre</td><td>Contenu du message</td></tr>
+              <tr><td><strong>time</strong></td><td class="type">string</td><td class="note">Format HH:MM</td><td>Heure d'envoi</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════
+         4. STOCKAGE LOCALSTORAGE
+    ════════════════════════════════════ -->
+    <section class="section" id="stockage">
+      <div class="section-badge">04 — Stockage</div>
+      <h2>Stockage localStorage</h2>
+      <p class="section-subtitle">Toutes les données sont persistées dans le <code>localStorage</code> du navigateur via des clés JSON.</p>
+
+      <div class="card">
+        <div class="card-header">🗂 Clés localStorage utilisées</div>
+        <div class="card-body">
+          <div class="storage-row">
+            <div class="storage-key">tf_user</div>
+            <div class="storage-desc">Session active — objet <code>{ email, name, role, avatar }</code>. Supprimé à la déconnexion.</div>
+          </div>
+          <div class="storage-row">
+            <div class="storage-key">tf_tickets_&lt;email&gt;</div>
+            <div class="storage-desc">Tableau JSON des tickets d'un utilisateur. Une clé par compte (ex: <code>tf_tickets_user@ticketflow.fr</code>).</div>
+          </div>
+          <div class="storage-row">
+            <div class="storage-key">tf_admin_users</div>
+            <div class="storage-desc">Liste des comptes utilisateurs gérés par l'admin. Tableau JSON d'objets <code>{ id, name, email, role, createdAt }</code>.</div>
+          </div>
+          <div class="storage-row">
+            <div class="storage-key">tf_admin_agents</div>
+            <div class="storage-desc">Liste des agents. Tableau JSON d'objets <code>{ id, name, email, specialty, tickets, resolved }</code>.</div>
+          </div>
+          <div class="storage-row">
+            <div class="storage-key">tf_features</div>
+            <div class="storage-desc">Carte des modules activés/désactivés. Objet JSON <code>{ moduleKey: boolean }</code>. Ex: <code>{ "dashboard_agent": false }</code>.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">⚠️ Limites du stockage client</div>
+        <div class="card-body">
+          <ul style="font-size:0.85rem; color: var(--gray); display: flex; flex-direction: column; gap: 8px; padding-left: 20px; list-style: disc;">
+            <li>Les données ne sont <strong>pas partagées entre navigateurs</strong> ni entre appareils</li>
+            <li>Capacité limitée à ~5 Mo par domaine</li>
+            <li>L'authentification est simulée (pas de vrai backend)</li>
+            <li>Un vrai projet en production utiliserait une base de données SQL/NoSQL + API REST</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════
+         5. MISE À JOUR D'UN TICKET
+    ════════════════════════════════════ -->
+    <section class="section" id="maj-ticket">
+      <div class="section-badge">05 — Mise à jour</div>
+      <h2>Cycle de vie & mise à jour d'un ticket</h2>
+      <p class="section-subtitle">Un ticket passe par plusieurs états. Agents et utilisateurs peuvent interagir dessus.</p>
+
+      <!-- Cycle de statuts -->
+      <div class="card" style="margin-bottom: 20px;">
+        <div class="card-header">🔄 Cycle des statuts</div>
+        <div class="card-body">
+          <div class="status-cycle">
+            <div class="status-node">
+              <div class="status-circle" style="background:#ede9fe;color:#4f46e5;">Ouvert</div>
+              <span style="font-size:0.7rem;color:var(--gray);">Création</span>
+            </div>
+            <div class="status-arrow">→</div>
+            <div class="status-node">
+              <div class="status-circle" style="background:#fef3c7;color:#92400e;">En cours</div>
+              <span style="font-size:0.7rem;color:var(--gray);">Agent répond</span>
+            </div>
+            <div class="status-arrow">→</div>
+            <div class="status-node">
+              <div class="status-circle" style="background:#d1fae5;color:#065f46;">Résolu</div>
+              <span style="font-size:0.7rem;color:var(--gray);">Problème réglé</span>
+            </div>
+            <div class="status-arrow">→</div>
+            <div class="status-node">
+              <div class="status-circle" style="background:#f1f5f9;color:#64748b;">Fermé</div>
+              <span style="font-size:0.7rem;color:var(--gray);">Archivé</span>
+            </div>
+          </div>
+          <p style="font-size:0.82rem;color:var(--gray);margin-top:8px;">
+            ⚡ Transition automatique : quand un agent envoie un premier message, le statut passe automatiquement de <strong>Ouvert → En cours</strong>.
+          </p>
+        </div>
+      </div>
+
+      <!-- Création -->
+      <div class="card">
+        <div class="card-header">➕ 1. Création d'un ticket (côté utilisateur)</div>
+        <div class="card-body">
+          <div class="steps">
+            <div class="step">
+              <div class="step-num">1</div>
+              <div class="step-content">
+                <h4>L'utilisateur remplit le formulaire</h4>
+                <p>Titre, catégorie, priorité, description. Les 3 premiers champs sont obligatoires.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">2</div>
+              <div class="step-content">
+                <h4>Appel à <code>submitNewTicket()</code></h4>
+                <p>Création de l'objet ticket avec <code>id: Date.now()</code>, <code>status: 'ouvert'</code>, <code>messages: []</code></p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">3</div>
+              <div class="step-content">
+                <h4>Ajout en tête de tableau + sauvegarde</h4>
+                <p><code>tickets.unshift(newTicket)</code> → <code>saveTickets()</code> → <code>localStorage.setItem('tf_tickets_&lt;email&gt;', JSON.stringify(tickets))</code></p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">4</div>
+              <div class="step-content">
+                <h4>Rafraîchissement de l'interface</h4>
+                <p><code>renderTickets()</code> et <code>updateStats()</code> mettent à jour l'affichage instantanément</p>
+              </div>
+            </div>
+          </div>
+          <div class="code-block"><span class="comment">// dashboard-user.html — submitNewTicket()</span>
+<span class="key">const</span> newTicket = {
+  <span class="key">id</span>:       <span class="func">Date.now()</span>,
+  title, category, priority, desc,
+  <span class="key">status</span>:   <span class="str">'ouvert'</span>,
+  <span class="key">date</span>:     <span class="func">new Date()</span>.toISOString().<span class="func">split</span>(<span class="str">'T'</span>)[0],
+  <span class="key">messages</span>: []
+};
+tickets.<span class="func">unshift</span>(newTicket);
+<span class="func">saveTickets</span>();   <span class="comment">// → localStorage</span>
+<span class="func">renderTickets</span>(); <span class="comment">// → re-render du tableau</span>
+<span class="func">updateStats</span>();   <span class="comment">// → badges & compteurs</span></div>
+        </div>
+      </div>
+
+      <!-- Mise à jour statut -->
+      <div class="card">
+        <div class="card-header">✏️ 2. Mise à jour du statut (côté agent)</div>
+        <div class="card-body">
+          <div class="steps">
+            <div class="step">
+              <div class="step-num">1</div>
+              <div class="step-content">
+                <h4>L'agent clique sur "Traiter" sur un ticket</h4>
+                <p>Appel à <code>openTicket(id)</code> → ouverture de la modale avec les détails</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">2</div>
+              <div class="step-content">
+                <h4>L'agent change le statut via le <code>&lt;select&gt;</code></h4>
+                <p>Appel à <code>changeStatus()</code> → trouve le ticket par id dans <code>allTickets[]</code>, modifie <code>t.status</code></p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">3</div>
+              <div class="step-content">
+                <h4>Mise à jour de l'affichage</h4>
+                <p><code>updateStats()</code> et <code>filterAgentTickets()</code> re-rendent le tableau immédiatement</p>
+              </div>
+            </div>
+          </div>
+          <div class="code-block"><span class="comment">// dashboard-agent.html — changeStatus()</span>
+<span class="key">function</span> <span class="func">changeStatus</span>() {
+  <span class="key">const</span> t = allTickets.<span class="func">find</span>(x => x.id === currentTicketId);
+  t.status = document.<span class="func">getElementById</span>(<span class="str">'modal-status-select'</span>).value;
+  <span class="func">updateStats</span>();
+  <span class="func">filterAgentTickets</span>();
+}</div>
+        </div>
+      </div>
+
+      <!-- Message agent -->
+      <div class="card">
+        <div class="card-header">💬 3. Réponse d'un agent (messagerie)</div>
+        <div class="card-body">
+          <div class="steps">
+            <div class="step">
+              <div class="step-num">1</div>
+              <div class="step-content">
+                <h4>L'agent saisit un message et clique "Envoyer"</h4>
+                <p>Appel à <code>agentReply()</code></p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">2</div>
+              <div class="step-content">
+                <h4>Ajout du message dans <code>t.messages[]</code></h4>
+                <p>Objet <code>{ from: 'agent', text, time }</code> poussé dans le tableau</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">3</div>
+              <div class="step-content">
+                <h4>Transition automatique de statut</h4>
+                <p>Si le ticket était <code>'ouvert'</code>, il passe automatiquement à <code>'en_cours'</code></p>
+              </div>
+            </div>
+          </div>
+          <div class="code-block"><span class="comment">// dashboard-agent.html — agentReply()</span>
+<span class="key">const</span> time = now.<span class="func">getHours</span>() + <span class="str">':'</span> + <span class="func">String</span>(now.<span class="func">getMinutes</span>()).<span class="func">padStart</span>(2, <span class="str">'0'</span>);
+t.messages.<span class="func">push</span>({ <span class="key">from</span>: <span class="str">'agent'</span>, text, time });
+
+<span class="comment">// Transition automatique ouvert → en_cours</span>
+<span class="key">if</span> (t.status === <span class="str">'ouvert'</span>) {
+  t.status = <span class="str">'en_cours'</span>;
+  <span class="func">updateStats</span>();
+}</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════
+         6. FEATURE FLAGS
+    ════════════════════════════════════ -->
+    <section class="section" id="feature-flags">
+      <div class="section-badge">06 — Feature Flags</div>
+      <h2>Système de Feature Flags</h2>
+      <p class="section-subtitle">L'admin peut activer ou désactiver chaque module du site en temps réel, sans rechargement.</p>
+
+      <div class="card">
+        <div class="card-header">🔀 Principe de fonctionnement</div>
+        <div class="card-body">
+          <div class="code-block"><span class="comment">// js/features.js</span>
+
+<span class="comment">// Vérifier si un module est actif</span>
+<span class="func">isEnabled</span>(<span class="str">'user_create_ticket'</span>) <span class="comment">// → true / false</span>
+
+<span class="comment">// Rediriger vers "Indisponible" si module désactivé</span>
+<span class="func">requireFeature</span>(<span class="str">'dashboard_user'</span>)
+
+<span class="comment">// Activer/désactiver un module et persister</span>
+<span class="func">toggleFeatureSave</span>(<span class="str">'agent_reply'</span>, <span class="key">false</span>)
+
+<span class="comment">// Désactiver TOUS les modules sauf login et dashboard_admin</span>
+<span class="func">setAllFeaturesSave</span>(<span class="key">false</span>)</div>
+
+          <p style="margin-top:12px;font-size:0.82rem;color:var(--gray);">
+            ⚠️ Les modules <strong>login</strong> et <strong>dashboard_admin</strong> sont <strong>verrouillés</strong> — ils ne peuvent jamais être désactivés pour garantir l'accès de l'administrateur.
+          </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">📦 Liste des modules disponibles</div>
+        <div class="card-body">
+          <table class="schema-table">
+            <thead><tr><th>Clé</th><th>Groupe</th><th>Par défaut</th></tr></thead>
+            <tbody>
+              <tr><td><code>landing</code></td><td>Pages publiques</td><td><span class="badge badge-success">Actif</span></td></tr>
+              <tr><td><code>login</code> 🔒</td><td>Pages publiques</td><td><span class="badge badge-success">Toujours actif</span></td></tr>
+              <tr><td><code>register</code></td><td>Pages publiques</td><td><span class="badge badge-success">Actif</span></td></tr>
+              <tr><td><code>dashboard_user</code></td><td>Espace utilisateur</td><td><span class="badge badge-success">Actif</span></td></tr>
+              <tr><td><code>user_create_ticket</code></td><td>Espace utilisateur</td><td><span class="badge badge-success">Actif</span></td></tr>
+              <tr><td><code>user_messaging</code></td><td>Espace utilisateur</td><td><span class="badge badge-gray">Inactif</span></td></tr>
+              <tr><td><code>dashboard_agent</code></td><td>Espace agent</td><td><span class="badge badge-gray">Inactif</span></td></tr>
+              <tr><td><code>agent_reply</code></td><td>Espace agent</td><td><span class="badge badge-gray">Inactif</span></td></tr>
+              <tr><td><code>dashboard_admin</code> 🔒</td><td>Panel admin</td><td><span class="badge badge-success">Toujours actif</span></td></tr>
+              <tr><td><code>codeur_generator</code></td><td>Outils</td><td><span class="badge badge-success">Actif</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════
+         7. OUTILS INTÉGRÉS
+    ════════════════════════════════════ -->
+    <section class="section" id="outils">
+      <div class="section-badge">07 — Outils</div>
+      <h2>Outils intégrés</h2>
+      <p class="section-subtitle">Module additionnel intégré nativement dans le projet.</p>
+
+      <div class="card">
+        <div class="card-header">✉ Générateur Codeur.com + Devis PDF</div>
+        <div class="card-body">
+          <div class="role-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="role-card user">
+              <h4>✉ Message de candidature</h4>
+              <ul>
+                <li>4 tons de message (Pro, Chaleureux, Concis, Expert)</li>
+                <li>Génération instantanée en temps réel</li>
+                <li>Copie en 1 clic dans le presse-papiers</li>
+              </ul>
+            </div>
+            <div class="role-card agent">
+              <h4>📄 Devis PDF automatique</h4>
+              <ul>
+                <li>Lignes de prestation dynamiques</li>
+                <li>Calcul HT / TVA / TTC automatique</li>
+                <li>Aperçu en temps réel</li>
+                <li>Export PDF via <strong>jsPDF</strong> (sans serveur)</li>
+              </ul>
+            </div>
+          </div>
+          <p style="font-size:0.82rem;color:var(--gray);margin-top:8px;">
+            Accessible depuis la sidebar de tous les dashboards. Peut être désactivé via le feature flag <code>codeur_generator</code>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script>
+  // Mise en évidence du lien actif dans le sommaire au scroll
+  const sections = document.querySelectorAll('.section');
+  const links    = document.querySelectorAll('.toc-link');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector('.toc-link[href="#' + e.target.id + '"]');
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
