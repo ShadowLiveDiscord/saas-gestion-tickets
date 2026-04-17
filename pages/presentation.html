@@ -289,6 +289,127 @@
     .tgrid{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:28px}
     .tchip{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);color:rgba(255,255,255,.75);font-size:.78rem;font-weight:600;padding:7px 18px;border-radius:999px}
     .deco{position:absolute;border-radius:50%;filter:blur(90px);opacity:.13;pointer-events:none}
+
+    /* ════ TRANSITIONS AMÉLIORÉES ════ */
+    .slide{
+      transition:opacity .45s cubic-bezier(.4,0,.2,1),transform .45s cubic-bezier(.4,0,.2,1);
+    }
+    .slide.out{opacity:0;transform:translateX(-70px) scale(.97)}
+    .slide.active{opacity:1;transform:translateX(0) scale(1)}
+    @keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes popIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+    @keyframes slideRight{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+    @keyframes countUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .slide.active .a1{animation:up .5s .05s both}
+    .slide.active .a2{animation:up .52s .15s both}
+    .slide.active .a3{animation:up .52s .27s both}
+    .slide.active .a4{animation:up .52s .4s both}
+    .slide.active .ap{animation:popIn .45s .1s both}
+    .slide.active .ar{animation:slideRight .45s .2s both}
+    #prog{transition:width .5s cubic-bezier(.4,0,.2,1);background:linear-gradient(90deg,#4f46e5,#06b6d4,#10b981);background-size:200% 100%;animation:gradShift 3s linear infinite}
+    @keyframes gradShift{0%{background-position:0 0}100%{background-position:200% 0}}
+    .dot{transition:background .25s,transform .25s,width .25s}
+    .dot.on{background:var(--p);transform:scale(1.5);width:18px;border-radius:4px}
+
+    /* ════ TOOLTIPS / DÉFINITIONS ════ */
+    .def{
+      border-bottom:1.5px dashed rgba(99,102,241,.55);
+      cursor:help;position:relative;display:inline;
+      color:inherit;font-style:normal;
+    }
+    .def::before{
+      content:attr(data-def);
+      position:absolute;
+      bottom:calc(100% + 10px);
+      left:50%;
+      transform:translateX(-50%) translateY(4px);
+      background:#1e293b;
+      color:#e2e8f0;
+      padding:10px 14px;
+      border-radius:10px;
+      font-size:.72rem;
+      width:240px;
+      text-align:left;
+      line-height:1.6;
+      z-index:9999;
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .2s,transform .2s;
+      font-weight:400;
+      border:1px solid rgba(99,102,241,.35);
+      box-shadow:0 12px 32px rgba(0,0,0,.5);
+      white-space:normal;
+    }
+    .def::after{
+      content:'';
+      position:absolute;
+      bottom:calc(100% + 4px);
+      left:50%;
+      transform:translateX(-50%) translateY(4px);
+      border:5px solid transparent;
+      border-top-color:#1e293b;
+      opacity:0;
+      transition:opacity .2s,transform .2s;
+      z-index:9999;
+      pointer-events:none;
+    }
+    .def:hover::before,.def:hover::after{opacity:1;transform:translateX(-50%) translateY(0)}
+    /* Label discret "?" sur les termes */
+    .def::before{counter-reset:none}
+    .s-dark .def{border-bottom-color:rgba(165,180,252,.5)}
+
+    /* Glossaire flottant (touche G) */
+    #glossaire{
+      position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.95);
+      background:#0f172a;border:1px solid rgba(99,102,241,.4);border-radius:16px;
+      padding:32px 36px;z-index:10000;width:min(700px,92vw);max-height:80vh;overflow-y:auto;
+      opacity:0;pointer-events:none;transition:.25s cubic-bezier(.4,0,.2,1);
+      box-shadow:0 24px 80px rgba(0,0,0,.7);
+    }
+    #glossaire.open{opacity:1;pointer-events:all;transform:translate(-50%,-50%) scale(1)}
+    #glossaire::-webkit-scrollbar{width:4px}
+    #glossaire::-webkit-scrollbar-thumb{background:rgba(99,102,241,.4);border-radius:2px}
+    .glos-title{color:white;font-size:1.1rem;font-weight:800;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between}
+    .glos-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .glos-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:10px;padding:12px 14px}
+    .glos-term{font-weight:700;font-size:.82rem;color:#a5b4fc;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+    .glos-def{font-size:.75rem;color:#94a3b8;line-height:1.6}
+    .glos-badge{background:rgba(79,70,229,.2);color:#818cf8;font-size:.6rem;padding:1px 6px;border-radius:4px;font-weight:600}
+    #glos-hint{position:fixed;bottom:80px;right:24px;background:rgba(79,70,229,.15);border:1px solid rgba(99,102,241,.3);color:#a5b4fc;padding:7px 14px;border-radius:999px;font-size:.72rem;font-weight:600;cursor:pointer;z-index:998;backdrop-filter:blur(8px);transition:.2s}
+    #glos-hint:hover{background:rgba(79,70,229,.35)}
+
+    /* ════ SIMULATION ════ */
+    .sim-view{display:none;height:100%}
+    .sim-view.active{display:flex;flex-direction:column;height:100%}
+    .sim-step-item{
+      display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:9px;
+      border:1px solid transparent;transition:.3s;margin-bottom:6px;
+    }
+    .sim-step-item .snum{
+      width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.1);
+      color:rgba(255,255,255,.4);font-size:.7rem;font-weight:800;
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.3s;
+    }
+    .sim-step-item .stxt{font-size:.78rem;color:rgba(255,255,255,.35);line-height:1.5;transition:.3s}
+    .sim-step-item .stitle{font-weight:700;font-size:.82rem;color:rgba(255,255,255,.35);transition:.3s}
+    .sim-step-item.done .snum{background:#10b981;color:white}
+    .sim-step-item.done .stitle,.sim-step-item.done .stxt{color:rgba(255,255,255,.55)}
+    .sim-step-item.active{border-color:rgba(99,102,241,.4);background:rgba(79,70,229,.15)}
+    .sim-step-item.active .snum{background:#4f46e5;color:white;box-shadow:0 0 0 4px rgba(79,70,229,.25)}
+    .sim-step-item.active .stitle{color:white;font-size:.85rem}
+    .sim-step-item.active .stxt{color:rgba(255,255,255,.65)}
+    .sim-btn{border:none;border-radius:9px;padding:10px 20px;font-weight:700;font-size:.82rem;cursor:pointer;transition:.2s}
+    .sim-btn.next{background:#4f46e5;color:white}
+    .sim-btn.next:hover{background:#3730a3}
+    .sim-btn.prev{background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.15)}
+    .sim-btn.prev:hover{background:rgba(255,255,255,.15)}
+    .sim-btn:disabled{opacity:.35;cursor:not-allowed}
+    /* Highlight d'un élément dans la maquette simulée */
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(79,70,229,.5)}50%{box-shadow:0 0 0 6px rgba(79,70,229,.2)}}
+    .highlight{animation:pulse 1.5s ease infinite;border-radius:6px}
+    @keyframes appear{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+    .appear{animation:appear .4s ease both}
   </style>
 </head>
 <body>
@@ -329,10 +450,10 @@
         <span class="tbadge">📋 Plan de la présentation</span>
       </div>
       <h2 class="a2" style="color:white;font-size:2rem;font-weight:900;margin-bottom:6px;text-align:center">Sommaire</h2>
-      <p class="a3" style="color:rgba(255,255,255,.45);font-size:.82rem;margin-bottom:26px;text-align:center">12 slides — cliquez sur une section pour y accéder directement</p>
+      <p class="a3" style="color:rgba(255,255,255,.45);font-size:.82rem;margin-bottom:26px;text-align:center">13 slides — cliquez sur une section pour y accéder directement · <kbd style="background:rgba(255,255,255,.1);color:#a5b4fc;padding:1px 7px;border-radius:4px;font-size:.75em">G</kbd> pour le glossaire</p>
 
-      <!-- Grille 5 colonnes top + 5 colonnes bas -->
-      <div class="a4" style="display:grid;grid-template-columns:repeat(5,1fr);gap:11px;width:100%;max-width:1080px">
+      <!-- Grille 6 colonnes x 2 rangées -->
+      <div class="a4" style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;width:100%;max-width:1080px">
 
         <div onclick="go(3)" style="cursor:pointer;background:rgba(79,70,229,.18);border:1px solid rgba(99,102,241,.35);border-radius:13px;padding:15px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;transition:.25s" onmouseover="this.style.background='rgba(79,70,229,.4)';this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(79,70,229,.18)';this.style.transform='translateY(0)'">
           <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#4f46e5,#818cf8);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:900;color:white">01</div>
@@ -388,7 +509,13 @@
           <div style="color:rgba(255,255,255,.4);font-size:.66rem;line-height:1.3">KPIs, gestion, feature flags</div>
         </div>
 
-        <div onclick="go(12)" style="cursor:pointer;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);border-radius:13px;padding:15px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;transition:.25s" onmouseover="this.style.background='rgba(16,185,129,.35)';this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(16,185,129,.12)';this.style.transform='translateY(0)'">
+        <div onclick="go(12)" style="cursor:pointer;background:rgba(245,158,11,.18);border:1px solid rgba(245,158,11,.35);border-radius:13px;padding:15px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;transition:.25s" onmouseover="this.style.background='rgba(245,158,11,.4)';this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(245,158,11,.18)';this.style.transform='translateY(0)'">
+          <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#f59e0b,#fbbf24);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:900;color:white">🎬</div>
+          <div style="color:white;font-weight:700;font-size:.8rem;line-height:1.3">Simulation</div>
+          <div style="color:rgba(255,255,255,.4);font-size:.66rem;line-height:1.3">Création ticket en direct</div>
+        </div>
+
+        <div onclick="go(13)" style="cursor:pointer;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);border-radius:13px;padding:15px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;transition:.25s" onmouseover="this.style.background='rgba(16,185,129,.35)';this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(16,185,129,.12)';this.style.transform='translateY(0)'">
           <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#059669,#34d399);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:900;color:white">✅</div>
           <div style="color:white;font-weight:700;font-size:.8rem;line-height:1.3">Conclusion</div>
           <div style="color:rgba(255,255,255,.4);font-size:.66rem;line-height:1.3">Récapitulatif &amp; démo live</div>
@@ -403,24 +530,24 @@
     <div class="inner" style="padding-bottom:80px">
       <div class="a1"><div class="label">01 — Architecture</div></div>
       <div class="h2 a2">Architecture du projet</div>
-      <p class="sub a3">Application <strong>100 % front-end</strong> — aucun serveur, aucune base de données distante.</p>
+      <p class="sub a3">Application <strong>100 % front-end</strong> — aucun serveur, aucune base de données distante. Survolez les termes <span class="def" data-def="Les termes soulignés en pointillé ont une définition. Survolez-les pour l'afficher, ou appuyez sur G pour le glossaire complet.">soulignés</span> pour les définitions.</p>
 
       <div class="row a4">
         <!-- Couches + structure -->
         <div class="col-40">
           <div class="layer hi">
             <div class="layericon" style="background:#ede9fe">🌐</div>
-            <div><div style="font-weight:700;font-size:.88rem">Navigateur (Client)</div><div style="font-size:.73rem;color:var(--gray)">Toute la logique s'exécute ici</div></div>
+            <div><div style="font-weight:700;font-size:.88rem"><span class="def" data-def="Le navigateur (Chrome, Firefox...) exécute HTML, CSS et JavaScript directement sur l'appareil de l'utilisateur, sans aucun serveur.">Navigateur (Client)</span></div><div style="font-size:.73rem;color:var(--gray)">Toute la logique s'exécute ici</div></div>
           </div>
           <div style="text-align:center;color:var(--gl);font-size:1.3rem">↓</div>
           <div class="layer hi">
             <div class="layericon" style="background:#dbeafe">⚙️</div>
-            <div><div style="font-weight:700;font-size:.88rem">JavaScript Vanilla ES6+</div><div style="font-size:.73rem;color:var(--gray)">Zéro framework — DOM natif, modules</div></div>
+            <div><div style="font-weight:700;font-size:.88rem"><span class="def" data-def="ES6+ (ECMAScript 2015+) : version moderne de JavaScript avec async/await, classes, modules. 'Vanilla' signifie sans framework comme React ou Vue.">JavaScript Vanilla ES6+</span></div><div style="font-size:.73rem;color:var(--gray)">Zéro framework — <span class="def" data-def="Document Object Model : l'arbre des éléments HTML. JavaScript peut le lire et le modifier pour mettre à jour l'affichage sans recharger la page.">DOM</span> natif, modules</div></div>
           </div>
           <div style="text-align:center;color:var(--gl);font-size:1.3rem">↓</div>
           <div class="layer hi">
             <div class="layericon" style="background:#d1fae5">💾</div>
-            <div><div style="font-weight:700;font-size:.88rem">localStorage (BDD locale)</div><div style="font-size:.73rem;color:var(--gray)">Persistance JSON côté client, ~5 Mo</div></div>
+            <div><div style="font-weight:700;font-size:.88rem"><span class="def" data-def="localStorage : stockage clé-valeur du navigateur, limité à ~5 Mo. Encore utilisé pour les sessions et les feature flags car synchrone et simple.">localStorage</span> (sessions &amp; flags)</div><div style="font-size:.73rem;color:var(--gray)">Persistance JSON côté client, ~5 Mo</div></div>
           </div>
           <div class="code" style="margin-top:8px">
 <span class="cc">TicketFlow/</span>
@@ -679,7 +806,7 @@
     <div class="inner" style="padding-bottom:80px">
       <div class="a1"><div class="label" style="background:#cffafe;color:#155e75">04 — Base de données</div></div>
       <div class="h2 a2">IndexedDB — La vraie base de données du navigateur</div>
-      <p class="sub a3">Remplace <code>localStorage</code> : transactions ACID, index, capacité quasi illimitée, API asynchrone.</p>
+      <p class="sub a3">Remplace <span class="def" data-def="localStorage : stockage clé-valeur simple, limité à ~5 Mo et synchrone (bloque le thread UI)."><code>localStorage</code></span> : transactions <span class="def" data-def="ACID : Atomicité (tout ou rien), Cohérence (état valide), Isolation (transactions séparées), Durabilité (données conservées même après crash).">ACID</span>, index, capacité quasi illimitée, <span class="def" data-def="API asynchrone : les opérations retournent une Promise. Avec async/await, on attend le résultat sans bloquer l'interface.">API asynchrone</span>.</p>
 
       <div class="row a4">
         <!-- Comparaison + schéma -->
@@ -991,7 +1118,7 @@
   <div class="slide s-light" id="s9">
     <div class="inner" style="padding-bottom:80px">
       <div class="a1"><div class="label">06 — Feature Flags</div></div>
-      <div class="h2 a2">Modules activables/désactivables</div>
+      <div class="h2 a2"><span class="def" data-def="Feature Flag (drapeau de fonctionnalité) : interrupteur logiciel qui permet d'activer ou de désactiver une fonctionnalité sans modifier ni redéployer le code source.">Modules</span> activables/désactivables</div>
 
       <div class="row a3">
         <div class="col-60">
@@ -1375,8 +1502,295 @@
     </div>
   </div>
 
-  <!-- ═══════════════════════════════ SLIDE 12 — CONCLUSION ═══════════════════════════════ -->
-  <div class="slide s-title" id="s12">
+  <!-- ═══════════════════════════════ SLIDE 12 — SIMULATION ═══════════════════════════════ -->
+  <div class="slide s-dark" id="s12">
+    <div class="deco" style="width:500px;height:500px;background:#4f46e5;top:-180px;right:-120px"></div>
+    <div class="deco" style="width:400px;height:400px;background:#06b6d4;bottom:-150px;left:-100px"></div>
+
+    <div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;padding:30px 50px 80px;overflow:hidden">
+      <div class="a1" style="margin-bottom:4px"><div class="label" style="background:rgba(79,70,229,.25);color:#a5b4fc;border-color:rgba(99,102,241,.4)">10 — Démo interactive</div></div>
+      <div class="h2 white a2" style="margin-bottom:4px">Simulation — Vie d'un ticket</div>
+      <p class="a3" style="color:rgba(255,255,255,.45);font-size:.82rem;margin-bottom:16px">Suivez le cycle complet de la création à la résolution.</p>
+
+      <div class="row a4" style="gap:24px;flex:1;min-height:0">
+
+        <!-- ══ MAQUETTE ANIMÉE (60%) ══ -->
+        <div style="flex:0 0 60%;min-width:0;display:flex;flex-direction:column">
+          <div class="browser" style="flex:1">
+            <div class="bbar">
+              <div class="bdot" style="background:#ef4444"></div>
+              <div class="bdot" style="background:#f59e0b"></div>
+              <div class="bdot" style="background:#10b981"></div>
+              <div class="burl" id="sim-url">localhost:3000/pages/dashboard-user.html</div>
+            </div>
+            <div class="bbody" style="position:relative">
+
+              <!-- VIEW 1 : Dashboard vide -->
+              <div class="sim-view active" id="sv1">
+                <div class="dash">
+                  <div class="dsb">
+                    <div class="dsblogo"><div class="dsbicon"></div><span class="dsbname">TicketFlow</span></div>
+                    <div class="dsbnav">
+                      <div class="dsbtitle">Menu</div>
+                      <div class="dsbitem act" style="outline:2px solid #4f46e5;outline-offset:2px"><span class="ic">☰</span> Mes tickets</div>
+                      <div class="dsbitem"><span class="ic">+</span> Nouveau ticket</div>
+                    </div>
+                  </div>
+                  <div class="dmain">
+                    <div class="dtop">
+                      <div><div class="dtitle">Mes tickets</div><div class="dsub">Aucun ticket pour l'instant</div></div>
+                      <div style="margin-left:auto;background:#e2e8f0;color:#94a3b8;border-radius:7px;padding:5px 14px;font-size:.72rem;font-weight:700">+ Nouveau ticket</div>
+                    </div>
+                    <div class="dcontent" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
+                      <div style="font-size:2rem;margin-bottom:10px;opacity:.3">🎫</div>
+                      <div style="font-size:.82rem;font-weight:600;color:var(--gray)">Aucun ticket pour l'instant</div>
+                      <div style="font-size:.73rem;color:var(--gl);margin-top:4px">Créez votre première demande de support</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- VIEW 2 : Bouton "+ Nouveau ticket" mis en surbrillance -->
+              <div class="sim-view" id="sv2">
+                <div class="dash">
+                  <div class="dsb">
+                    <div class="dsblogo"><div class="dsbicon"></div><span class="dsbname">TicketFlow</span></div>
+                    <div class="dsbnav">
+                      <div class="dsbtitle">Menu</div>
+                      <div class="dsbitem"><span class="ic">☰</span> Mes tickets</div>
+                      <div class="dsbitem act" style="outline:2px solid #4f46e5;outline-offset:2px"><span class="ic">+</span> Nouveau ticket</div>
+                    </div>
+                  </div>
+                  <div class="dmain">
+                    <div class="dtop">
+                      <div><div class="dtitle">Nouveau ticket</div><div class="dsub">Créer une nouvelle demande</div></div>
+                      <div class="highlight" style="margin-left:auto;background:var(--p);color:white;border-radius:7px;padding:5px 14px;font-size:.72rem;font-weight:700;cursor:pointer">+ Nouveau ticket</div>
+                    </div>
+                    <div class="dcontent">
+                      <div class="card appear" style="max-width:500px">
+                        <div class="ch">Créer un nouveau ticket</div>
+                        <div class="cb">
+                          <div style="font-size:.7rem;color:var(--gray);font-weight:600;margin-bottom:3px">Titre du ticket *</div>
+                          <div class="minput highlight">Impossible de me connecter à mon compte</div>
+                          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
+                            <div>
+                              <div style="font-size:.68rem;color:var(--gray);font-weight:600;margin-bottom:3px">Catégorie *</div>
+                              <div class="mselect">Compte <span style="color:var(--gl)">▾</span></div>
+                            </div>
+                            <div>
+                              <div style="font-size:.68rem;color:var(--gray);font-weight:600;margin-bottom:3px">Priorité *</div>
+                              <div class="mselect">Élevé <span style="color:var(--gl)">▾</span></div>
+                            </div>
+                          </div>
+                          <div style="font-size:.7rem;color:var(--gray);font-weight:600;margin-top:6px;margin-bottom:3px">Description *</div>
+                          <div class="mtarea">Depuis ce matin, je ne peux plus accéder à mon compte malgré le bon mot de passe...</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- VIEW 3 : Sauvegarde en IndexedDB -->
+              <div class="sim-view" id="sv3">
+                <div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);gap:16px">
+                  <div style="background:white;border:1px solid var(--border);border-radius:14px;padding:24px 32px;text-align:center;min-width:280px">
+                    <div style="font-size:2rem;margin-bottom:10px">🗄</div>
+                    <div style="font-weight:800;font-size:.9rem;color:var(--dark);margin-bottom:6px">Enregistrement en base</div>
+                    <div style="font-size:.75rem;color:var(--gray);margin-bottom:16px">IndexedDB — Object Store "tickets"</div>
+                    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;font-family:monospace;font-size:.7rem;color:#065f46;text-align:left;line-height:1.8">
+                      <div style="color:#94a3b8;margin-bottom:4px">INSERT INTO tickets:</div>
+                      <div>id: <span style="color:#4f46e5">1714000001</span></div>
+                      <div>userEmail: <span style="color:#059669">"user@..."</span></div>
+                      <div>status: <span style="color:#059669">"ouvert"</span></div>
+                      <div>priority: <span style="color:#d97706">"eleve"</span></div>
+                    </div>
+                    <div style="margin-top:12px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:.75rem;color:#059669;font-weight:700">
+                      <div style="width:16px;height:16px;border-radius:50%;background:#10b981;display:flex;align-items:center;justify-content:center;color:white;font-size:.6rem">✓</div>
+                      Ticket enregistré avec succès
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- VIEW 4 : Ticket dans la liste -->
+              <div class="sim-view" id="sv4">
+                <div class="dash">
+                  <div class="dsb">
+                    <div class="dsblogo"><div class="dsbicon"></div><span class="dsbname">TicketFlow</span></div>
+                    <div class="dsbnav">
+                      <div class="dsbtitle">Menu</div>
+                      <div class="dsbitem act"><span class="ic">☰</span> Mes tickets <span class="bx">1</span></div>
+                      <div class="dsbitem"><span class="ic">+</span> Nouveau ticket</div>
+                    </div>
+                  </div>
+                  <div class="dmain">
+                    <div class="dtop">
+                      <div><div class="dtitle">Mes tickets</div></div>
+                      <div style="margin-left:auto;background:var(--p);color:white;border-radius:7px;padding:5px 14px;font-size:.72rem;font-weight:700">+ Nouveau ticket</div>
+                    </div>
+                    <div class="dcontent">
+                      <div class="stats" style="grid-template-columns:repeat(4,1fr);margin-bottom:10px">
+                        <div class="stat"><div><div class="statn" style="color:#4f46e5">1</div><div class="statl">Total</div></div><div class="stati" style="background:#ede9fe;font-size:.7rem;font-weight:800;color:#4f46e5">T</div></div>
+                        <div class="stat"><div><div class="statn" style="color:#d97706">1</div><div class="statl">En cours</div></div><div class="stati" style="background:#fef3c7;font-size:.7rem;font-weight:800;color:#d97706">E</div></div>
+                        <div class="stat"><div><div class="statn" style="color:#059669">0</div><div class="statl">Résolus</div></div><div class="stati" style="background:#d1fae5;font-size:.7rem;font-weight:800;color:#059669">R</div></div>
+                        <div class="stat"><div><div class="statn" style="color:#dc2626">0</div><div class="statl">Critiques</div></div><div class="stati" style="background:#fee2e2;font-size:.7rem;font-weight:800;color:#dc2626">!</div></div>
+                      </div>
+                      <table class="dtbl">
+                        <thead><tr><th>#</th><th>Titre</th><th>Catégorie</th><th>Priorité</th><th>Statut</th></tr></thead>
+                        <tbody>
+                          <tr class="appear" style="background:#eff6ff">
+                            <td style="color:var(--gl);font-size:.68rem">#1</td>
+                            <td style="font-size:.73rem;font-weight:700">Impossible de me connecter</td>
+                            <td><span class="b bg_">Compte</span></td>
+                            <td><span style="background:#fef3c7;color:#92400e;padding:2px 6px;border-radius:4px;font-size:.62rem;font-weight:700">Élevé</span></td>
+                            <td><span class="b bp">Ouvert</span></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- VIEW 5 : Agent répond → statut En cours -->
+              <div class="sim-view" id="sv5">
+                <div class="dash">
+                  <div class="dsb" style="background:#f8fafc">
+                    <div class="dsblogo"><div class="dsbicon" style="background:linear-gradient(135deg,#10b981,#34d399)"></div><span class="dsbname">TicketFlow</span></div>
+                    <div class="dsbnav">
+                      <div class="dsbtitle">Gestion</div>
+                      <div class="dsbitem act"><span class="ic" style="font-size:.6rem;font-weight:800">ALL</span> Tous les tickets</div>
+                    </div>
+                    <div style="padding:8px 12px;border-top:1px solid var(--border);display:flex;align-items:center;gap:6px;flex-shrink:0">
+                      <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#10b981,#34d399);display:flex;align-items:center;justify-content:center;font-size:.6rem;color:white;font-weight:700">A</div>
+                      <div style="font-size:.68rem;font-weight:700;color:var(--dark)">Agent Support</div>
+                    </div>
+                  </div>
+                  <div class="dmain">
+                    <div class="dtop" style="gap:8px">
+                      <div><div class="dtitle" style="font-size:.8rem">Ticket #1 — Impossible de me connecter</div></div>
+                      <div style="margin-left:auto;display:flex;gap:6px">
+                        <div style="background:#fef3c7;color:#92400e;padding:3px 9px;border-radius:5px;font-size:.65rem;font-weight:700">Élevé</div>
+                        <div class="highlight" style="background:#d1fae5;color:#065f46;padding:3px 9px;border-radius:5px;font-size:.65rem;font-weight:700">En cours ▾</div>
+                      </div>
+                    </div>
+                    <div class="dcontent" style="display:flex;flex-direction:column;gap:10px;padding:12px">
+                      <div style="font-size:.73rem;color:var(--gray);background:white;border:1px solid var(--border);border-radius:8px;padding:10px 12px;line-height:1.6">
+                        <strong>Description :</strong> Depuis ce matin, je ne peux plus accéder à mon compte malgré le bon mot de passe...
+                      </div>
+                      <div style="display:flex;flex-direction:column;gap:8px">
+                        <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:8px 12px">
+                          <div style="font-size:.62rem;font-weight:700;color:#1d4ed8;margin-bottom:3px">Utilisateur · 09:14</div>
+                          <div style="font-size:.72rem;color:var(--dark)">Depuis ce matin je ne peux plus me connecter...</div>
+                        </div>
+                        <div class="appear" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:8px 12px">
+                          <div style="font-size:.62rem;font-weight:700;color:#059669;margin-bottom:3px">Agent Support · 09:22</div>
+                          <div style="font-size:.72rem;color:var(--dark)">Bonjour, nous prenons en charge votre ticket. Pouvez-vous essayer de réinitialiser votre mot de passe ?</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- VIEW 6 : Ticket résolu -->
+              <div class="sim-view" id="sv6">
+                <div class="dash">
+                  <div class="dsb">
+                    <div class="dsblogo"><div class="dsbicon"></div><span class="dsbname">TicketFlow</span></div>
+                    <div class="dsbnav">
+                      <div class="dsbtitle">Menu</div>
+                      <div class="dsbitem act"><span class="ic">☰</span> Mes tickets</div>
+                    </div>
+                  </div>
+                  <div class="dmain">
+                    <div class="dtop"><div><div class="dtitle">Mes tickets</div></div></div>
+                    <div class="dcontent">
+                      <table class="dtbl">
+                        <thead><tr><th>#</th><th>Titre</th><th>Statut</th><th>Mis à jour</th></tr></thead>
+                        <tbody>
+                          <tr>
+                            <td style="color:var(--gl);font-size:.68rem">#1</td>
+                            <td style="font-size:.73rem;font-weight:700">Impossible de me connecter</td>
+                            <td><span class="b bok appear">✓ Résolu</span></td>
+                            <td style="font-size:.68rem;color:var(--gl)">Aujourd'hui 09:45</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <div class="appear" style="margin-top:14px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:14px">
+                        <div style="font-size:1.6rem">✅</div>
+                        <div>
+                          <div style="font-weight:700;font-size:.85rem;color:#065f46">Ticket résolu avec succès</div>
+                          <div style="font-size:.73rem;color:#059669;margin-top:2px">L'agent a marqué votre demande comme résolue. Durée de traitement : 31 min.</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div><!-- /bbody -->
+          </div><!-- /browser -->
+        </div>
+
+        <!-- ══ ÉTAPES + CONTRÔLES (40%) ══ -->
+        <div style="flex:0 0 38%;min-width:0;display:flex;flex-direction:column;gap:12px">
+
+          <div id="sim-steps" style="flex:1;display:flex;flex-direction:column;gap:4px;overflow:hidden">
+            <div class="sim-step-item active" data-step="1">
+              <div class="snum">1</div>
+              <div><div class="stitle">Dashboard chargé</div><div class="stxt">L'utilisateur est connecté. Son dashboard est vide — aucun ticket en base.</div></div>
+            </div>
+            <div class="sim-step-item" data-step="2">
+              <div class="snum">2</div>
+              <div><div class="stitle">Formulaire de création</div><div class="stxt">L'utilisateur clique sur "+ Nouveau ticket" et remplit le titre, la catégorie, la priorité et la description.</div></div>
+            </div>
+            <div class="sim-step-item" data-step="3">
+              <div class="snum">3</div>
+              <div><div class="stitle">Sauvegarde IndexedDB</div><div class="stxt">En cliquant "Envoyer", la fonction <code style="font-size:.7em;background:rgba(79,70,229,.15);color:#a5b4fc;padding:1px 5px;border-radius:3px">await TicketDB.save()</code> insère le ticket en base de données.</div></div>
+            </div>
+            <div class="sim-step-item" data-step="4">
+              <div class="snum">4</div>
+              <div><div class="stitle">Ticket visible dans la liste</div><div class="stxt">Le ticket apparaît en temps réel dans le tableau avec le statut "Ouvert" et les statistiques mises à jour.</div></div>
+            </div>
+            <div class="sim-step-item" data-step="5">
+              <div class="snum">5</div>
+              <div><div class="stitle">L'agent prend en charge</div><div class="stxt">L'agent voit le ticket dans sa file, change le statut en "En cours" et envoie un message de réponse.</div></div>
+            </div>
+            <div class="sim-step-item" data-step="6">
+              <div class="snum">6</div>
+              <div><div class="stitle">Ticket résolu ✅</div><div class="stxt">L'agent marque le ticket comme résolu. L'utilisateur voit la mise à jour dans son dashboard.</div></div>
+            </div>
+          </div>
+
+          <!-- Compteur + boutons -->
+          <div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+              <span style="font-size:.72rem;color:rgba(255,255,255,.35);font-weight:600">Étape <span id="sim-counter">1</span> / 6</span>
+              <div style="display:flex;gap:4px">
+                <div id="sim-dot-1" style="width:18px;height:6px;border-radius:3px;background:#4f46e5;transition:.25s"></div>
+                <div id="sim-dot-2" style="width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,.15);transition:.25s"></div>
+                <div id="sim-dot-3" style="width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,.15);transition:.25s"></div>
+                <div id="sim-dot-4" style="width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,.15);transition:.25s"></div>
+                <div id="sim-dot-5" style="width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,.15);transition:.25s"></div>
+                <div id="sim-dot-6" style="width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,.15);transition:.25s"></div>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px">
+              <button class="sim-btn prev" id="sim-prev" onclick="simPrev()" disabled>← Précédent</button>
+              <button class="sim-btn next" id="sim-next" onclick="simNext()">Suivant →</button>
+            </div>
+            <div style="margin-top:10px;font-size:.7rem;color:rgba(255,255,255,.25);text-align:center">↑ ↓ ou boutons pour avancer dans la simulation</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ SLIDE 13 — CONCLUSION ═══════════════════════════════ -->
+  <div class="slide s-title" id="s13">
     <div class="deco" style="width:600px;height:600px;background:#06b6d4;top:-200px;left:-130px"></div>
     <div class="deco" style="width:700px;height:700px;background:#4f46e5;bottom:-250px;right:-180px"></div>
     <div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 60px 90px;overflow:hidden">
@@ -1454,12 +1868,74 @@
 <div id="nav">
   <button class="nb" onclick="prev()" title="← Précédent">‹</button>
   <div id="dots" style="display:flex;gap:6px;align-items:center"></div>
-  <span id="sc">1 / 12</span>
+  <span id="sc">1 / 13</span>
   <button class="nb" onclick="next()" title="Suivant →">›</button>
 </div>
 
+<!-- Bouton glossaire -->
+<button id="glos-hint" title="Appuyez sur G">📖 Glossaire</button>
+
+<!-- Panneau glossaire -->
+<div id="glossaire">
+  <div class="glos-title">
+    <span>📖 Glossaire des termes techniques</span>
+    <button onclick="toggleGlossaire()" style="background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.6);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:.8rem">✕ Fermer</button>
+  </div>
+  <div style="font-size:.72rem;color:#64748b;margin-bottom:16px">Passez la souris sur les termes <span style="border-bottom:1.5px dashed rgba(99,102,241,.55);color:#a5b4fc">soulignés en pointillé</span> dans les slides pour voir leur définition. Appuyez sur <kbd style="background:rgba(255,255,255,.1);color:#a5b4fc;padding:1px 6px;border-radius:4px;font-family:monospace">G</kbd> pour ouvrir/fermer.</div>
+  <div class="glos-grid">
+    <div class="glos-item">
+      <div class="glos-term">IndexedDB <span class="glos-badge">BDD</span></div>
+      <div class="glos-def">Base de données intégrée aux navigateurs modernes. Contrairement à localStorage, elle supporte les transactions, les index et peut stocker de grandes quantités de données de manière structurée.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">localStorage <span class="glos-badge">Stockage</span></div>
+      <div class="glos-def">Système de stockage simple du navigateur. Stocke des paires clé-valeur en texte uniquement, limité à ~5 Mo. Pratique pour des petites données mais sans requêtes avancées.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">ACID <span class="glos-badge">BDD</span></div>
+      <div class="glos-def">Propriétés garantissant la fiabilité des transactions : Atomicité (tout ou rien), Cohérence (état valide), Isolation (transactions indépendantes), Durabilité (données persistées).</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">async / await <span class="glos-badge">JS</span></div>
+      <div class="glos-def">Syntaxe JavaScript moderne pour gérer des opérations asynchrones (réseau, BDD...) de façon lisible, sans bloquer l'interface utilisateur pendant l'attente du résultat.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">Feature Flag <span class="glos-badge">Archi</span></div>
+      <div class="glos-def">Interrupteur logiciel permettant d'activer ou désactiver une fonctionnalité en production sans redéployer le code. Utile pour les démos, les tests A/B ou les lancements progressifs.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">Object Store <span class="glos-badge">IndexedDB</span></div>
+      <div class="glos-def">Équivalent d'une table SQL dans IndexedDB. Stocke des objets JavaScript natifs (pas de sérialisation nécessaire) identifiés par une clé primaire (keyPath).</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">SaaS <span class="glos-badge">Modèle</span></div>
+      <div class="glos-def">Software as a Service : logiciel accessible via un navigateur web, sans installation, généralement proposé par abonnement mensuel. Ex : Slack, Notion, Jira.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">DOM <span class="glos-badge">Web</span></div>
+      <div class="glos-def">Document Object Model : représentation de la page HTML sous forme d'arbre d'objets manipulables par JavaScript. document.getElementById() permet d'accéder aux éléments.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">CDN <span class="glos-badge">Réseau</span></div>
+      <div class="glos-def">Content Delivery Network : réseau de serveurs distribués géographiquement servant des fichiers (CSS, JS...) rapidement. Utilisé ici pour charger jsPDF sans installation locale.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">CRUD <span class="glos-badge">BDD</span></div>
+      <div class="glos-def">Create, Read, Update, Delete : les 4 opérations de base sur une base de données. Toute l'API TicketDB (save, getAll, getByUser, delete) implémente ces opérations sur IndexedDB.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">Session <span class="glos-badge">Auth</span></div>
+      <div class="glos-def">Données identifiant un utilisateur connecté. Dans TicketFlow, la session est stockée dans localStorage (clé tf_user) et lue à chaque chargement de page pour rediriger l'utilisateur.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">ES6+ <span class="glos-badge">JS</span></div>
+      <div class="glos-def">Versions modernes de JavaScript (depuis 2015). Introduit les classes, modules, arrow functions, destructuration, async/await, et bien d'autres fonctionnalités utilisées dans TicketFlow.</div>
+    </div>
+  </div>
+</div>
+
 <script>
-  const N=12; let c=1;
+  const N=13; let c=1;
   const get=n=>document.getElementById('s'+n);
   function go(n){
     if(n<1||n>N) return;
@@ -1476,10 +1952,57 @@
   const dots=document.getElementById('dots');
   for(let i=1;i<=N;i++){const d=document.createElement('div');d.className='dot'+(i===1?' on':'');d.onclick=()=>go(i);d.title='Slide '+i;dots.appendChild(d)}
   document.addEventListener('keydown',e=>{
-    if(['ArrowRight','ArrowDown',' '].includes(e.key)){e.preventDefault();next()}
-    if(['ArrowLeft','ArrowUp'].includes(e.key)){e.preventDefault();prev()}
+    if(document.getElementById('glossaire').classList.contains('open')){
+      if(e.key==='Escape'||e.key==='g')toggleGlossaire();
+      return;
+    }
+    if(['ArrowRight','ArrowDown',' '].includes(e.key)&&c!==12){e.preventDefault();next()}
+    if(['ArrowLeft','ArrowUp'].includes(e.key)&&c!==12){e.preventDefault();prev()}
+    if(e.key==='g'||e.key==='G'){e.preventDefault();toggleGlossaire();}
   });
   document.getElementById('prog').style.width=(1/N*100)+'%';
+
+  /* ── Simulation ── */
+  let simCur = 1;
+  const SIM_MAX = 6;
+  const SIM_URLS = [
+    'localhost:3000/pages/dashboard-user.html',
+    'localhost:3000/pages/dashboard-user.html → Nouveau ticket',
+    'IndexedDB — TicketDB.save(ticket)',
+    'localhost:3000/pages/dashboard-user.html',
+    'localhost:3000/pages/dashboard-agent.html',
+    'localhost:3000/pages/dashboard-user.html'
+  ];
+  function simGo(n){
+    document.getElementById('sv'+simCur).classList.remove('active');
+    simCur=n;
+    document.getElementById('sv'+simCur).classList.add('active');
+    document.getElementById('sim-url').textContent=SIM_URLS[simCur-1];
+    document.getElementById('sim-counter').textContent=simCur;
+    document.getElementById('sim-prev').disabled=simCur===1;
+    document.getElementById('sim-next').disabled=simCur===SIM_MAX;
+    document.getElementById('sim-next').textContent=simCur===SIM_MAX?'✅ Terminé':'Suivant →';
+    document.querySelectorAll('.sim-step-item').forEach((el,i)=>{
+      el.classList.toggle('active',i+1===simCur);
+      el.classList.toggle('done',i+1<simCur);
+    });
+    for(let i=1;i<=SIM_MAX;i++){
+      const d=document.getElementById('sim-dot-'+i);
+      if(!d)continue;
+      if(i<simCur){d.style.background='#10b981';d.style.width='6px';}
+      else if(i===simCur){d.style.background='#4f46e5';d.style.width='18px';}
+      else{d.style.background='rgba(255,255,255,.15)';d.style.width='6px';}
+    }
+  }
+  function simNext(){if(simCur<SIM_MAX)simGo(simCur+1);}
+  function simPrev(){if(simCur>1)simGo(simCur-1);}
+
+  /* ── Glossaire flottant (touche G) ── */
+  function toggleGlossaire(){
+    document.getElementById('glossaire').classList.toggle('open');
+  }
+  document.getElementById('glos-hint').onclick=toggleGlossaire;
+  document.getElementById('glossaire').addEventListener('click',e=>{if(e.target===e.currentTarget)toggleGlossaire();});
 </script>
 </body>
 </html>
