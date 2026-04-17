@@ -329,57 +329,69 @@
         <span class="tbadge">📋 Plan de la présentation</span>
       </div>
       <h2 class="a2" style="color:white;font-size:2rem;font-weight:900;margin-bottom:6px;text-align:center">Sommaire</h2>
-      <p class="a3" style="color:rgba(255,255,255,.45);font-size:.82rem;margin-bottom:26px;text-align:center">Cliquez sur une section pour y accéder directement</p>
+      <p class="a3" style="color:rgba(255,255,255,.45);font-size:.82rem;margin-bottom:26px;text-align:center">12 slides — cliquez sur une section pour y accéder directement</p>
 
-      <!-- Grille 4 colonnes, centrée -->
-      <div class="a4" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;width:100%;max-width:1000px">
+      <!-- Grille 5 colonnes top + 5 colonnes bas -->
+      <div class="a4" style="display:grid;grid-template-columns:repeat(5,1fr);gap:11px;width:100%;max-width:1080px">
 
-        <div onclick="go(3)" style="cursor:pointer;background:rgba(79,70,229,.18);border:1px solid rgba(99,102,241,.35);border-radius:14px;padding:18px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;transition:.25s" onmouseover="this.style.background='rgba(79,70,229,.4)';this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(79,70,229,.18)';this.style.transform='translateY(0)'">
-          <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#4f46e5,#818cf8);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:900;color:white">01</div>
-          <div style="color:white;font-weight:700;font-size:.82rem;line-height:1.3">Architecture</div>
-          <div style="color:rgba(255,255,255,.45);font-size:.68rem;line-height:1.4">Stack front-end, couches applicatives</div>
+        <div onclick="go(3)" style="cursor:pointer;background:rgba(79,70,229,.18);border:1px solid rgba(99,102,241,.35);border-radius:13px;padding:15px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;transition:.25s" onmouseover="this.style.background='rgba(79,70,229,.4)';this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(79,70,229,.18)';this.style.transform='translateY(0)'">
+          <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#4f46e5,#818cf8);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:900;color:white">01</div>
+          <div style="color:white;font-weight:700;font-size:.8rem;line-height:1.3">Architecture</div>
+          <div style="color:rgba(255,255,255,.4);font-size:.66rem;line-height:1.3">Stack front-end, couches</div>
         </div>
 
-        <div onclick="go(4)" style="cursor:pointer;background:rgba(16,185,129,.18);border:1px solid rgba(16,185,129,.35);border-radius:14px;padding:18px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;transition:.25s" onmouseover="this.style.background='rgba(16,185,129,.4)';this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(16,185,129,.18)';this.style.transform='translateY(0)'">
-          <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#10b981,#34d399);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:900;color:white">02</div>
-          <div style="color:white;font-weight:700;font-size:.82rem;line-height:1.3">Rôles &amp; Accès</div>
-          <div style="color:rgba(255,255,255,.45);font-size:.68rem;line-height:1.4">Admin, Agent, Utilisateur</div>
+        <div onclick="go(4)" style="cursor:pointer;background:rgba(16,185,129,.18);border:1px solid rgba(16,185,129,.35);border-radius:13px;padding:15px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;transition:.25s" onmouseover="this.style.background='rgba(16,185,129,.4)';this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(16,185,129,.18)';this.style.transform='translateY(0)'">
+          <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#10b981,#34d399);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:900;color:white">02</div>
+          <div style="color:white;font-weight:700;font-size:.8rem;line-height:1.3">Rôles &amp; Accès</div>
+          <div style="color:rgba(255,255,255,.4);font-size:.66rem;line-height:1.3">Admin, Agent, User</div>
         </div>
 
-        <div onclick="go(5)" style="cursor:pointer;background:rgba(245,158,11,.18);border:1px solid rgba(245,158,11,.35);border-radius:14px;padding:18px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;transition:.25s" onmouseover="this.style.background='rgba(245,158,11,.4)';this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(245,158,11,.18)';this.style.transform='translateY(0)'">
-          <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#f59e0b,#fbbf24);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:900;color:white">03</div>
-          <div style="color:white;font-weight:700;font-size:.82rem;line-height:1.3">Schéma BDD</div>
-          <div style="color:rgba(255,255,255,.45);font-size:.68rem;line-height:1.4">Structure des tickets en base</div>
+        <div onclick="go(5)" style="cursor:pointer;background:rgba(245,158,11,.18);border:1px solid rgba(245,158,11,.35);border-radius:13px;padding:15px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;transition:.25s" onmouseover="this.style.background='rgba(245,158,11,.4)';this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(245,158,11,.18)';this.style.transform='translateY(0)'">
+          <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#f59e0b,#fbbf24);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:900;color:white">03</div>
+          <div style="color:white;font-weight:700;font-size:.8rem;line-height:1.3">Schéma BDD</div>
+          <div style="color:rgba(255,255,255,.4);font-size:.66rem;line-height:1.3">Structure des tickets</div>
         </div>
 
-        <div onclick="go(6)" style="cursor:pointer;background:rgba(6,182,212,.18);border:1px solid rgba(6,182,212,.35);border-radius:14px;padding:18px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;transition:.25s" onmouseover="this.style.background='rgba(6,182,212,.4)';this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(6,182,212,.18)';this.style.transform='translateY(0)'">
-          <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#06b6d4,#22d3ee);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:900;color:white">04</div>
-          <div style="color:white;font-weight:700;font-size:.82rem;line-height:1.3">IndexedDB</div>
-          <div style="color:rgba(255,255,255,.45);font-size:.68rem;line-height:1.4">Vraie BDD, async, migrations</div>
+        <div onclick="go(6)" style="cursor:pointer;background:rgba(6,182,212,.18);border:1px solid rgba(6,182,212,.35);border-radius:13px;padding:15px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;transition:.25s" onmouseover="this.style.background='rgba(6,182,212,.4)';this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(6,182,212,.18)';this.style.transform='translateY(0)'">
+          <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#06b6d4,#22d3ee);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:900;color:white">04</div>
+          <div style="color:white;font-weight:700;font-size:.8rem;line-height:1.3">IndexedDB</div>
+          <div style="color:rgba(255,255,255,.4);font-size:.66rem;line-height:1.3">BDD réelle, async, index</div>
         </div>
 
-        <div onclick="go(7)" style="cursor:pointer;background:rgba(139,92,246,.18);border:1px solid rgba(139,92,246,.35);border-radius:14px;padding:18px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;transition:.25s" onmouseover="this.style.background='rgba(139,92,246,.4)';this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(139,92,246,.18)';this.style.transform='translateY(0)'">
-          <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#8b5cf6,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:900;color:white">05</div>
-          <div style="color:white;font-weight:700;font-size:.82rem;line-height:1.3">Création ticket</div>
-          <div style="color:rgba(255,255,255,.45);font-size:.68rem;line-height:1.4">Formulaire → sauvegarde BDD</div>
+        <div onclick="go(7)" style="cursor:pointer;background:rgba(139,92,246,.18);border:1px solid rgba(139,92,246,.35);border-radius:13px;padding:15px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;transition:.25s" onmouseover="this.style.background='rgba(139,92,246,.4)';this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(139,92,246,.18)';this.style.transform='translateY(0)'">
+          <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#8b5cf6,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:900;color:white">05</div>
+          <div style="color:white;font-weight:700;font-size:.8rem;line-height:1.3">Création ticket</div>
+          <div style="color:rgba(255,255,255,.4);font-size:.66rem;line-height:1.3">Formulaire → IndexedDB</div>
         </div>
 
-        <div onclick="go(8)" style="cursor:pointer;background:rgba(239,68,68,.18);border:1px solid rgba(239,68,68,.35);border-radius:14px;padding:18px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;transition:.25s" onmouseover="this.style.background='rgba(239,68,68,.4)';this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(239,68,68,.18)';this.style.transform='translateY(0)'">
-          <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#ef4444,#f87171);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:900;color:white">06</div>
-          <div style="color:white;font-weight:700;font-size:.82rem;line-height:1.3">Vue Agent</div>
-          <div style="color:rgba(255,255,255,.45);font-size:.68rem;line-height:1.4">File, messagerie, statuts</div>
+        <div onclick="go(8)" style="cursor:pointer;background:rgba(239,68,68,.18);border:1px solid rgba(239,68,68,.35);border-radius:13px;padding:15px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;transition:.25s" onmouseover="this.style.background='rgba(239,68,68,.4)';this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(239,68,68,.18)';this.style.transform='translateY(0)'">
+          <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#ef4444,#f87171);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:900;color:white">06</div>
+          <div style="color:white;font-weight:700;font-size:.8rem;line-height:1.3">Vue Agent</div>
+          <div style="color:rgba(255,255,255,.4);font-size:.66rem;line-height:1.3">File, messagerie, statuts</div>
         </div>
 
-        <div onclick="go(9)" style="cursor:pointer;background:rgba(236,72,153,.18);border:1px solid rgba(236,72,153,.35);border-radius:14px;padding:18px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;transition:.25s" onmouseover="this.style.background='rgba(236,72,153,.4)';this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(236,72,153,.18)';this.style.transform='translateY(0)'">
-          <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#ec4899,#f472b6);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:900;color:white">07</div>
-          <div style="color:white;font-weight:700;font-size:.82rem;line-height:1.3">Feature Flags</div>
-          <div style="color:rgba(255,255,255,.45);font-size:.68rem;line-height:1.4">Activation dynamique des modules</div>
+        <div onclick="go(9)" style="cursor:pointer;background:rgba(236,72,153,.18);border:1px solid rgba(236,72,153,.35);border-radius:13px;padding:15px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;transition:.25s" onmouseover="this.style.background='rgba(236,72,153,.4)';this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(236,72,153,.18)';this.style.transform='translateY(0)'">
+          <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#ec4899,#f472b6);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:900;color:white">07</div>
+          <div style="color:white;font-weight:700;font-size:.8rem;line-height:1.3">Feature Flags</div>
+          <div style="color:rgba(255,255,255,.4);font-size:.66rem;line-height:1.3">Modules dynamiques</div>
         </div>
 
-        <div onclick="go(10)" style="cursor:pointer;background:rgba(14,165,233,.18);border:1px solid rgba(14,165,233,.35);border-radius:14px;padding:18px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;transition:.25s" onmouseover="this.style.background='rgba(14,165,233,.4)';this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(14,165,233,.18)';this.style.transform='translateY(0)'">
-          <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#0ea5e9,#38bdf8);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:900;color:white">08</div>
-          <div style="color:white;font-weight:700;font-size:.82rem;line-height:1.3">Générateur</div>
-          <div style="color:rgba(255,255,255,.45);font-size:.68rem;line-height:1.4">Messages Codeur.com + devis PDF</div>
+        <div onclick="go(10)" style="cursor:pointer;background:rgba(29,78,216,.22);border:1px solid rgba(59,130,246,.4);border-radius:13px;padding:15px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;transition:.25s" onmouseover="this.style.background='rgba(29,78,216,.45)';this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(29,78,216,.22)';this.style.transform='translateY(0)'">
+          <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#1d4ed8,#60a5fa);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:900;color:white">08</div>
+          <div style="color:white;font-weight:700;font-size:.8rem;line-height:1.3">Vue Utilisateur</div>
+          <div style="color:rgba(255,255,255,.4);font-size:.66rem;line-height:1.3">Dashboard, tickets, messages</div>
+        </div>
+
+        <div onclick="go(11)" style="cursor:pointer;background:rgba(220,38,38,.22);border:1px solid rgba(252,165,165,.4);border-radius:13px;padding:15px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;transition:.25s" onmouseover="this.style.background='rgba(220,38,38,.45)';this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(220,38,38,.22)';this.style.transform='translateY(0)'">
+          <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#dc2626,#f87171);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:900;color:white">09</div>
+          <div style="color:white;font-weight:700;font-size:.8rem;line-height:1.3">Vue Admin</div>
+          <div style="color:rgba(255,255,255,.4);font-size:.66rem;line-height:1.3">KPIs, gestion, feature flags</div>
+        </div>
+
+        <div onclick="go(12)" style="cursor:pointer;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);border-radius:13px;padding:15px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;transition:.25s" onmouseover="this.style.background='rgba(16,185,129,.35)';this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(16,185,129,.12)';this.style.transform='translateY(0)'">
+          <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#059669,#34d399);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:900;color:white">✅</div>
+          <div style="color:white;font-weight:700;font-size:.8rem;line-height:1.3">Conclusion</div>
+          <div style="color:rgba(255,255,255,.4);font-size:.66rem;line-height:1.3">Récapitulatif &amp; démo live</div>
         </div>
 
       </div>
@@ -1100,70 +1112,85 @@
     </div>
   </div>
 
-  <!-- ═══════════════════════════════ SLIDE 8 — GÉNÉRATEUR ═══════════════════════════════ -->
+  <!-- ═══════════════════════════════ SLIDE 10 — VUE UTILISATEUR ═══════════════════════════════ -->
   <div class="slide s-light" id="s10">
     <div class="inner" style="padding-bottom:80px">
-      <div class="a1"><div class="label">07 — Outils intégrés</div></div>
-      <div class="h2 a2">Générateur Codeur.com + Devis PDF</div>
+      <div class="a1"><div class="label" style="background:#eff6ff;color:#1d4ed8">08 — Vue Utilisateur</div></div>
+      <div class="h2 a2">Ce que voit et fait l'utilisateur</div>
+      <p class="sub a3">Parcours complet depuis la connexion jusqu'à la résolution du ticket.</p>
 
-      <div class="row a3">
-        <!-- Onglet message -->
-        <div class="col" style="flex:1">
-          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:8px">📸 Onglet — Message de candidature</div>
+      <div class="row a4">
+        <!-- Maquette dashboard user -->
+        <div class="col-60">
           <div class="browser">
             <div class="bbar">
               <div class="bdot" style="background:#ef4444"></div>
               <div class="bdot" style="background:#f59e0b"></div>
               <div class="bdot" style="background:#10b981"></div>
-              <div class="burl">localhost:3000/pages/codeur-generator</div>
+              <div class="burl">localhost:3000/pages/dashboard-user.html</div>
             </div>
             <div class="bbody">
-              <div style="padding:16px;background:var(--bg);flex:1;overflow:hidden;display:flex;flex-direction:column;gap:12px">
-                <!-- Tabs -->
-                <div style="display:flex;gap:4px;background:var(--w);border:1px solid var(--border);border-radius:10px;padding:5px;width:fit-content">
-                  <div style="background:var(--p);color:white;padding:7px 18px;border-radius:7px;font-size:.78rem;font-weight:700">✉ Message candidature</div>
-                  <div style="padding:7px 18px;border-radius:7px;font-size:.78rem;font-weight:600;color:var(--gray)">📄 Devis PDF</div>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;min-height:0">
-                  <!-- Formulaire -->
-                  <div class="card">
-                    <div class="ch">Informations du projet</div>
-                    <div class="cb">
-                      <div style="font-size:.72rem;color:var(--gray);margin-bottom:4px;font-weight:600">Titre du projet (codeur.com)</div>
-                      <div class="minput">Création site e-commerce Shopify</div>
-                      <div style="font-size:.72rem;color:var(--gray);margin-bottom:4px;font-weight:600">Ton expertise</div>
-                      <div class="minput">Développeur web full-stack React</div>
-                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-                        <div>
-                          <div style="font-size:.68rem;color:var(--gray);margin-bottom:4px;font-weight:600">Délai</div>
-                          <div class="minput">2 semaines</div>
-                        </div>
-                        <div>
-                          <div style="font-size:.68rem;color:var(--gray);margin-bottom:4px;font-weight:600">Budget (€)</div>
-                          <div class="minput">1500</div>
-                        </div>
-                      </div>
-                      <div style="font-size:.7rem;color:var(--gray);margin-bottom:6px;font-weight:600;margin-top:4px">Ton du message</div>
-                      <div style="display:flex;gap:5px;flex-wrap:wrap">
-                        <span style="background:#ede9fe;color:var(--p);font-size:.68rem;padding:3px 10px;border-radius:999px;font-weight:700">Professionnel</span>
-                        <span style="background:var(--bg);border:1px solid var(--border);color:var(--gray);font-size:.68rem;padding:3px 10px;border-radius:999px">Chaleureux</span>
-                        <span style="background:var(--bg);border:1px solid var(--border);color:var(--gray);font-size:.68rem;padding:3px 10px;border-radius:999px">Concis</span>
-                        <span style="background:var(--bg);border:1px solid var(--border);color:var(--gray);font-size:.68rem;padding:3px 10px;border-radius:999px">Expert</span>
-                      </div>
-                    </div>
+              <div class="dash">
+                <!-- Sidebar -->
+                <div class="dsb">
+                  <div class="dsblogo"><div class="dsbicon"></div><span class="dsbname">TicketFlow</span></div>
+                  <div class="dsbnav">
+                    <div class="dsbtitle">Menu</div>
+                    <div class="dsbitem act"><span class="ic">☰</span> Mes tickets <span class="bx">2</span></div>
+                    <div class="dsbitem"><span class="ic">+</span> Nouveau ticket</div>
+                    <div class="dsbtitle">Compte</div>
+                    <div class="dsbitem"><span class="ic">◎</span> Mon profil</div>
+                    <div class="dsbitem" style="color:#ef4444"><span class="ic">←</span> Déconnexion</div>
                   </div>
-                  <!-- Message généré -->
-                  <div class="card">
-                    <div class="ch" style="justify-content:space-between">Message généré <div style="background:var(--p);color:white;border-radius:5px;padding:3px 10px;font-size:.65rem;font-weight:700">📋 Copier</div></div>
-                    <div class="cb">
-                      <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:7px;padding:12px;font-size:.75rem;color:var(--dark);line-height:1.7;height:160px;overflow:hidden">
-                        Bonjour,<br><br>
-                        J'ai lu votre projet <strong>"Création site e-commerce Shopify"</strong> avec attention et je suis convaincu de pouvoir vous livrer une solution de qualité dans les délais.<br><br>
-                        Fort de mon expérience en tant que <strong>Développeur web full-stack React</strong>, je propose une approche rigoureuse : cadrage précis, développements itératifs et communication transparente.<br><br>
-                        Je peux réaliser ce projet en <strong>2 semaines</strong> pour un budget de <strong>1 500 € HT</strong>.<br><br>
-                        Cordialement,<br>Jean Dupont
-                      </div>
+                  <div style="padding:10px 12px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0">
+                    <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#818cf8);display:flex;align-items:center;justify-content:center;font-size:.7rem;color:white;font-weight:700;flex-shrink:0">M</div>
+                    <div><div style="font-size:.72rem;font-weight:700;color:var(--dark)">Marie Durand</div><div style="font-size:.62rem;color:var(--gl)">Utilisateur</div></div>
+                  </div>
+                </div>
+                <!-- Main -->
+                <div class="dmain">
+                  <div class="dtop">
+                    <div><div class="dtitle">Mes tickets</div><div class="dsub">Gérez vos demandes de support</div></div>
+                    <div style="margin-left:auto;background:var(--p);color:white;border-radius:7px;padding:5px 14px;font-size:.72rem;font-weight:700">+ Nouveau ticket</div>
+                  </div>
+                  <div class="dcontent">
+                    <!-- Stats -->
+                    <div class="stats" style="grid-template-columns:repeat(4,1fr)">
+                      <div class="stat"><div><div class="statn" style="color:#4f46e5">3</div><div class="statl">Total</div></div><div class="stati" style="background:#ede9fe;color:#4f46e5;font-weight:800;font-size:.8rem">T</div></div>
+                      <div class="stat"><div><div class="statn" style="color:#d97706">1</div><div class="statl">En cours</div></div><div class="stati" style="background:#fef3c7;color:#d97706;font-weight:800;font-size:.8rem">E</div></div>
+                      <div class="stat"><div><div class="statn" style="color:#059669">1</div><div class="statl">Résolus</div></div><div class="stati" style="background:#d1fae5;color:#059669;font-weight:800;font-size:.8rem">R</div></div>
+                      <div class="stat"><div><div class="statn" style="color:#dc2626">0</div><div class="statl">Critiques</div></div><div class="stati" style="background:#fee2e2;color:#dc2626;font-weight:800;font-size:.8rem">!</div></div>
                     </div>
+                    <!-- Table -->
+                    <table class="dtbl" style="margin-top:0">
+                      <thead><tr><th>#</th><th>Titre</th><th>Catégorie</th><th>Priorité</th><th>Statut</th><th>Actions</th></tr></thead>
+                      <tbody>
+                        <tr>
+                          <td style="color:var(--gl);font-size:.7rem">#1</td>
+                          <td style="font-size:.75rem;font-weight:600">Impossible de me connecter</td>
+                          <td><span class="b bg_">Compte</span></td>
+                          <td><span style="background:#fef3c7;color:#92400e;padding:2px 7px;border-radius:4px;font-size:.65rem;font-weight:700">Élevé</span></td>
+                          <td><span class="b bw">En cours</span></td>
+                          <td><button class="dtbtn g">Voir</button></td>
+                        </tr>
+                        <tr>
+                          <td style="color:var(--gl);font-size:.7rem">#2</td>
+                          <td style="font-size:.75rem;font-weight:600">Problème de facturation</td>
+                          <td><span class="b bg_">Facturation</span></td>
+                          <td><span style="background:#d1fae5;color:#065f46;padding:2px 7px;border-radius:4px;font-size:.65rem;font-weight:700">Moyen</span></td>
+                          <td><span class="b bp">Ouvert</span></td>
+                          <td><button class="dtbtn g">Voir</button></td>
+                        </tr>
+                        <tr>
+                          <td style="color:var(--gl);font-size:.7rem">#3</td>
+                          <td style="font-size:.75rem;font-weight:600">Demande fonctionnalité</td>
+                          <td><span class="b bg_">Commercial</span></td>
+                          <td><span style="background:#ede9fe;color:#4f46e5;padding:2px 7px;border-radius:4px;font-size:.65rem;font-weight:700">Bas</span></td>
+                          <td><span class="b bok">Résolu</span></td>
+                          <td><button class="dtbtn g">Voir</button></td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
@@ -1171,46 +1198,49 @@
           </div>
         </div>
 
-        <!-- Devis PDF -->
-        <div class="col" style="flex:1">
-          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gl);margin-bottom:8px">📸 Onglet — Devis PDF généré (aperçu)</div>
-          <div class="browser">
-            <div class="bbar">
-              <div class="bdot" style="background:#ef4444"></div>
-              <div class="bdot" style="background:#f59e0b"></div>
-              <div class="bdot" style="background:#10b981"></div>
-              <div class="burl">localhost:3000/pages/codeur-generator → Devis</div>
-            </div>
-            <div class="bbody" style="padding:14px;background:var(--bg);gap:12px">
-              <div class="pdf-doc">
-                <div class="pdf-header">
-                  <div><div class="pdf-title">DEVIS</div></div>
-                  <div style="text-align:right"><div class="pdf-num">DEV-5678</div><div class="pdf-date">Le 16/04/2026 — Validité : 30 jours</div></div>
-                </div>
-                <div class="pdf-body">
-                  <div class="pdf-row">
-                    <div class="pdf-box"><div class="pdf-box-label">Émetteur</div><div class="pdf-box-name">Jean Dupont</div><div class="pdf-box-email">jean@mail.com — SIRET 123 456 789</div></div>
-                    <div class="pdf-box"><div class="pdf-box-label">Client</div><div class="pdf-box-name">ACME Corp</div><div class="pdf-box-email">contact@acme.fr</div></div>
-                  </div>
-                  <div class="pdf-objet">Objet : Développement site e-commerce Shopify</div>
-                  <table class="pdf-tbl">
-                    <thead><tr><th>Prestation / Description</th><th style="text-align:center">Qté</th><th style="text-align:right">P.U. HT</th><th style="text-align:right">Total HT</th></tr></thead>
-                    <tbody>
-                      <tr><td>Développement front-end (React)</td><td style="text-align:center">1</td><td style="text-align:right">1 200,00 €</td><td style="text-align:right;font-weight:700">1 200,00 €</td></tr>
-                      <tr><td>Intégration Shopify & configuration</td><td style="text-align:center">1</td><td style="text-align:right">800,00 €</td><td style="text-align:right;font-weight:700">800,00 €</td></tr>
-                      <tr><td>Tests, recette & mise en ligne</td><td style="text-align:center">1</td><td style="text-align:right">300,00 €</td><td style="text-align:right;font-weight:700">300,00 €</td></tr>
-                    </tbody>
-                  </table>
-                  <div class="pdf-totals">
-                    <div class="pdf-tot-box">
-                      <div class="pdf-tot-line"><span>Total HT</span><span>2 300,00 €</span></div>
-                      <div class="pdf-tot-line"><span>TVA (20 %)</span><span>460,00 €</span></div>
-                      <div class="pdf-tot-ttc"><span>TOTAL TTC</span><span>2 760,00 €</span></div>
-                    </div>
-                  </div>
-                </div>
+        <!-- Parcours utilisateur -->
+        <div class="col-40">
+          <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--gl);margin-bottom:12px">Parcours utilisateur</div>
+
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <div style="width:32px;height:32px;border-radius:50%;background:#4f46e5;color:white;font-weight:800;font-size:.78rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
+              <div style="background:white;border:1px solid var(--border);border-radius:10px;padding:12px;flex:1">
+                <div style="font-weight:700;font-size:.83rem;color:var(--dark);margin-bottom:3px">Connexion sécurisée</div>
+                <div style="font-size:.75rem;color:var(--gray);line-height:1.5">L'utilisateur entre son email et mot de passe. La session est stockée et il est redirigé automatiquement vers son dashboard.</div>
               </div>
-              <div style="background:var(--p);color:white;border-radius:8px;height:36px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;cursor:pointer;margin-top:10px">⬇ Télécharger le devis en PDF</div>
+            </div>
+
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <div style="width:32px;height:32px;border-radius:50%;background:#8b5cf6;color:white;font-weight:800;font-size:.78rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</div>
+              <div style="background:white;border:1px solid var(--border);border-radius:10px;padding:12px;flex:1">
+                <div style="font-weight:700;font-size:.83rem;color:var(--dark);margin-bottom:3px">Tableau de bord personnel</div>
+                <div style="font-size:.75rem;color:var(--gray);line-height:1.5">Il voit uniquement <strong>ses propres tickets</strong> chargés depuis IndexedDB, avec des statistiques en temps réel (total, en cours, résolus, critiques).</div>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <div style="width:32px;height:32px;border-radius:50%;background:#10b981;color:white;font-weight:800;font-size:.78rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</div>
+              <div style="background:white;border:1px solid var(--border);border-radius:10px;padding:12px;flex:1">
+                <div style="font-weight:700;font-size:.83rem;color:var(--dark);margin-bottom:3px">Créer un ticket</div>
+                <div style="font-size:.75rem;color:var(--gray);line-height:1.5">Il remplit un formulaire : titre, catégorie, priorité, description. Le ticket est enregistré dans IndexedDB et apparaît instantanément.</div>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <div style="width:32px;height:32px;border-radius:50%;background:#f59e0b;color:white;font-weight:800;font-size:.78rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">4</div>
+              <div style="background:white;border:1px solid var(--border);border-radius:10px;padding:12px;flex:1">
+                <div style="font-weight:700;font-size:.83rem;color:var(--dark);margin-bottom:3px">Fil de discussion</div>
+                <div style="font-size:.75rem;color:var(--gray);line-height:1.5">En cliquant sur "Voir", il accède au détail du ticket et peut échanger des messages avec l'agent en temps réel.</div>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <div style="width:32px;height:32px;border-radius:50%;background:#ef4444;color:white;font-weight:800;font-size:.78rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">5</div>
+              <div style="background:white;border:1px solid var(--border);border-radius:10px;padding:12px;flex:1">
+                <div style="font-weight:700;font-size:.83rem;color:var(--dark);margin-bottom:3px">Recherche &amp; filtres</div>
+                <div style="font-size:.75rem;color:var(--gray);line-height:1.5">Il peut filtrer ses tickets par statut (ouvert, en cours, résolu) et par priorité, ou faire une recherche libre par mot-clé.</div>
+              </div>
             </div>
           </div>
         </div>
@@ -1218,49 +1248,203 @@
     </div>
   </div>
 
-  <!-- ═══════════════════════════════ SLIDE 9 — CONCLUSION ═══════════════════════════════ -->
-  <div class="slide s-title" id="s11">
-    <div class="deco" style="width:500px;height:500px;background:#06b6d4;top:-150px;left:-100px"></div>
-    <div class="deco" style="width:600px;height:600px;background:#4f46e5;bottom:-200px;right:-150px"></div>
-    <div class="inner center" style="position:relative;z-index:1;padding-bottom:80px">
-      <div class="tbadge a1">✅ Récapitulatif</div>
-      <h1 class="ttitle a2" style="font-size:2.5rem">TicketFlow en résumé</h1>
-      <div class="a3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:750px;margin:24px auto 0">
-        <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:18px;text-align:center">
-          <div style="font-size:1.8rem;margin-bottom:8px">🏗</div>
-          <div style="color:white;font-weight:700;margin-bottom:4px">Architecture</div>
-          <div style="color:rgba(255,255,255,.55);font-size:.75rem">100% front-end, JS Vanilla, IndexedDB</div>
+  <!-- ═══════════════════════════════ SLIDE 11 — VUE ADMIN ═══════════════════════════════ -->
+  <div class="slide s-light" id="s11">
+    <div class="inner" style="padding-bottom:80px">
+      <div class="a1"><div class="label" style="background:#fff5f5;color:#dc2626">09 — Vue Admin</div></div>
+      <div class="h2 a2">Ce que voit et fait l'administrateur</div>
+      <p class="sub a3">Contrôle total sur les tickets, les utilisateurs, les agents et les modules.</p>
+
+      <div class="row a4">
+        <!-- Maquette admin -->
+        <div class="col-60">
+          <div class="browser">
+            <div class="bbar">
+              <div class="bdot" style="background:#ef4444"></div>
+              <div class="bdot" style="background:#f59e0b"></div>
+              <div class="bdot" style="background:#10b981"></div>
+              <div class="burl">localhost:3000/pages/dashboard-admin.html</div>
+            </div>
+            <div class="bbody">
+              <div class="dash">
+                <!-- Sidebar -->
+                <div class="dsb">
+                  <div class="dsblogo"><div class="dsbicon"></div><span class="dsbname">TicketFlow</span></div>
+                  <div class="dsbnav">
+                    <div class="dsbtitle">Administration</div>
+                    <div class="dsbitem act"><span class="ic">◈</span> Vue d'ensemble</div>
+                    <div class="dsbitem"><span class="ic">☰</span> Tickets <span class="bx">3</span></div>
+                    <div class="dsbitem"><span class="ic">👤</span> Utilisateurs</div>
+                    <div class="dsbitem"><span class="ic">🎧</span> Agents</div>
+                    <div class="dsbitem"><span class="ic">⚙</span> Modules</div>
+                    <div class="dsbtitle">Outils</div>
+                    <div class="dsbitem"><span class="ic">✉</span> Générateur</div>
+                    <div class="dsbtitle">Compte</div>
+                    <div class="dsbitem" style="color:#ef4444"><span class="ic">←</span> Déconnexion</div>
+                  </div>
+                  <div style="padding:10px 12px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0">
+                    <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#ef4444,#f97316);display:flex;align-items:center;justify-content:center;font-size:.7rem;color:white;font-weight:700;flex-shrink:0">A</div>
+                    <div><div style="font-size:.72rem;font-weight:700;color:var(--dark)">Admin</div><div style="font-size:.62rem;color:var(--err)">Administrateur</div></div>
+                  </div>
+                </div>
+                <!-- Main -->
+                <div class="dmain">
+                  <div class="dtop">
+                    <div><div class="dtitle">Vue d'ensemble</div><div class="dsub">Tableau de bord administrateur</div></div>
+                  </div>
+                  <div class="dcontent">
+                    <!-- KPIs -->
+                    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:12px">
+                      <div style="background:white;border:1px solid var(--border);border-radius:7px;padding:8px;text-align:center"><div style="font-size:1.2rem;font-weight:900;color:#4f46e5">5</div><div style="font-size:.6rem;color:var(--gl)">Tickets</div></div>
+                      <div style="background:white;border:1px solid var(--border);border-radius:7px;padding:8px;text-align:center"><div style="font-size:1.2rem;font-weight:900;color:#f59e0b">3</div><div style="font-size:.6rem;color:var(--gl)">Ouverts</div></div>
+                      <div style="background:white;border:1px solid var(--border);border-radius:7px;padding:8px;text-align:center"><div style="font-size:1.2rem;font-weight:900;color:#10b981">1</div><div style="font-size:.6rem;color:var(--gl)">Résolus</div></div>
+                      <div style="background:white;border:1px solid var(--border);border-radius:7px;padding:8px;text-align:center"><div style="font-size:1.2rem;font-weight:900;color:#ef4444">1</div><div style="font-size:.6rem;color:var(--gl)">Critiques</div></div>
+                      <div style="background:white;border:1px solid var(--border);border-radius:7px;padding:8px;text-align:center"><div style="font-size:1.2rem;font-weight:900;color:#8b5cf6">3</div><div style="font-size:.6rem;color:var(--gl)">Users</div></div>
+                      <div style="background:white;border:1px solid var(--border);border-radius:7px;padding:8px;text-align:center"><div style="font-size:1.2rem;font-weight:900;color:#06b6d4">2</div><div style="font-size:.6rem;color:var(--gl)">Agents</div></div>
+                    </div>
+                    <!-- Tickets récents -->
+                    <table class="dtbl">
+                      <thead><tr><th>#</th><th>Titre</th><th>Client</th><th>Priorité</th><th>Statut</th><th>Action</th></tr></thead>
+                      <tbody>
+                        <tr>
+                          <td style="color:var(--gl);font-size:.68rem">#101</td>
+                          <td style="font-size:.72rem;font-weight:600">Erreur serveur paiement</td>
+                          <td style="font-size:.72rem">Marie D.</td>
+                          <td><span style="background:#fee2e2;color:#991b1b;padding:2px 6px;border-radius:4px;font-size:.62rem;font-weight:700">Critique</span></td>
+                          <td><span class="b bp" style="font-size:.62rem">Ouvert</span></td>
+                          <td><select style="font-size:.62rem;border:1px solid var(--border);border-radius:4px;padding:2px 4px;background:var(--bg)"><option>Ouvert</option></select></td>
+                        </tr>
+                        <tr>
+                          <td style="color:var(--gl);font-size:.68rem">#102</td>
+                          <td style="font-size:.72rem;font-weight:600">Demande remboursement</td>
+                          <td style="font-size:.72rem">Pierre M.</td>
+                          <td><span style="background:#fef3c7;color:#92400e;padding:2px 6px;border-radius:4px;font-size:.62rem;font-weight:700">Élevé</span></td>
+                          <td><span class="b bw" style="font-size:.62rem">En cours</span></td>
+                          <td><select style="font-size:.62rem;border:1px solid var(--border);border-radius:4px;padding:2px 4px;background:var(--bg)"><option>En cours</option></select></td>
+                        </tr>
+                        <tr>
+                          <td style="color:var(--gl);font-size:.68rem">#103</td>
+                          <td style="font-size:.72rem;font-weight:600">Mot de passe oublié</td>
+                          <td style="font-size:.72rem">Sophie B.</td>
+                          <td><span style="background:#d1fae5;color:#065f46;padding:2px 6px;border-radius:4px;font-size:.62rem;font-weight:700">Bas</span></td>
+                          <td><span class="b bok" style="font-size:.62rem">Résolu</span></td>
+                          <td><select style="font-size:.62rem;border:1px solid var(--border);border-radius:4px;padding:2px 4px;background:var(--bg)"><option>Résolu</option></select></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:18px;text-align:center">
-          <div style="font-size:1.8rem;margin-bottom:8px">🎫</div>
-          <div style="color:white;font-weight:700;margin-bottom:4px">Tickets JSON</div>
-          <div style="color:rgba(255,255,255,.55);font-size:.75rem">Création → Réponse → Résolution</div>
-        </div>
-        <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:18px;text-align:center">
-          <div style="font-size:1.8rem;margin-bottom:8px">👥</div>
-          <div style="color:white;font-weight:700;margin-bottom:4px">3 Rôles</div>
-          <div style="color:rgba(255,255,255,.55);font-size:.75rem">Admin / Agent / Utilisateur</div>
-        </div>
-        <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:18px;text-align:center">
-          <div style="font-size:1.8rem;margin-bottom:8px">⚙️</div>
-          <div style="color:white;font-weight:700;margin-bottom:4px">Feature Flags</div>
-          <div style="color:rgba(255,255,255,.55);font-size:.75rem">20+ modules activables</div>
-        </div>
-        <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:18px;text-align:center">
-          <div style="font-size:1.8rem;margin-bottom:8px">✉</div>
-          <div style="color:white;font-weight:700;margin-bottom:4px">Générateur</div>
-          <div style="color:rgba(255,255,255,.55);font-size:.75rem">Messages codeur.com + devis PDF</div>
-        </div>
-        <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:18px;text-align:center">
-          <div style="font-size:1.8rem;margin-bottom:8px">🔒</div>
-          <div style="color:white;font-weight:700;margin-bottom:4px">Admin sécurisé</div>
-          <div style="color:rgba(255,255,255,.55);font-size:.75rem">Accès garanti quels que soient les flags</div>
+
+        <!-- Pouvoirs admin -->
+        <div class="col-40">
+          <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--gl);margin-bottom:12px">Capacités administrateur</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+
+            <div style="background:white;border:1.5px solid #fecaca;border-radius:10px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start">
+              <div style="font-size:1.1rem;flex-shrink:0">📊</div>
+              <div><div style="font-weight:700;font-size:.83rem;color:var(--dark);margin-bottom:2px">KPIs temps réel</div><div style="font-size:.73rem;color:var(--gray);line-height:1.5">6 indicateurs clés affichés en direct : total de tickets, ouverts, résolus, critiques, nombre d'utilisateurs et d'agents.</div></div>
+            </div>
+
+            <div style="background:white;border:1.5px solid #fecaca;border-radius:10px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start">
+              <div style="font-size:1.1rem;flex-shrink:0">🎫</div>
+              <div><div style="font-weight:700;font-size:.83rem;color:var(--dark);margin-bottom:2px">Gestion complète des tickets</div><div style="font-size:.73rem;color:var(--gray);line-height:1.5">Il voit <strong>tous les tickets</strong> de tous les utilisateurs. Il peut changer le statut directement dans le tableau et supprimer un ticket.</div></div>
+            </div>
+
+            <div style="background:white;border:1.5px solid #fecaca;border-radius:10px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start">
+              <div style="font-size:1.1rem;flex-shrink:0">👥</div>
+              <div><div style="font-weight:700;font-size:.83rem;color:var(--dark);margin-bottom:2px">Gestion utilisateurs &amp; agents</div><div style="font-size:.73rem;color:var(--gray);line-height:1.5">Ajouter, supprimer, changer le rôle (user → agent → admin). Les modifications sont persistées dans IndexedDB.</div></div>
+            </div>
+
+            <div style="background:white;border:1.5px solid #fecaca;border-radius:10px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start">
+              <div style="font-size:1.1rem;flex-shrink:0">⚙️</div>
+              <div><div style="font-weight:700;font-size:.83rem;color:var(--dark);margin-bottom:2px">Feature Flags — modules</div><div style="font-size:.73rem;color:var(--gray);line-height:1.5">Il active ou désactive les fonctionnalités du site en temps réel via des toggles. Les modules <code style="background:#fef3c7;color:#92400e;padding:1px 4px;border-radius:3px;font-size:.7em">login</code> et <code style="background:#fef3c7;color:#92400e;padding:1px 4px;border-radius:3px;font-size:.7em">admin</code> sont verrouillés.</div></div>
+            </div>
+
+            <div style="background:white;border:1.5px solid #fecaca;border-radius:10px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start">
+              <div style="font-size:1.1rem;flex-shrink:0">📈</div>
+              <div><div style="font-weight:700;font-size:.83rem;color:var(--dark);margin-bottom:2px">Statistiques visuelles</div><div style="font-size:.73rem;color:var(--gray);line-height:1.5">Barres de progression par statut et par priorité, calculées automatiquement à partir des tickets en base.</div></div>
+            </div>
+
+          </div>
         </div>
       </div>
-      <div class="a4" style="margin-top:28px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-        <a href="dashboard-admin.html" style="background:var(--p);color:white;padding:11px 26px;border-radius:9px;font-weight:700;font-size:.875rem;text-decoration:none">🖥 Voir le Dashboard</a>
-        <a href="codeur-generator.html" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:white;padding:11px 26px;border-radius:9px;font-weight:700;font-size:.875rem;text-decoration:none">✉ Générateur</a>
-        <button onclick="window.print()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:white;padding:11px 26px;border-radius:9px;font-weight:700;font-size:.875rem;cursor:pointer">🖨 Imprimer</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ SLIDE 12 — CONCLUSION ═══════════════════════════════ -->
+  <div class="slide s-title" id="s12">
+    <div class="deco" style="width:600px;height:600px;background:#06b6d4;top:-200px;left:-130px"></div>
+    <div class="deco" style="width:700px;height:700px;background:#4f46e5;bottom:-250px;right:-180px"></div>
+    <div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 60px 90px;overflow:hidden">
+      <div class="tbadge a1" style="margin-bottom:18px">✅ Récapitulatif</div>
+      <h1 class="ttitle a2" style="font-size:2.8rem;margin-bottom:8px">TicketFlow — en résumé</h1>
+      <p class="a3" style="color:rgba(255,255,255,.5);font-size:.9rem;max-width:600px;line-height:1.7;text-align:center;margin-bottom:32px">
+        Une plateforme SaaS complète, 100 % locale, sans serveur ni base de données distante.
+      </p>
+
+      <!-- Grille 4 + 4 -->
+      <div class="a4" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:940px;width:100%;margin-bottom:28px">
+
+        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:14px;padding:16px;text-align:center">
+          <div style="font-size:1.6rem;margin-bottom:8px">🏗</div>
+          <div style="color:white;font-weight:700;font-size:.85rem;margin-bottom:4px">Architecture</div>
+          <div style="color:rgba(255,255,255,.5);font-size:.7rem;line-height:1.4">HTML/CSS/JS Vanilla — zéro serveur, zéro framework</div>
+        </div>
+
+        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:14px;padding:16px;text-align:center">
+          <div style="font-size:1.6rem;margin-bottom:8px">🗄</div>
+          <div style="color:white;font-weight:700;font-size:.85rem;margin-bottom:4px">IndexedDB</div>
+          <div style="color:rgba(255,255,255,.5);font-size:.7rem;line-height:1.4">Vraie base de données navigateur avec transactions ACID</div>
+        </div>
+
+        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:14px;padding:16px;text-align:center">
+          <div style="font-size:1.6rem;margin-bottom:8px">👥</div>
+          <div style="color:white;font-weight:700;font-size:.85rem;margin-bottom:4px">3 rôles</div>
+          <div style="color:rgba(255,255,255,.5);font-size:.7rem;line-height:1.4">Admin, Agent, Utilisateur — dashboards et permissions dédiés</div>
+        </div>
+
+        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:14px;padding:16px;text-align:center">
+          <div style="font-size:1.6rem;margin-bottom:8px">🎫</div>
+          <div style="color:white;font-weight:700;font-size:.85rem;margin-bottom:4px">Tickets complets</div>
+          <div style="color:rgba(255,255,255,.5);font-size:.7rem;line-height:1.4">Création → fil de messages → résolution avec suivi des statuts</div>
+        </div>
+
+        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:14px;padding:16px;text-align:center">
+          <div style="font-size:1.6rem;margin-bottom:8px">⚙️</div>
+          <div style="color:white;font-weight:700;font-size:.85rem;margin-bottom:4px">Feature Flags</div>
+          <div style="color:rgba(255,255,255,.5);font-size:.7rem;line-height:1.4">20+ modules activables / désactivables en temps réel</div>
+        </div>
+
+        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:14px;padding:16px;text-align:center">
+          <div style="font-size:1.6rem;margin-bottom:8px">🔒</div>
+          <div style="color:white;font-weight:700;font-size:.85rem;margin-bottom:4px">Admin garanti</div>
+          <div style="color:rgba(255,255,255,.5);font-size:.7rem;line-height:1.4">Accès admin toujours possible, quels que soient les flags actifs</div>
+        </div>
+
+        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:14px;padding:16px;text-align:center">
+          <div style="font-size:1.6rem;margin-bottom:8px">📊</div>
+          <div style="color:white;font-weight:700;font-size:.85rem;margin-bottom:4px">Statistiques</div>
+          <div style="color:rgba(255,255,255,.5);font-size:.7rem;line-height:1.4">KPIs temps réel, barres de progression, filtres avancés</div>
+        </div>
+
+        <div style="background:rgba(6,182,212,.15);border:1px solid rgba(6,182,212,.35);border-radius:14px;padding:16px;text-align:center">
+          <div style="font-size:1.6rem;margin-bottom:8px">🚀</div>
+          <div style="color:white;font-weight:700;font-size:.85rem;margin-bottom:4px">Déployable</div>
+          <div style="color:rgba(255,255,255,.5);font-size:.7rem;line-height:1.4">Lance avec <code style="background:rgba(255,255,255,.1);color:#a5b4fc;padding:1px 5px;border-radius:3px">npx serve</code> — aucune dépendance serveur</div>
+        </div>
+
+      </div>
+
+      <!-- Boutons -->
+      <div class="a4" style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
+        <a href="dashboard-admin.html" style="background:var(--p);color:white;padding:11px 26px;border-radius:9px;font-weight:700;font-size:.875rem;text-decoration:none">🖥 Dashboard Admin</a>
+        <a href="dashboard-user.html" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:white;padding:11px 26px;border-radius:9px;font-weight:700;font-size:.875rem;text-decoration:none">👤 Dashboard User</a>
+        <a href="dashboard-agent.html" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:white;padding:11px 26px;border-radius:9px;font-weight:700;font-size:.875rem;text-decoration:none">🎧 Dashboard Agent</a>
+        <button onclick="go(1)" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:white;padding:11px 26px;border-radius:9px;font-weight:700;font-size:.875rem;cursor:pointer">↩ Retour au début</button>
       </div>
     </div>
   </div>
@@ -1270,12 +1454,12 @@
 <div id="nav">
   <button class="nb" onclick="prev()" title="← Précédent">‹</button>
   <div id="dots" style="display:flex;gap:6px;align-items:center"></div>
-  <span id="sc">1 / 11</span>
+  <span id="sc">1 / 12</span>
   <button class="nb" onclick="next()" title="Suivant →">›</button>
 </div>
 
 <script>
-  const N=11; let c=1;
+  const N=12; let c=1;
   const get=n=>document.getElementById('s'+n);
   function go(n){
     if(n<1||n>N) return;
