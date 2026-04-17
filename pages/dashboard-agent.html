@@ -210,6 +210,7 @@
 </div>
 
 <script src="../js/features.js"></script>
+<script src="../js/database.js"></script>
 <script>
 requireFeature('dashboard_agent');
 
@@ -222,7 +223,7 @@ const STATUS_LABELS   = { ouvert: 'Ouvert', en_cours: 'En cours', resolu: 'Réso
 const STATUS_BADGE    = { ouvert: 'badge-primary', en_cours: 'badge-warning', resolu: 'badge-success', ferme: 'badge-gray' };
 const PRIORITY_CLASS  = { bas: 'priority-low', moyen: 'priority-medium', eleve: 'priority-high', critique: 'priority-critical' };
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const session = localStorage.getItem('tf_user');
   if (!session) { window.location.href = 'login.html'; return; }
   currentUser = JSON.parse(session);
@@ -238,7 +239,10 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('profile-email').textContent  = currentUser.email;
 
   applyAgentFlags();
-  loadAllTickets();
+
+  // Initialiser IndexedDB puis charger tous les tickets
+  await initDB();
+  await loadAllTickets();
   updateStats();
   renderAgentTickets();
 });
@@ -250,27 +254,9 @@ function applyAgentFlags() {
   }
 }
 
-function loadAllTickets() {
-  // Charger tickets de tous les users (démo)
-  allTickets = [];
-  const demoUsers = ['user@ticketflow.fr'];
-  demoUsers.forEach(email => {
-    const stored = localStorage.getItem('tf_tickets_' + email);
-    if (stored) {
-      const userTickets = JSON.parse(stored).map(t => ({ ...t, userEmail: email, userName: 'Utilisateur Demo' }));
-      allTickets = allTickets.concat(userTickets);
-    }
-  });
-
-  // Ajouter tickets de démo si vide
-  if (allTickets.length === 0) {
-    allTickets = [
-      { id: 101, title: 'Erreur 500 lors du paiement', category: 'Technique', priority: 'critique', status: 'ouvert', date: '2026-04-01', desc: 'Une erreur serveur survient à chaque tentative de paiement.', userEmail: 'client1@test.fr', userName: 'Marie Durand', messages: [] },
-      { id: 102, title: 'Demande de remboursement', category: 'Facturation', priority: 'eleve', status: 'en_cours', date: '2026-03-31', desc: 'J\'ai été débité deux fois pour ma commande du 28 mars.', userEmail: 'client2@test.fr', userName: 'Pierre Martin', messages: [{ from: 'agent', text: 'Bonjour Pierre, nous avons transmis votre demande à la comptabilité.', time: '09:15' }] },
-      { id: 103, title: 'Comment changer mon mot de passe ?', category: 'Compte', priority: 'bas', status: 'resolu', date: '2026-03-29', desc: 'Je n\'arrive pas à trouver l\'option pour changer mon mot de passe.', userEmail: 'client3@test.fr', userName: 'Sophie Bernard', messages: [{ from: 'agent', text: 'Allez dans Mon profil → Sécurité → Changer le mot de passe. Cordialement.', time: '11:00' }] },
-      { id: 104, title: 'Application lente sur mobile', category: 'Technique', priority: 'moyen', status: 'ouvert', date: '2026-04-01', desc: 'Sur iPhone 13, l\'application rame énormément depuis la dernière mise à jour.', userEmail: 'client4@test.fr', userName: 'Lucas Petit', messages: [] },
-    ];
-  }
+async function loadAllTickets() {
+  // SELECT * FROM tickets — tous les tickets de la BDD IndexedDB
+  allTickets = await TicketDB.getAll();
 }
 
 function updateStats() {
@@ -368,10 +354,13 @@ function openTicket(id) {
   openModal('modal-ticket');
 }
 
-function changeStatus() {
+async function changeStatus() {
   const t = allTickets.find(x => x.id === currentTicketId);
   if (!t) return;
   t.status = document.getElementById('modal-status-select').value;
+  // UPDATE tickets SET status = ? WHERE id = ?
+  await TicketDB.save(t);
+  await loadAllTickets();
   updateStats();
   filterAgentTickets();
   document.getElementById('modal-ticket-meta').innerHTML = `
@@ -380,14 +369,17 @@ function changeStatus() {
     <span class="badge badge-gray">${t.category}</span>`;
 }
 
-function changePriority() {
+async function changePriority() {
   const t = allTickets.find(x => x.id === currentTicketId);
   if (!t) return;
   t.priority = document.getElementById('modal-priority-select').value;
+  // UPDATE tickets SET priority = ? WHERE id = ?
+  await TicketDB.save(t);
+  await loadAllTickets();
   filterAgentTickets();
 }
 
-function agentReply() {
+async function agentReply() {
   const input = document.getElementById('agent-reply');
   const text  = input.value.trim();
   if (!text) return;
@@ -395,10 +387,16 @@ function agentReply() {
   if (!t) return;
   const now  = new Date();
   const time = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+  t.messages = t.messages || [];
   t.messages.push({ from: 'agent', text, time });
+  if (t.status === 'ouvert') t.status = 'en_cours';
+  // UPDATE tickets SET messages = ?, status = ? WHERE id = ?
+  await TicketDB.save(t);
+  await loadAllTickets();
   input.value = '';
   openTicket(currentTicketId);
-  if (t.status === 'ouvert') { t.status = 'en_cours'; updateStats(); filterAgentTickets(); }
+  updateStats();
+  filterAgentTickets();
 }
 
 function showSection(name) {

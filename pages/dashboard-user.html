@@ -294,6 +294,7 @@
 </div>
 
 <script src="../js/features.js"></script>
+<script src="../js/database.js"></script>
 <script>
 requireFeature('dashboard_user');
 
@@ -308,7 +309,7 @@ const STATUS_BADGE     = { ouvert: 'badge-primary', en_cours: 'badge-warning', r
 const PRIORITY_CLASS   = { bas: 'priority-low', moyen: 'priority-medium', eleve: 'priority-high', critique: 'priority-critical' };
 
 // ===== INIT =====
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const session = localStorage.getItem('tf_user');
   if (!session) { window.location.href = 'login.html'; return; }
   currentUser = JSON.parse(session);
@@ -326,10 +327,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('profile-name-input').value   = currentUser.name;
   document.getElementById('profile-email-input').value  = currentUser.email;
 
-  // Appliquer les feature flags sur l'interface
   applyFeatureFlags();
 
-  loadTickets();
+  // Initialiser IndexedDB (migration depuis localStorage si besoin + données de démo)
+  await initDB();
+  await loadTickets();
   renderTickets();
   updateStats();
 });
@@ -363,21 +365,17 @@ function applyFeatureFlags() {
   }
 }
 
-// ===== TICKETS =====
-function loadTickets() {
-  const stored = localStorage.getItem('tf_tickets_' + currentUser.email);
-  tickets = stored ? JSON.parse(stored) : getDemoTickets();
-  saveTickets();
+// ===== TICKETS — IndexedDB =====
+async function loadTickets() {
+  // Requête : SELECT * FROM tickets WHERE userEmail = ?
+  tickets = await TicketDB.getByUser(currentUser.email);
 }
-function saveTickets() {
-  localStorage.setItem('tf_tickets_' + currentUser.email, JSON.stringify(tickets));
-}
-function getDemoTickets() {
-  return [
-    { id: 1, title: 'Impossible de me connecter à mon compte', category: 'Compte', priority: 'eleve', status: 'en_cours', date: '2026-03-28', desc: 'Depuis ce matin, je n\'arrive plus à accéder à mon compte malgré mon bon mot de passe.', messages: [{ from: 'agent', text: 'Bonjour, nous avons pris en charge votre ticket. Pouvez-vous nous donner plus de détails ?', time: '10:30' }] },
-    { id: 2, title: 'Problème de facturation sur ma dernière facture', category: 'Facturation', priority: 'moyen', status: 'ouvert', date: '2026-03-30', desc: 'Ma facture du mois de mars ne correspond pas à mon abonnement Pro.', messages: [] },
-    { id: 3, title: 'Demande d\'ajout d\'une fonctionnalité', category: 'Commercial', priority: 'bas', status: 'resolu', date: '2026-03-15', desc: 'Je souhaiterais avoir une option d\'export CSV dans le tableau de bord.', messages: [{ from: 'agent', text: 'Cette fonctionnalité est disponible dans la version Pro. Merci de votre suggestion !', time: '14:20' }] },
-  ];
+
+async function saveTicket(ticket) {
+  // Requête : INSERT OR REPLACE INTO tickets VALUES (?)
+  ticket.userEmail = currentUser.email;
+  await TicketDB.save(ticket);
+  await loadTickets();
 }
 
 function updateStats() {
@@ -452,7 +450,7 @@ function filterTickets() {
   renderTickets(filtered);
 }
 
-function submitNewTicket(isInline) {
+async function submitNewTicket(isInline) {
   const prefix = isInline ? 'nt' : 'm-nt';
   const title    = document.getElementById(prefix + '-title').value.trim();
   const category = document.getElementById(prefix + '-category').value;
@@ -463,19 +461,21 @@ function submitNewTicket(isInline) {
 
   const newTicket = {
     id: Date.now(),
+    userEmail: currentUser.email,
     title, category, priority, desc,
     status: 'ouvert',
     date: new Date().toISOString().split('T')[0],
     messages: []
   };
-  tickets.unshift(newTicket);
-  saveTickets();
+
+  // INSERT INTO tickets VALUES (newTicket)
+  await TicketDB.save(newTicket);
+  await loadTickets();
   updateStats();
   renderTickets();
   closeModal('modal-new-ticket');
   showSection('tickets');
 
-  // Reset forms
   ['nt-title','nt-category','nt-desc','m-nt-title','m-nt-category','m-nt-desc'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = el.tagName === 'SELECT' ? el.options[0].value : '';
@@ -513,7 +513,7 @@ function viewTicket(id) {
   openModal('modal-ticket-detail');
 }
 
-function sendReply() {
+async function sendReply() {
   const input = document.getElementById('reply-input');
   const text  = input.value.trim();
   if (!text) return;
@@ -522,8 +522,12 @@ function sendReply() {
   if (!t) return;
   const now = new Date();
   const time = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
+  t.messages = t.messages || [];
   t.messages.push({ from: 'user', text, time });
-  saveTickets();
+
+  // UPDATE tickets SET messages = ? WHERE id = ?
+  await TicketDB.save(t);
+  await loadTickets();
   input.value = '';
   viewTicket(currentTicketId);
 }
@@ -535,6 +539,7 @@ document.addEventListener('submit', function(e) {
     submitNewTicket(true);
   }
 });
+
 
 // ===== UI HELPERS =====
 function showSection(name) {

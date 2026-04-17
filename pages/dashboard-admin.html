@@ -349,6 +349,7 @@
 </div>
 
 <script src="../js/features.js"></script>
+<script src="../js/database.js"></script>
 <script>
   let currentUser = null;
   let allTickets  = [];
@@ -360,7 +361,7 @@
   const STATUS_BADGE    = { ouvert: 'badge-primary', en_cours: 'badge-warning', resolu: 'badge-success', ferme: 'badge-gray' };
   const PRIORITY_CLASS  = { bas: 'priority-low', moyen: 'priority-medium', eleve: 'priority-high', critique: 'priority-critical' };
 
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
     const session = localStorage.getItem('tf_user');
     if (!session) { window.location.href = 'login.html'; return; }
     currentUser = JSON.parse(session);
@@ -370,7 +371,10 @@
     document.getElementById('user-name').textContent   = currentUser.name;
 
     applyAdminFlags();
-    initData();
+
+    // Initialiser IndexedDB puis charger toutes les données
+    await initDB();
+    await loadAllData();
     updateKPIs();
     renderStatusBars();
     renderPriorityBars();
@@ -393,29 +397,15 @@
     }
   }
 
-  function initData() {
-    allTickets = [
-      { id: 101, title: 'Erreur serveur lors du paiement', category: 'Technique', priority: 'critique', status: 'ouvert',   date: '2026-04-01', userName: 'Marie Durand' },
-      { id: 102, title: 'Demande de remboursement',        category: 'Facturation', priority: 'eleve', status: 'en_cours',   date: '2026-03-31', userName: 'Pierre Martin' },
-      { id: 103, title: 'Mot de passe oublié',             category: 'Compte',    priority: 'bas',    status: 'resolu',     date: '2026-03-29', userName: 'Sophie Bernard' },
-      { id: 104, title: 'Application lente sur mobile',    category: 'Technique', priority: 'moyen',  status: 'ouvert',     date: '2026-04-01', userName: 'Lucas Petit' },
-      { id: 105, title: 'Facture incorrecte mars 2026',    category: 'Facturation', priority: 'eleve', status: 'ouvert',    date: '2026-03-30', userName: 'Emma Rousseau' },
-    ];
-    const su = localStorage.getItem('tf_admin_users');
-    users = su ? JSON.parse(su) : [
-      { id: 1, name: 'Marie Durand',   email: 'marie@test.fr',  role: 'user', createdAt: '2026-03-01' },
-      { id: 2, name: 'Pierre Martin',  email: 'pierre@test.fr', role: 'user', createdAt: '2026-03-05' },
-      { id: 3, name: 'Sophie Bernard', email: 'sophie@test.fr', role: 'user', createdAt: '2026-03-10' },
-    ];
-    const sa = localStorage.getItem('tf_admin_agents');
-    agents = sa ? JSON.parse(sa) : [
-      { id: 1, name: 'Agent Support',  email: 'agent@ticketflow.fr', specialty: 'Généraliste', tickets: 12, resolved: 9 },
-      { id: 2, name: 'Alice Lefebvre', email: 'alice@ticketflow.fr', specialty: 'Technique',   tickets: 8,  resolved: 7 },
-    ];
+  async function loadAllData() {
+    // SELECT * FROM tickets / users / agents
+    allTickets = await TicketDB.getAll();
+    users      = await UserDB.getAll();
+    agents     = await AgentDB.getAll();
   }
 
-  function saveUsers()  { localStorage.setItem('tf_admin_users',  JSON.stringify(users));  }
-  function saveAgents() { localStorage.setItem('tf_admin_agents', JSON.stringify(agents)); }
+  async function saveUsers()  { await UserDB.saveMany(users);  }
+  async function saveAgents() { await AgentDB.saveMany(agents); }
 
   function updateKPIs() {
     document.getElementById('kpi-total-tickets').textContent = allTickets.length;
@@ -508,14 +498,21 @@
     renderAdminTickets(allTickets.filter(t => (!q || t.title.toLowerCase().includes(q)) && (!st || t.status === st)));
   }
 
-  function adminChangeStatus(id, status) {
+  async function adminChangeStatus(id, status) {
     const t = allTickets.find(x => x.id === id);
-    if (t) { t.status = status; updateKPIs(); renderStatusBars(); }
+    if (!t) return;
+    t.status = status;
+    // UPDATE tickets SET status = ? WHERE id = ?
+    await TicketDB.save(t);
+    await loadAllData();
+    updateKPIs(); renderStatusBars();
   }
 
-  function deleteTicket(id) {
+  async function deleteTicket(id) {
     if (!confirm('Supprimer ce ticket ?')) return;
-    allTickets = allTickets.filter(x => x.id !== id);
+    // DELETE FROM tickets WHERE id = ?
+    await TicketDB.delete(id);
+    await loadAllData();
     renderAdminTickets(); updateKPIs(); renderStatusBars(); renderPriorityBars();
   }
 
@@ -607,45 +604,46 @@
     renderFeatureFlags();
   }
 
-  function toggleRole(id) {
+  async function toggleRole(id) {
     const u = users.find(x => x.id === id);
     if (!u) return;
     const roles = ['user','agent','admin'];
     u.role = roles[(roles.indexOf(u.role) + 1) % roles.length];
-    saveUsers(); renderUsers(); updateKPIs();
+    await UserDB.save(u);
+    await loadAllData(); renderUsers(); updateKPIs();
   }
 
-  function deleteUser(id) {
+  async function deleteUser(id) {
     if (!confirm('Supprimer cet utilisateur ?')) return;
-    users = users.filter(x => x.id !== id);
-    saveUsers(); renderUsers(); updateKPIs();
+    await UserDB.delete(id);
+    await loadAllData(); renderUsers(); updateKPIs();
   }
 
-  function deleteAgent(id) {
+  async function deleteAgent(id) {
     if (!confirm('Supprimer cet agent ?')) return;
-    agents = agents.filter(x => x.id !== id);
-    saveAgents(); renderAgents(); updateKPIs();
+    await AgentDB.delete(id);
+    await loadAllData(); renderAgents(); updateKPIs();
   }
 
-  function addUser() {
+  async function addUser() {
     const fn = document.getElementById('nu-firstname').value.trim();
     const ln = document.getElementById('nu-lastname').value.trim();
     const em = document.getElementById('nu-email').value.trim();
     const rl = document.getElementById('nu-role').value;
     if (!fn || !ln || !em) return alert('Veuillez remplir tous les champs.');
-    users.push({ id: Date.now(), name: fn + ' ' + ln, email: em, role: rl, createdAt: new Date().toISOString().split('T')[0] });
-    saveUsers(); updateKPIs(); renderUsers(); closeModal('modal-add-user');
+    await UserDB.save({ id: Date.now(), name: fn + ' ' + ln, email: em, role: rl, createdAt: new Date().toISOString().split('T')[0] });
+    await loadAllData(); updateKPIs(); renderUsers(); closeModal('modal-add-user');
     ['nu-firstname','nu-lastname','nu-email'].forEach(id => document.getElementById(id).value = '');
   }
 
-  function addAgent() {
+  async function addAgent() {
     const fn = document.getElementById('na-firstname').value.trim();
     const ln = document.getElementById('na-lastname').value.trim();
     const em = document.getElementById('na-email').value.trim();
     const sp = document.getElementById('na-specialty').value;
     if (!fn || !ln || !em) return alert('Veuillez remplir tous les champs.');
-    agents.push({ id: Date.now(), name: fn + ' ' + ln, email: em, specialty: sp, tickets: 0, resolved: 0 });
-    saveAgents(); updateKPIs(); renderAgents(); closeModal('modal-add-agent');
+    await AgentDB.save({ id: Date.now(), name: fn + ' ' + ln, email: em, specialty: sp, tickets: 0, resolved: 0 });
+    await loadAllData(); updateKPIs(); renderAgents(); closeModal('modal-add-agent');
     ['na-firstname','na-lastname','na-email'].forEach(id => document.getElementById(id).value = '');
   }
 
@@ -669,9 +667,9 @@
       document.getElementById('page-title').textContent    = titles[name][0];
       document.getElementById('page-subtitle').textContent = titles[name][1];
     }
-    if (name === 'tickets')  renderAdminTickets();
-    if (name === 'users')    renderUsers();
-    if (name === 'agents')   renderAgents();
+    if (name === 'tickets')  { loadAllData().then(() => renderAdminTickets()); }
+    if (name === 'users')    { loadAllData().then(() => renderUsers()); }
+    if (name === 'agents')   { loadAllData().then(() => renderAgents()); }
     if (name === 'features') renderFeatureFlags();
   }
 
