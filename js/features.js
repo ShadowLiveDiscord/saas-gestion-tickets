@@ -120,14 +120,53 @@ function setAllFeaturesSave(enabled) {
 
 /**
  * Redirige vers la page "Prochainement" si le module est désactivé.
- * À appeler en tête de chaque page protégée.
+ * dashboard_admin et login sont TOUJOURS accessibles (ne peuvent pas être bloqués).
  */
 function requireFeature(key) {
+  // Ces modules sont inviolables — jamais bloqués
+  const ALWAYS_ACCESSIBLE = ['dashboard_admin', 'login'];
+  if (ALWAYS_ACCESSIBLE.includes(key)) return;
+
   if (!isEnabled(key)) {
     const inPages = window.location.pathname.includes('/pages/');
     window.location.href = (inPages ? '../' : '') + 'pages/unavailable.html?feature=' + key;
   }
 }
+
+/**
+ * Réinitialise TOUS les feature flags à leurs valeurs par défaut.
+ * Accessible via URL ?reset_features=1 ou depuis la console.
+ */
+function resetAllFeatures() {
+  localStorage.removeItem(TF_FEATURES_KEY);
+  console.log('[Features] Tous les modules réinitialisés aux valeurs par défaut.');
+}
+
+/* ── Reset d'urgence via URL ──
+   Ajouter ?reset_features=1 dans n'importe quelle URL pour tout réinitialiser */
+(function checkEmergencyReset() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('reset_features') === '1') {
+    resetAllFeatures();
+    // Retirer le paramètre de l'URL et recharger proprement
+    const clean = window.location.href
+      .replace(/[?&]reset_features=1/, '')
+      .replace(/\?$/, '');
+    window.history.replaceState({}, '', clean);
+
+    // Toast de confirmation
+    const t = document.createElement('div');
+    t.textContent = '✓ Modules réinitialisés aux valeurs par défaut';
+    Object.assign(t.style, {
+      position:'fixed', bottom:'24px', left:'50%', transform:'translateX(-50%)',
+      background:'#10b981', color:'white', padding:'12px 22px', borderRadius:'12px',
+      fontSize:'.875rem', fontWeight:'700', zIndex:'999999', fontFamily:'Inter,sans-serif',
+      boxShadow:'0 8px 24px rgba(16,185,129,.4)'
+    });
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+  }
+})();
 
 /**
  * Masque un élément DOM si le module est désactivé.
@@ -239,7 +278,14 @@ function applyFeature(key, selector) {
 
   /* Navigation vers le panel admin */
   function goAdmin() {
-    // Vérifier si une session existe
+    // Forcer dashboard_admin et login activés (mesure de sécurité)
+    try {
+      const map = _getStateMap();
+      map['dashboard_admin'] = true;
+      map['login']           = true;
+      _saveStored(map);
+    } catch {}
+
     let role = null;
     try {
       const s = localStorage.getItem('tf_user');
