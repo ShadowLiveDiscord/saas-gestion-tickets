@@ -237,8 +237,12 @@
     .msg-text { max-width:75%; padding:9px 13px; border-radius:12px; font-size:.82rem; line-height:1.5; }
     .msg-bubble:not(.user-side) .msg-text { background:white; border:1px solid var(--border); border-radius:0 12px 12px 12px; }
     .msg-bubble.user-side .msg-text { background:linear-gradient(135deg,#4f46e5,#6366f1); color:white; border-radius:12px 0 12px 12px; }
+    .msg-bubble.admin-side { flex-direction:row-reverse; }
+    .msg-bubble.admin-side .msg-text { background:linear-gradient(135deg,#ef4444,#dc2626); color:white; border-radius:12px 0 12px 12px; }
+    .msg-av.admin-av { background:linear-gradient(135deg,#ef4444,#f87171); color:white; }
     .msg-meta { font-size:.65rem; color:var(--text-light); margin-top:3px; padding:0 2px; }
-    .msg-bubble.user-side .msg-meta { text-align:right; }
+    .msg-bubble.user-side .msg-meta,
+    .msg-bubble.admin-side .msg-meta { text-align:right; }
 
     /* ── ANIMATIONS ── */
     @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
@@ -695,8 +699,21 @@
       </div>
       <div class="atd-messages">
         <h4>Fil de discussion</h4>
-        <div id="atd-thread"></div>
+        <div id="atd-thread" style="max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:8px"></div>
       </div>
+    </div>
+    <!-- Zone de réponse admin -->
+    <div id="atd-reply-zone" style="padding:14px 24px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center;background:#f8fafc">
+      <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#ef4444,#f87171);color:white;font-size:.72rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0" id="atd-reply-av">A</div>
+      <input type="text" id="atd-reply-input" placeholder="Répondre en tant qu'admin… (Entrée pour envoyer)"
+        style="flex:1;border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;font-size:.85rem;outline:none;transition:.2s"
+        onfocus="this.style.borderColor='#ef4444';this.style.boxShadow='0 0 0 3px rgba(239,68,68,.1)'"
+        onblur="this.style.borderColor='var(--border)';this.style.boxShadow='none'"
+        onkeydown="if(event.key==='Enter') adminReply()" />
+      <button onclick="adminReply()" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:white;border:none;border-radius:10px;padding:10px 18px;font-size:.82rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:.2s;flex-shrink:0" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
+        Envoyer
+      </button>
     </div>
     <div class="modal-footer" style="justify-content:space-between">
       <button class="btn btn-danger" style="border-radius:9px;font-size:.8rem" onclick="deleteTicketFromModal()">🗑 Supprimer</button>
@@ -940,20 +957,70 @@ function openAdminTicket(id) {
   document.getElementById('atd-status-select').value = t.status;
   document.getElementById('atd-desc').textContent = t.desc;
 
+  renderAdminThread(t);
+  document.getElementById('atd-reply-av').textContent = currentUser?.avatar || currentUser?.name?.charAt(0) || 'A';
+
+  // Masquer reply si ticket fermé
+  const rz = document.getElementById('atd-reply-zone');
+  if (rz) rz.style.display = t.status === 'ferme' ? 'none' : 'flex';
+
+  openModal('modal-ticket-admin');
+  setTimeout(() => {
+    const inp = document.getElementById('atd-reply-input');
+    if (inp && t.status !== 'ferme') inp.focus();
+    const thread = document.getElementById('atd-thread');
+    if (thread) thread.scrollTop = thread.scrollHeight;
+  }, 150);
+}
+
+function renderAdminThread(t) {
+  const msgs = t.messages || [];
   const thread = document.getElementById('atd-thread');
+  document.getElementById('atd-msgs').textContent = msgs.length + ' message' + (msgs.length!==1?'s':'');
   if (msgs.length === 0) {
-    thread.innerHTML = `<div style="text-align:center;padding:16px;color:var(--text-light);font-size:.82rem">Aucun message.</div>`;
-  } else {
-    thread.innerHTML = msgs.map(m=>`
-      <div class="msg-bubble ${m.from==='user'?'user-side':''}">
-        <div class="msg-av ${m.from==='agent'?'a-av':'u-av'}">${m.from==='agent'?'A':'U'}</div>
+    thread.innerHTML = `<div style="text-align:center;padding:20px 0;color:var(--text-light);font-size:.82rem">Aucun message. Soyez le premier à répondre.</div>`;
+    return;
+  }
+  thread.innerHTML = msgs.map(m => {
+    const isAdmin  = m.from === 'admin';
+    const isAgent  = m.from === 'agent';
+    const isUser   = m.from === 'user';
+    const side     = (isAdmin || isAgent) ? (isAdmin ? 'admin-side' : '') : 'user-side';
+    const avClass  = isAdmin ? 'admin-av' : isAgent ? 'a-av' : 'u-av';
+    const avLabel  = isAdmin ? '👑' : isAgent ? 'A' : 'U';
+    const fromLabel= isAdmin ? 'Admin' : isAgent ? 'Agent' : 'Utilisateur';
+    return `
+      <div class="msg-bubble ${side}">
+        <div class="msg-av ${avClass}">${avLabel}</div>
         <div>
           <div class="msg-text">${m.text}</div>
-          <div class="msg-meta">${m.from==='agent'?'Agent':'Utilisateur'} · ${m.time}</div>
+          <div class="msg-meta">${fromLabel} · ${m.time}</div>
         </div>
-      </div>`).join('');
-  }
-  openModal('modal-ticket-admin');
+      </div>`;
+  }).join('');
+}
+
+async function adminReply() {
+  const input = document.getElementById('atd-reply-input');
+  const text  = input?.value?.trim();
+  if (!text || !currentAdminTicketId) return;
+  const t = allTickets.find(x=>x.id===currentAdminTicketId);
+  if (!t) return;
+  const now  = new Date();
+  const time = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+  t.messages = t.messages || [];
+  t.messages.push({ from: 'admin', text, time });
+  if (t.status === 'ouvert') t.status = 'en_cours';
+  await TicketDB.save(t);
+  await loadAllData();
+  input.value = '';
+  renderAdminThread(t);
+  document.getElementById('modal-status-select') && (document.getElementById('atd-status-select').value = t.status);
+  const thread = document.getElementById('atd-thread');
+  if (thread) thread.scrollTop = thread.scrollHeight;
+  updateKPIs(); renderStatusBars(); renderResolutionRing(); updateBannerChips();
+  filterAdminTickets();
+  showToast('Réponse envoyée.', 'success');
 }
 
 async function adminChangeStatusFromModal(status) {
