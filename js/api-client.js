@@ -77,10 +77,15 @@ async function isApiAvailable() {
 
 const AuthAPI = {
   async login(email, password) {
+    // Si API indisponible → fallback comptes démo
+    const apiOk = await isApiAvailable();
+    if (!apiOk) {
+      return _demoLogin(email, password);
+    }
+
     const data = await _post('/auth/login', { email, password });
     if (data && data.token) {
       localStorage.setItem('tf_session_token', data.token);
-      // Stocker l'utilisateur avec _exp pour la vérification d'expiration
       const userStore = {
         ...data.user,
         _token : data.token,
@@ -214,17 +219,38 @@ if (typeof Security !== 'undefined') {
 }
 
 /* ─────────────────────────────────────────
+   MODE DÉMO LOCAL (fallback sans serveur)
+   Comptes : admin@ticketflow.fr / admin123
+             agent@ticketflow.fr / agent123
+             user@ticketflow.fr  / user123
+───────────────────────────────────────── */
+const _DEMO_ACCOUNTS = [
+  { id: 1, name: 'Admin TicketFlow', email: 'admin@ticketflow.fr', password: 'admin123', role: 'admin', company: null },
+  { id: 2, name: 'Agent Support',    email: 'agent@ticketflow.fr', password: 'agent123', role: 'agent', company: null },
+  { id: 3, name: 'Jean Dupont',      email: 'user@ticketflow.fr',  password: 'user123',  role: 'user',  company: null },
+];
+
+function _demoLogin(email, password) {
+  const acc = _DEMO_ACCOUNTS.find(a => a.email === email.toLowerCase() && a.password === password);
+  if (!acc) throw new Error('Email ou mot de passe incorrect.');
+  const token   = 'demo_' + Math.random().toString(36).slice(2);
+  const userObj = { id: acc.id, name: acc.name, email: acc.email, role: acc.role, company: acc.company };
+  const exp     = Date.now() + 86400000;
+  localStorage.setItem('tf_session_token', token);
+  localStorage.setItem('tf_user', JSON.stringify({ ...userObj, _token: token, _exp: exp }));
+  return { token, user: userObj, expires: new Date(exp).toISOString(), _demo: true };
+}
+
+/* ─────────────────────────────────────────
    initDB : compatibilité (no-op pour l'API)
 ───────────────────────────────────────── */
 
 async function initDB() {
-  // Vérifier que l'API est disponible
   const ok = await isApiAvailable();
   if (!ok) {
-    console.warn('[API] Serveur non disponible sur', API_BASE);
-    console.warn('[API] Lancez : cd server && npm install && node server.js');
+    console.warn('[API] Serveur non disponible sur', API_BASE, '→ mode démo local activé');
   } else {
-    console.log('[API] Connecté à MySQL via', API_BASE);
+    console.log('[API] Connecté à', API_BASE);
   }
   return ok;
 }

@@ -254,19 +254,23 @@ async function destroySession() {
  * @returns {Promise<object|null>} session ou null (avec redirection)
  */
 async function requireAuth(requiredRole = null) {
-  const session = await getSession();
+  // On utilise Security.getSession (et non la référence locale) pour que
+  // la surcharge de api-client.js soit toujours prise en compte.
+  const sess = Security || {};
+  const session = await (sess.getSession ? sess.getSession() : getSession());
 
   if (!session) {
-    // Éviter la boucle infinie si on est déjà sur login.html
     if (!window.location.pathname.includes('login.html')) {
-      window.location.href = '../pages/login.html';
+      const inPages = window.location.pathname.includes('/pages/');
+      window.location.href = inPages ? 'login.html' : 'pages/login.html';
     }
     return null;
   }
 
   if (requiredRole && session.role !== 'admin' && session.role !== requiredRole) {
     if (!window.location.pathname.includes('login.html')) {
-      window.location.href = '../pages/login.html';
+      const inPages = window.location.pathname.includes('/pages/');
+      window.location.href = inPages ? 'login.html' : 'pages/login.html';
     }
     return null;
   }
