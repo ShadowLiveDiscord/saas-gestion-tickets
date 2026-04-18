@@ -87,8 +87,8 @@
 
         <!-- Alert erreur -->
         <div class="auth-alert auth-alert-error" id="alert-error">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
-          Email ou mot de passe incorrect.
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+          <span class="alert-msg">Email ou mot de passe incorrect.</span>
         </div>
 
         <form id="login-form" novalidate>
@@ -287,10 +287,27 @@
 
   function showError(msg) {
     const el = document.getElementById('alert-error');
-    el.querySelector('span') ? el.querySelector('span').textContent = msg : (el.lastChild.textContent = ' ' + msg);
+    // Mettre à jour le texte du message
+    let span = el.querySelector('.alert-msg');
+    if (!span) {
+      span = document.createElement('span');
+      span.className = 'alert-msg';
+      el.appendChild(span);
+    }
+    span.innerHTML = msg;
     el.classList.add('show');
     document.getElementById('login-form').classList.add('shake');
     setTimeout(() => { el.classList.remove('show'); document.getElementById('login-form').classList.remove('shake'); }, 5000);
+  }
+
+  function showToast(msg, bg) {
+    const t = document.getElementById('toast-notif');
+    if (!t) return;
+    t.textContent = msg;
+    t.style.background = bg || '#0f172a';
+    t.style.display = 'block';
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => { t.style.display = 'none'; }, 3500);
   }
 
   /* ── Soumission du formulaire ── */
@@ -487,15 +504,6 @@
     closeGoogleModal();
     showToast('✓ Client ID enregistré ! Rechargement…', '#10b981');
     setTimeout(() => location.reload(), 1200);
-  }
-
-  function showToast(msg, bg) {
-    const t = document.getElementById('toast-notif');
-    t.textContent = msg;
-    t.style.background = bg || '#0f172a';
-    t.style.display = 'block';
-    clearTimeout(t._timer);
-    t._timer = setTimeout(() => { t.style.display = 'none'; }, 3500);
   }
 
   // Fermer modal en cliquant dehors

@@ -177,21 +177,8 @@ function clearRateLimit(email) { localStorage.removeItem(_rlKey(email)); }
 
 /* ─────────────────────────────────────────
    4. GESTION DES SESSIONS
+   SessionDB est défini dans database.js (chargé avant security.js)
 ───────────────────────────────────────── */
-
-const SessionDB = {
-  _store: 'sessions',
-  getByToken: (token) => _getByIndex ? _getByIndex('sessions', 'idx_token', token).then(r => r[0] || null)
-                                     : Promise.resolve(null),
-  save:        (s)     => typeof _put !== 'undefined' ? _put('sessions', s) : Promise.resolve(),
-  delete:      (token) => typeof _delete !== 'undefined' ? _delete('sessions', token) : Promise.resolve(),
-  deleteExpired: async () => {
-    if (typeof _getAll === 'undefined') return;
-    const all = await _getAll('sessions');
-    const now = Date.now();
-    for (const s of all) { if (s.expiresAt < now) await _delete('sessions', s.token); }
-  },
-};
 
 /**
  * Crée une nouvelle session sécurisée après connexion réussie
@@ -283,25 +270,9 @@ async function requireAuth(requiredRole = null) {
 }
 
 /* ─────────────────────────────────────────
-   5. CONTENT SECURITY POLICY (Meta tag)
-   Ajoute un CSP de base si non présent
+   5. CONTENT SECURITY POLICY
+   Non appliqué automatiquement en local — peut être activé en production
 ───────────────────────────────────────── */
-(function applyCSP() {
-  if (document.querySelector('meta[http-equiv="Content-Security-Policy"]')) return;
-  const meta = document.createElement('meta');
-  meta.httpEquiv = 'Content-Security-Policy';
-  // Politique permissive pour un app client-side (ajuster selon besoins)
-  meta.content = [
-    "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' https://accounts.google.com https://cdnjs.cloudflare.com https://fonts.googleapis.com",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "font-src 'self' https://fonts.gstatic.com",
-    "img-src 'self' data: https: blob:",
-    "connect-src 'self' https://accounts.google.com",
-    "frame-src https://accounts.google.com",
-  ].join('; ');
-  document.head.prepend(meta);
-})();
 
 /* ─────────────────────────────────────────
    6. NETTOYAGE AUTOMATIQUE
