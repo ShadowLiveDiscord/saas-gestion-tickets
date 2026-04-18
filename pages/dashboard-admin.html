@@ -301,6 +301,30 @@
     .es h3 { font-size:1rem; font-weight:700; margin-bottom:6px; }
     .es p  { font-size:.82rem; color:var(--text-light); max-width:280px; line-height:1.6; }
 
+    /* ── USER CARDS ── */
+    .users-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; padding:20px; }
+    .user-card {
+      background:white; border:1.5px solid var(--border); border-radius:14px;
+      overflow:hidden; transition:.25s; cursor:pointer;
+    }
+    .user-card:hover { border-color:#c7d2fe; box-shadow:0 8px 28px rgba(79,70,229,.1); transform:translateY(-2px); }
+    .user-card-top {
+      padding:16px 18px; display:flex; align-items:center; gap:14px;
+      border-bottom:1px solid var(--border);
+    }
+    .user-av-lg { width:46px; height:46px; min-width:46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.1rem; font-weight:800; color:white; flex-shrink:0; }
+    .user-card-name { font-weight:800; font-size:.92rem; color:var(--text); }
+    .user-card-email { font-size:.75rem; color:var(--text-light); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:170px; }
+    .user-card-body { padding:14px 18px; display:flex; flex-direction:column; gap:12px; }
+    .user-stats-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+    .user-stat { text-align:center; padding:8px; background:#f8fafc; border-radius:9px; }
+    .user-stat-val { font-size:1.05rem; font-weight:900; line-height:1; }
+    .user-stat-lbl { font-size:.6rem; color:var(--text-light); font-weight:600; margin-top:3px; text-transform:uppercase; letter-spacing:.05em; }
+    .user-card-actions { display:flex; gap:6px; }
+    .user-btn { flex:1; padding:7px 8px; border-radius:9px; border:1.5px solid var(--border); background:white; font-size:.72rem; font-weight:700; cursor:pointer; transition:.2s; display:flex; align-items:center; justify-content:center; gap:4px; color:var(--text-light); }
+    .user-btn:hover { background:#eff6ff; border-color:#bfdbfe; color:#2563eb; }
+    .user-btn.danger:hover { background:#fef2f2; border-color:#fecaca; color:#dc2626; }
+
     /* ── AGENT CARDS ── */
     .agents-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; padding:20px; }
     .agent-card {
@@ -567,10 +591,19 @@
         <div class="table-wrapper">
           <div class="table-header">
             <h3>Utilisateurs <span class="tcount" id="users-count">0</span></h3>
-            <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-user')" style="border-radius:9px;display:flex;align-items:center;gap:6px;font-weight:700">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-              Ajouter
-            </button>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <input type="text" id="user-search" class="search-input" placeholder="🔍 Rechercher…" oninput="filterUsers()" />
+              <select id="user-filter-role" class="form-control" style="width:auto;padding:8px 12px;border-radius:9px;font-size:.8rem" onchange="filterUsers()">
+                <option value="">Tous les rôles</option>
+                <option value="user">Utilisateur</option>
+                <option value="agent">Agent</option>
+                <option value="admin">Admin</option>
+              </select>
+              <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-user')" style="border-radius:9px;display:flex;align-items:center;gap:6px;font-weight:700">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                Ajouter
+              </button>
+            </div>
           </div>
           <div id="users-container"></div>
         </div>
@@ -635,6 +668,56 @@
         </div>
       </section>
 
+    </div>
+  </div>
+</div>
+
+<!-- MODAL : DÉTAIL UTILISATEUR -->
+<div class="modal-overlay" id="modal-user-detail">
+  <div class="modal" style="max-width:660px;width:95vw;border-radius:16px;overflow:hidden;max-height:90vh;display:flex;flex-direction:column">
+    <!-- Header -->
+    <div id="mud-header" style="padding:22px 24px;display:flex;align-items:center;gap:16px;border-bottom:1px solid var(--border)">
+      <div id="mud-av" class="user-av-lg" style="font-size:1.3rem;width:56px;height:56px">U</div>
+      <div style="flex:1;min-width:0">
+        <div id="mud-name" style="font-size:1.05rem;font-weight:800;color:var(--text)"></div>
+        <div id="mud-email" style="font-size:.8rem;color:var(--text-light);margin-top:3px"></div>
+        <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+          <span id="mud-role-badge"></span>
+          <span id="mud-since" style="font-size:.68rem;color:var(--text-light);font-weight:500;padding:2px 8px;background:#f1f5f9;border-radius:999px"></span>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal-user-detail')">✕</button>
+    </div>
+    <!-- Stats -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--border)">
+      <div style="padding:14px;text-align:center;border-right:1px solid var(--border)"><div id="mud-s-total" style="font-size:1.4rem;font-weight:900;color:#4f46e5">0</div><div style="font-size:.62rem;color:var(--text-light);font-weight:600;margin-top:3px;text-transform:uppercase;letter-spacing:.05em">Total tickets</div></div>
+      <div style="padding:14px;text-align:center;border-right:1px solid var(--border)"><div id="mud-s-open" style="font-size:1.4rem;font-weight:900;color:#f59e0b">0</div><div style="font-size:.62rem;color:var(--text-light);font-weight:600;margin-top:3px;text-transform:uppercase;letter-spacing:.05em">Ouverts</div></div>
+      <div style="padding:14px;text-align:center;border-right:1px solid var(--border)"><div id="mud-s-cours" style="font-size:1.4rem;font-weight:900;color:#8b5cf6">0</div><div style="font-size:.62rem;color:var(--text-light);font-weight:600;margin-top:3px;text-transform:uppercase;letter-spacing:.05em">En cours</div></div>
+      <div style="padding:14px;text-align:center"><div id="mud-s-resolu" style="font-size:1.4rem;font-weight:900;color:#10b981">0</div><div style="font-size:.62rem;color:var(--text-light);font-weight:600;margin-top:3px;text-transform:uppercase;letter-spacing:.05em">Résolus</div></div>
+    </div>
+    <!-- Actions rapides -->
+    <div style="padding:12px 20px;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#fafafa">
+      <span style="font-size:.75rem;font-weight:700;color:var(--text-light)">Rôle :</span>
+      <select id="mud-role-select" class="status-select" onchange="changeUserRoleFromModal(this.value)">
+        <option value="user">👤 Utilisateur</option>
+        <option value="agent">🛡️ Agent</option>
+        <option value="admin">⚙️ Admin</option>
+      </select>
+      <button id="mud-suspend-btn" onclick="toggleUserSuspend()" style="padding:6px 14px;border-radius:9px;border:1.5px solid var(--border);background:white;font-size:.75rem;font-weight:700;cursor:pointer;transition:.2s;color:var(--text-light)" onmouseover="this.style.borderColor='#f59e0b';this.style.color='#d97706'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-light)'">
+        🚫 Suspendre
+      </button>
+    </div>
+    <!-- Tickets list -->
+    <div style="flex:1;overflow-y:auto">
+      <div style="padding:14px 20px;border-bottom:1px solid var(--border)">
+        <span style="font-size:.8rem;font-weight:700;color:var(--text)">Tickets de cet utilisateur</span>
+      </div>
+      <div id="mud-tickets-list"></div>
+    </div>
+    <!-- Footer -->
+    <div class="modal-footer" style="justify-content:space-between">
+      <button onclick="deleteUserFromModal()" class="btn btn-danger" style="border-radius:9px;font-size:.8rem">🗑 Supprimer l'utilisateur</button>
+      <button class="btn btn-ghost" onclick="closeModal('modal-user-detail')" style="border-radius:9px">Fermer</button>
     </div>
   </div>
 </div>
@@ -1157,55 +1240,182 @@ async function deleteTicket(id) {
 }
 
 // ===== UTILISATEURS =====
-function renderUsers() {
-  document.getElementById('users-count').textContent = users.length;
-  if (users.length === 0) {
-    document.getElementById('users-container').innerHTML = `<div class="es"><div class="es-icon">👤</div><h3>Aucun utilisateur</h3></div>`;
+let currentUserId = null;
+
+const ROLE_COLORS = {
+  user:  { bg:'#eff6ff', color:'#2563eb', label:'👤 Utilisateur' },
+  agent: { bg:'#f0fdf4', color:'#059669', label:'🛡️ Agent' },
+  admin: { bg:'#fef2f2', color:'#dc2626', label:'⚙️ Admin' },
+};
+const USER_AV_GRADIENTS = [
+  'linear-gradient(135deg,#4f46e5,#6366f1)',
+  'linear-gradient(135deg,#0891b2,#06b6d4)',
+  'linear-gradient(135deg,#7c3aed,#8b5cf6)',
+  'linear-gradient(135deg,#059669,#10b981)',
+  'linear-gradient(135deg,#d97706,#f59e0b)',
+  'linear-gradient(135deg,#db2777,#ec4899)',
+];
+
+function renderUsers(list) {
+  const toRender = list !== undefined ? list : users;
+  document.getElementById('users-count').textContent = toRender.length;
+  if (toRender.length === 0) {
+    document.getElementById('users-container').innerHTML = `<div class="es"><div class="es-icon">👤</div><h3>Aucun utilisateur</h3><p>Modifiez vos filtres ou ajoutez un utilisateur.</p></div>`;
     return;
   }
-  document.getElementById('users-container').innerHTML = `
-    <table>
-      <thead><tr><th>Utilisateur</th><th>Email</th><th>Rôle</th><th>Inscrit le</th><th>Actions</th></tr></thead>
-      <tbody>
-        ${users.map((u,i)=>{
-          const avClass = AV_COLORS[i % AV_COLORS.length];
-          const roleLabel = u.role==='admin'?'Admin':u.role==='agent'?'Agent':'Utilisateur';
-          const roleBadge = u.role==='admin'?'badge-danger':u.role==='agent'?'badge-success':'badge-primary';
-          return `
-            <tr>
-              <td><div style="display:flex;align-items:center;gap:10px">
-                <div class="av-sm ${avClass}">${u.name.charAt(0).toUpperCase()}</div>
-                <span style="font-weight:600;font-size:.85rem">${u.name}</span>
-              </div></td>
-              <td style="color:var(--text-light);font-size:.82rem">${u.email}</td>
-              <td><span class="badge ${roleBadge}">${roleLabel}</span></td>
-              <td style="font-size:.78rem;color:var(--text-light)">${formatDate(u.createdAt)}</td>
-              <td><div style="display:flex;gap:6px">
-                <button class="btn btn-sm btn-ghost" style="border-radius:7px;font-size:.75rem" onclick="toggleRole(${u.id})">Changer rôle</button>
-                <button class="btn-icon" onclick="deleteUser(${u.id})" title="Supprimer">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
-                </button>
-              </div></td>
-            </tr>`;
-        }).join('')}
-      </tbody>
-    </table>`;
+  document.getElementById('users-container').innerHTML = `<div class="users-grid">${toRender.map((u,i)=>{
+    const avGrad   = USER_AV_GRADIENTS[i % USER_AV_GRADIENTS.length];
+    const rc       = ROLE_COLORS[u.role] || ROLE_COLORS.user;
+    const uTickets = allTickets.filter(t=>t.userEmail===u.email||t.userName===u.name);
+    const uOpen    = uTickets.filter(t=>t.status==='ouvert').length;
+    const uCours   = uTickets.filter(t=>t.status==='en_cours').length;
+    const uResolu  = uTickets.filter(t=>t.status==='resolu').length;
+    const suspended = u.suspended;
+    return `
+      <div class="user-card${suspended?' opacity-50':''}" onclick="openUserDetail(${u.id})">
+        <div class="user-card-top">
+          <div class="user-av-lg" style="background:${avGrad}">${u.name.charAt(0).toUpperCase()}</div>
+          <div style="flex:1;min-width:0">
+            <div class="user-card-name">${u.name}${suspended?` <span style="font-size:.62rem;background:#fef3c7;color:#92400e;padding:1px 7px;border-radius:999px;font-weight:700;vertical-align:middle">Suspendu</span>`:''}</div>
+            <div class="user-card-email" title="${u.email}">${u.email}</div>
+          </div>
+          <span style="background:${rc.bg};color:${rc.color};font-size:.65rem;font-weight:800;padding:3px 9px;border-radius:999px;flex-shrink:0">${rc.label}</span>
+        </div>
+        <div class="user-card-body">
+          <div class="user-stats-row">
+            <div class="user-stat"><div class="user-stat-val" style="color:#4f46e5">${uTickets.length}</div><div class="user-stat-lbl">Tickets</div></div>
+            <div class="user-stat"><div class="user-stat-val" style="color:#f59e0b">${uOpen+uCours}</div><div class="user-stat-lbl">En attente</div></div>
+            <div class="user-stat"><div class="user-stat-val" style="color:#10b981">${uResolu}</div><div class="user-stat-lbl">Résolus</div></div>
+          </div>
+          <div class="user-card-actions" onclick="event.stopPropagation()">
+            <button class="user-btn" onclick="openUserDetail(${u.id})">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              Voir le profil
+            </button>
+            <button class="user-btn" onclick="quickChangeRole(${u.id})">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+              Rôle
+            </button>
+            <button class="user-btn danger" onclick="deleteUser(${u.id})">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>`;
+  }).join('')}</div>`;
 }
 
-async function toggleRole(id) {
+function filterUsers() {
+  const q    = (document.getElementById('user-search')?.value||'').toLowerCase();
+  const role = document.getElementById('user-filter-role')?.value||'';
+  renderUsers(users.filter(u=>
+    (!q    || u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)) &&
+    (!role || u.role === role)
+  ));
+}
+
+// ── Ouvrir le détail d'un utilisateur ──
+function openUserDetail(userId) {
+  currentUserId = userId;
+  const u = users.find(x=>x.id===userId);
+  if (!u) return;
+  const i = users.indexOf(u);
+  const avGrad = USER_AV_GRADIENTS[i % USER_AV_GRADIENTS.length];
+  const rc     = ROLE_COLORS[u.role] || ROLE_COLORS.user;
+  const uTickets = allTickets.filter(t=>t.userEmail===u.email||t.userName===u.name);
+
+  const av = document.getElementById('mud-av');
+  av.textContent = u.name.charAt(0).toUpperCase();
+  av.style.background = avGrad;
+  document.getElementById('mud-name').textContent  = u.name;
+  document.getElementById('mud-email').textContent = u.email;
+  document.getElementById('mud-role-badge').innerHTML = `<span style="background:${rc.bg};color:${rc.color};font-size:.68rem;font-weight:800;padding:3px 10px;border-radius:999px">${rc.label}</span>`;
+  document.getElementById('mud-since').textContent  = `Inscrit le ${formatDate(u.createdAt||'')}`;
+  document.getElementById('mud-role-select').value  = u.role;
+  document.getElementById('mud-s-total').textContent  = uTickets.length;
+  document.getElementById('mud-s-open').textContent   = uTickets.filter(t=>t.status==='ouvert').length;
+  document.getElementById('mud-s-cours').textContent  = uTickets.filter(t=>t.status==='en_cours').length;
+  document.getElementById('mud-s-resolu').textContent = uTickets.filter(t=>t.status==='resolu').length;
+
+  // Bouton suspend
+  const sb = document.getElementById('mud-suspend-btn');
+  if (u.suspended) {
+    sb.textContent = '✅ Réactiver';
+    sb.style.background = '#f0fdf4'; sb.style.borderColor = '#bbf7d0'; sb.style.color = '#059669';
+  } else {
+    sb.textContent = '🚫 Suspendre';
+    sb.style.background = 'white'; sb.style.borderColor = 'var(--border)'; sb.style.color = 'var(--text-light)';
+  }
+
+  // Tickets de l'utilisateur
+  const list = document.getElementById('mud-tickets-list');
+  if (uTickets.length === 0) {
+    list.innerHTML = `<div class="es" style="padding:30px"><div class="es-icon">🎫</div><h3>Aucun ticket</h3><p>Cet utilisateur n'a pas encore soumis de ticket.</p></div>`;
+  } else {
+    list.innerHTML = `<table>
+      <thead><tr><th>Ticket</th><th>Priorité</th><th>Statut</th><th>Date</th><th></th></tr></thead>
+      <tbody>
+        ${uTickets.map(t=>`
+          <tr>
+            <td><div class="ticket-name">${t.title}</div><div class="ticket-sub">${t.category}</div></td>
+            <td><span class="prio-pill ${PRIO_CLASS[t.priority]}">${PRIO_DOT[t.priority]} ${PRIORITY_LABELS[t.priority]}</span></td>
+            <td><div style="display:flex;align-items:center;gap:5px"><span class="status-dot ${t.status}"></span><span style="font-size:.78rem;font-weight:500">${STATUS_LABELS[t.status]}</span></div></td>
+            <td style="font-size:.75rem;color:var(--text-light)">${formatDate(t.date)}</td>
+            <td><button class="btn btn-sm btn-ghost" style="border-radius:7px;font-size:.72rem" onclick="closeModal('modal-user-detail');openAdminTicket(${t.id})">Ouvrir →</button></td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+  }
+  openModal('modal-user-detail');
+}
+
+async function changeUserRoleFromModal(newRole) {
+  const u = users.find(x=>x.id===currentUserId);
+  if (!u) return;
+  u.role = newRole;
+  await UserDB.save(u);
+  await loadAllData(); filterUsers(); updateKPIs();
+  // Refresh badge dans la modale
+  const rc = ROLE_COLORS[newRole] || ROLE_COLORS.user;
+  document.getElementById('mud-role-badge').innerHTML = `<span style="background:${rc.bg};color:${rc.color};font-size:.68rem;font-weight:800;padding:3px 10px;border-radius:999px">${rc.label}</span>`;
+  showToast(`Rôle changé → ${newRole}`, 'success');
+}
+
+async function toggleUserSuspend() {
+  const u = users.find(x=>x.id===currentUserId);
+  if (!u) return;
+  u.suspended = !u.suspended;
+  await UserDB.save(u);
+  await loadAllData(); filterUsers();
+  openUserDetail(currentUserId);
+  showToast(u.suspended ? 'Utilisateur suspendu.' : 'Utilisateur réactivé.', u.suspended?'warning':'success');
+}
+
+async function deleteUserFromModal() {
+  showConfirm('Supprimer cet utilisateur ?', 'Cette action est irréversible.', async () => {
+    await UserDB.delete(currentUserId);
+    await loadAllData(); filterUsers(); updateKPIs();
+    closeModal('modal-user-detail');
+    showToast('Utilisateur supprimé.', 'success');
+  });
+}
+
+async function quickChangeRole(id) {
   const u = users.find(x=>x.id===id);
   if (!u) return;
   const roles = ['user','agent','admin'];
   u.role = roles[(roles.indexOf(u.role)+1) % roles.length];
   await UserDB.save(u);
-  await loadAllData(); renderUsers(); updateKPIs();
-  showToast(`Rôle changé → ${u.role}`, 'info');
+  await loadAllData(); filterUsers(); updateKPIs();
+  showToast(`Rôle → ${u.role}`, 'info');
 }
+
+async function toggleRole(id) { await quickChangeRole(id); }
 
 async function deleteUser(id) {
   showConfirm('Supprimer cet utilisateur ?', 'Cette action est irréversible.', async () => {
     await UserDB.delete(id);
-    await loadAllData(); renderUsers(); updateKPIs();
+    await loadAllData(); filterUsers(); updateKPIs();
     showToast('Utilisateur supprimé.', 'success');
   });
 }
@@ -1496,9 +1706,9 @@ function showSection(name, clickedEl) {
   const tb = document.getElementById('topbar-add-user');
   if (tb) tb.style.display = name === 'overview' ? '' : 'none';
 
-  if (name==='tickets')  loadAllData().then(() => renderAdminTickets());
-  if (name==='users')    loadAllData().then(() => renderUsers());
-  if (name==='agents')   loadAllData().then(() => renderAgents());
+    if (name==='tickets')  loadAllData().then(() => renderAdminTickets());
+    if (name==='users')    loadAllData().then(() => filterUsers());
+    if (name==='agents')   loadAllData().then(() => renderAgents());
   if (name==='features') renderFeatureFlags();
 }
 
