@@ -136,3 +136,148 @@ function applyFeature(key, selector) {
   if (isEnabled(key)) return;
   document.querySelectorAll(selector).forEach(el => el.style.display = 'none');
 }
+
+/* ─────────────────────────────────────────
+   RACCOURCI CLAVIER — Alt+A → Panel Admin
+───────────────────────────────────────── */
+
+(function initAdminShortcut() {
+
+  /* Résoudre le chemin vers dashboard-admin selon la page courante */
+  function adminPath() {
+    const inPages = window.location.pathname.includes('/pages/');
+    return inPages ? 'dashboard-admin.html' : 'pages/dashboard-admin.html';
+  }
+
+  /* Toast rapide "style inline" (aucune dépendance CSS externe) */
+  function shortcutToast(msg) {
+    const existing = document.getElementById('_tf_shortcut_toast');
+    if (existing) existing.remove();
+
+    const t = document.createElement('div');
+    t.id = '_tf_shortcut_toast';
+    t.innerHTML = msg;
+    Object.assign(t.style, {
+      position        : 'fixed',
+      bottom          : '28px',
+      left            : '50%',
+      transform       : 'translateX(-50%) translateY(20px)',
+      background      : 'linear-gradient(135deg,#1e1b4b,#4f46e5)',
+      color           : '#fff',
+      padding         : '11px 22px',
+      borderRadius    : '12px',
+      fontSize        : '0.875rem',
+      fontWeight      : '600',
+      fontFamily      : 'Inter,sans-serif',
+      zIndex          : '999999',
+      boxShadow       : '0 8px 30px rgba(79,70,229,.45)',
+      transition      : 'all .25s cubic-bezier(.34,1.56,.64,1)',
+      pointerEvents   : 'none',
+      whiteSpace      : 'nowrap',
+      display         : 'flex',
+      alignItems      : 'center',
+      gap             : '8px',
+    });
+    document.body.appendChild(t);
+
+    // Animation entrée
+    requestAnimationFrame(() => {
+      t.style.transform = 'translateX(-50%) translateY(0)';
+      t.style.opacity   = '1';
+    });
+
+    // Disparition
+    setTimeout(() => {
+      t.style.transform = 'translateX(-50%) translateY(20px)';
+      t.style.opacity   = '0';
+      setTimeout(() => t.remove(), 300);
+    }, 1800);
+  }
+
+  /* Badge flottant discret en bas à droite (hint visuel permanent) */
+  function injectShortcutBadge() {
+    if (document.getElementById('_tf_admin_badge')) return;
+    const badge = document.createElement('div');
+    badge.id = '_tf_admin_badge';
+    badge.title = 'Raccourci : Alt+A → Panel Admin';
+    badge.innerHTML = `
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6
+             11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623
+             5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152
+             c-3.196 0-6.1-1.248-8.25-3.285z"/>
+      </svg>
+      <kbd style="background:rgba(255,255,255,.2);padding:1px 5px;border-radius:4px;
+                  font-size:.7rem;font-family:monospace;letter-spacing:.5px">Alt+A</kbd>`;
+    Object.assign(badge.style, {
+      position        : 'fixed',
+      bottom          : '16px',
+      right           : '16px',
+      background      : 'linear-gradient(135deg,#1e1b4b,#4f46e5)',
+      color           : '#fff',
+      padding         : '6px 12px',
+      borderRadius    : '20px',
+      fontSize        : '.75rem',
+      fontWeight      : '600',
+      fontFamily      : 'Inter,sans-serif',
+      zIndex          : '99998',
+      cursor          : 'pointer',
+      display         : 'flex',
+      alignItems      : 'center',
+      gap             : '6px',
+      boxShadow       : '0 4px 14px rgba(79,70,229,.4)',
+      opacity         : '.75',
+      transition      : 'opacity .2s,transform .2s',
+      userSelect      : 'none',
+    });
+    badge.onmouseenter = () => { badge.style.opacity = '1'; badge.style.transform = 'scale(1.05)'; };
+    badge.onmouseleave = () => { badge.style.opacity = '.75'; badge.style.transform = 'scale(1)'; };
+    badge.onclick      = () => goAdmin();
+    document.body.appendChild(badge);
+  }
+
+  /* Navigation vers le panel admin */
+  function goAdmin() {
+    // Vérifier si une session existe
+    let role = null;
+    try {
+      const s = localStorage.getItem('tf_user');
+      if (s) role = JSON.parse(s).role;
+    } catch {}
+
+    if (role === 'admin') {
+      shortcutToast('🛡️ Panel Admin <span style="opacity:.6;font-size:.8rem">→ ouverture…</span>');
+      setTimeout(() => { window.location.href = adminPath(); }, 600);
+    } else if (role) {
+      shortcutToast('⚠️ Accès admin requis — redirection connexion');
+      setTimeout(() => {
+        const inPages = window.location.pathname.includes('/pages/');
+        window.location.href = (inPages ? '' : 'pages/') + 'login.html';
+      }, 900);
+    } else {
+      shortcutToast('🔐 Connexion requise');
+      setTimeout(() => {
+        const inPages = window.location.pathname.includes('/pages/');
+        window.location.href = (inPages ? '' : 'pages/') + 'login.html';
+      }, 900);
+    }
+  }
+
+  /* Écouteur clavier : Alt+A */
+  document.addEventListener('keydown', function(e) {
+    if (e.altKey && !e.shiftKey && !e.ctrlKey && !e.metaKey
+        && (e.key === 'a' || e.key === 'A' || e.key === 'à')) {
+      e.preventDefault();
+      goAdmin();
+    }
+  });
+
+  /* Injecter le badge une fois le DOM prêt */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectShortcutBadge);
+  } else {
+    injectShortcutBadge();
+  }
+
+})();
