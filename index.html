@@ -4,6 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TicketFlow — Gestion de tickets simplifiée</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <!-- Open Graph -->
+  <meta property="og:title" content="TicketFlow — Gestion de tickets simplifiée" />
+  <meta property="og:description" content="Centralisez vos demandes clients, suivez leur avancement en temps réel et offrez un support de qualité." />
+  <meta property="og:image" content="assets/og-image.png" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="assets/og-image.png" />
   <link rel="stylesheet" href="css/style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
@@ -252,6 +260,11 @@
         <div class="hstat"><div class="hstat-val">0€</div><div class="hstat-lbl">Pour commencer</div></div>
       </div>
     </div>
+    <!-- Illustration flottante -->
+    <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:min(800px,90vw);opacity:.18;pointer-events:none;z-index:0">
+      <img src="assets/hero-illustration.png" alt="" style="width:100%;display:block" />
+    </div>
+
     <div class="scroll-hint">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
       Découvrir
@@ -342,6 +355,10 @@
         <div class="section-label">3 rôles distincts</div>
         <h2 class="section-title">Un espace adapté à chacun</h2>
         <p class="section-sub">Chaque rôle dispose d'un tableau de bord personnalisé avec les fonctionnalités dont il a besoin.</p>
+      </div>
+      <!-- Aperçu icônes rôles -->
+      <div class="reveal" style="text-align:center;margin-top:40px;margin-bottom:0">
+        <img src="assets/roles-icons.png" alt="Icônes des rôles TicketFlow" style="max-width:380px;width:100%;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.1)" />
       </div>
       <div class="roles-grid">
         <div class="role-card rc-user reveal">
