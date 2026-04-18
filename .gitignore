@@ -6,6 +6,9 @@ server/node_modules/
 server/.env
 .env
 
+# Config PHP avec credentials MySQL (NE PAS COMMITER)
+api/config.php
+
 # Logs
 *.log
 npm-debug.log*
