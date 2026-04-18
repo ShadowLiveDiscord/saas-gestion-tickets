@@ -703,6 +703,7 @@
 
 <script src="../js/features.js"></script>
 <script src="../js/database.js"></script>
+<script src="../js/security.js"></script>
 <script>
 requireFeature('dashboard_user');
 
@@ -717,9 +718,9 @@ const STATUS_BADGE    = { ouvert: 'badge-primary', en_cours: 'badge-warning', re
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', async () => {
-  const session = localStorage.getItem('tf_user');
-  if (!session) { window.location.href = 'login.html'; return; }
-  currentUser = JSON.parse(session);
+  await initDB();
+  currentUser = await Security.requireAuth('user');
+  if (!currentUser) return; // requireAuth redirige si invalide
   if (currentUser.role !== 'user') {
     window.location.href = currentUser.role === 'admin' ? 'dashboard-admin.html' : 'dashboard-agent.html';
     return;
@@ -1069,7 +1070,7 @@ document.querySelectorAll('.modal-overlay').forEach(el => {
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open')); });
 
-function logout() { localStorage.removeItem('tf_user'); window.location.href = '../index.html'; }
+async function logout() { await Security.destroySession(); window.location.href = '../index.html'; }
 
 function saveProfile() {
   const name  = document.getElementById('profile-name-input').value.trim();

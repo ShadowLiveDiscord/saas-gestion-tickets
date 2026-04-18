@@ -10,6 +10,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <!-- Google Identity Services -->
   <script src="https://accounts.google.com/gsi/client" async></script>
+  <!-- Base de données & Sécurité -->
+  <script src="../js/database.js"></script>
+  <script src="../js/security.js"></script>
 </head>
 <body>
 
@@ -247,6 +250,27 @@
 <script>
   requireFeature('login');
 
+  /* ── Init DB au démarrage ── */
+  (async () => {
+    try { await initDB(); } catch(e) { console.warn('[Login] initDB:', e); }
+    checkExistingSession();
+  })();
+
+  /* ── Redirection si déjà connecté ── */
+  async function checkExistingSession() {
+    const session = await Security.getSession();
+    if (!session) return;
+    const features = getFeatures();
+    redirectByRole(session.role, features);
+  }
+
+  function redirectByRole(role, features) {
+    if (role === 'admin')      window.location.href = 'dashboard-admin.html';
+    else if (role === 'agent') window.location.href = features.dashboard_agent.enabled ? 'dashboard-agent.html' : 'unavailable.html?feature=dashboard_agent';
+    else                       window.location.href = features.dashboard_user.enabled  ? 'dashboard-user.html'  : 'unavailable.html?feature=dashboard_user';
+  }
+
+  /* ── Helpers UI ── */
   function togglePassword(id, btn) {
     const input = document.getElementById(id);
     const hidden = input.type === 'password';
@@ -261,54 +285,78 @@
     document.getElementById('password').classList.add('success');
   }
 
-  const DEMO_ACCOUNTS = {
-    'admin@ticketflow.fr': { password: 'admin123', role: 'admin', name: 'Admin Principal' },
-    'agent@ticketflow.fr': { password: 'agent123', role: 'agent', name: 'Agent Support' },
-    'user@ticketflow.fr':  { password: 'user123',  role: 'user',  name: 'Utilisateur Demo' },
-  };
+  function showError(msg) {
+    const el = document.getElementById('alert-error');
+    el.querySelector('span') ? el.querySelector('span').textContent = msg : (el.lastChild.textContent = ' ' + msg);
+    el.classList.add('show');
+    document.getElementById('login-form').classList.add('shake');
+    setTimeout(() => { el.classList.remove('show'); document.getElementById('login-form').classList.remove('shake'); }, 5000);
+  }
 
+  /* ── Soumission du formulaire ── */
   document.getElementById('login-form').addEventListener('submit', async function(e) {
     e.preventDefault();
-    const email    = document.getElementById('email').value.trim().toLowerCase();
+
+    const emailRaw = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
-    const alertEl  = document.getElementById('alert-error');
     const btn      = document.getElementById('submit-btn');
-    const account  = DEMO_ACCOUNTS[email];
 
-    btn.classList.add('loading');
-    btn.disabled = true;
+    // Validation basique
+    if (!Security.validateEmail(emailRaw)) { showError('Adresse email invalide.'); return; }
+    if (!password) { showError('Veuillez saisir votre mot de passe.'); return; }
 
-    await new Promise(r => setTimeout(r, 800));
+    const email = emailRaw.toLowerCase();
 
-    if (account && account.password === password) {
-      localStorage.setItem('tf_user', JSON.stringify({
-        email, name: account.name, role: account.role,
-        avatar: account.name.charAt(0).toUpperCase()
-      }));
+    // Rate limiting
+    const rl = Security.checkRateLimit(email);
+    if (rl.blocked) {
+      showError(`Trop de tentatives. Réessayez dans ${rl.minutesLeft} minute(s).`);
+      return;
+    }
+
+    btn.classList.add('loading'); btn.disabled = true;
+
+    try {
+      // Chercher l'utilisateur en IndexedDB
+      await initDB();
+      const user = await UserDB.getByEmail(email);
+
+      let authenticated = false;
+      let userData      = null;
+
+      if (user && user.passwordHash) {
+        // Vérification PBKDF2
+        authenticated = await Security.verifyPassword(password, user.passwordHash, user.passwordSalt);
+        if (authenticated) userData = user;
+      }
+
+      if (!authenticated) {
+        const attempt = Security.recordFailedAttempt(email);
+        btn.classList.remove('loading'); btn.disabled = false;
+        if (attempt.blocked) {
+          showError(`Compte temporairement bloqué (${attempt.minutesLeft} min) après trop d'échecs.`);
+        } else {
+          showError(`Email ou mot de passe incorrect. (${attempt.attemptsLeft} tentative(s) restante(s))`);
+        }
+        document.getElementById('password').classList.add('error');
+        setTimeout(() => document.getElementById('password').classList.remove('error'), 3000);
+        return;
+      }
+
+      // Succès — effacer rate limit et créer session
+      Security.clearRateLimit(email);
+      await Security.createSession(userData);
+
+      showToast('✓ Connexion réussie !', '#10b981');
       const features = getFeatures();
-      if (account.role === 'admin') window.location.href = 'dashboard-admin.html';
-      else if (account.role === 'agent') window.location.href = features.dashboard_agent.enabled ? 'dashboard-agent.html' : 'unavailable.html?feature=dashboard_agent';
-      else window.location.href = features.dashboard_user.enabled ? 'dashboard-user.html' : 'unavailable.html?feature=dashboard_user';
-    } else {
-      btn.classList.remove('loading');
-      btn.disabled = false;
-      alertEl.classList.add('show');
-      document.getElementById('login-form').classList.add('shake');
-      setTimeout(() => {
-        alertEl.classList.remove('show');
-        document.getElementById('login-form').classList.remove('shake');
-      }, 4000);
+      setTimeout(() => redirectByRole(userData.role, features), 700);
+
+    } catch(err) {
+      console.error('[Login]', err);
+      btn.classList.remove('loading'); btn.disabled = false;
+      showError('Une erreur est survenue. Réessayez.');
     }
   });
-
-  const session = localStorage.getItem('tf_user');
-  if (session) {
-    const user = JSON.parse(session);
-    const features = getFeatures();
-    if (user.role === 'admin') window.location.href = 'dashboard-admin.html';
-    else if (user.role === 'agent' && features.dashboard_agent.enabled) window.location.href = 'dashboard-agent.html';
-    else if (user.role === 'user' && features.dashboard_user.enabled) window.location.href = 'dashboard-user.html';
-  }
 
   /* ═══════════════════════════════════════
      GOOGLE SIGN-IN

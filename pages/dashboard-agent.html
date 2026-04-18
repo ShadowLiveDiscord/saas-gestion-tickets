@@ -494,6 +494,7 @@
 
 <script src="../js/features.js"></script>
 <script src="../js/database.js"></script>
+<script src="../js/security.js"></script>
 <script>
 requireFeature('dashboard_agent');
 
@@ -510,9 +511,9 @@ const PRIO_DOT        = { bas:'🟢', moyen:'🟡', eleve:'🟠', critique:'🔴
 
 // ── INIT ──
 document.addEventListener('DOMContentLoaded', async () => {
-  const session = localStorage.getItem('tf_user');
-  if (!session) { window.location.href = 'login.html'; return; }
-  currentUser = JSON.parse(session);
+  await initDB();
+  currentUser = await Security.requireAuth('agent');
+  if (!currentUser) return;
   if (currentUser.role !== 'agent') {
     window.location.href = currentUser.role === 'admin' ? 'dashboard-admin.html' : 'dashboard-user.html';
     return;
@@ -832,7 +833,7 @@ function showToast(msg, type='info') {
 }
 
 // ── UTILS ──
-function logout() { localStorage.removeItem('tf_user'); window.location.href = '../index.html'; }
+async function logout() { await Security.destroySession(); window.location.href = '../index.html'; }
 function formatDate(d) {
   if (!d) return '';
   const [y,m,day] = d.split('-');

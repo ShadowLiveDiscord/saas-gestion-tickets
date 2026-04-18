@@ -11,7 +11,7 @@
  */
 
 const DB_NAME    = 'ticketflow_db';
-const DB_VERSION = 1;
+const DB_VERSION = 2; // v2 : ajout store sessions + champs sécurité users
 
 let _db = null;
 
@@ -82,6 +82,25 @@ function openDB() {
       if (!db.objectStoreNames.contains('agents')) {
         const agentsStore = db.createObjectStore('agents', { keyPath: 'id' });
         agentsStore.createIndex('idx_email', 'email', { unique: true });
+      }
+
+      /* ── Object Store : sessions (v2) ──
+         CREATE TABLE sessions (
+           token      TEXT PRIMARY KEY,
+           email      TEXT,
+           role       TEXT,
+           name       TEXT,
+           avatar     TEXT,
+           picture    TEXT,
+           provider   TEXT,
+           createdAt  INTEGER,
+           expiresAt  INTEGER
+         );
+      */
+      if (!db.objectStoreNames.contains('sessions')) {
+        const sessionsStore = db.createObjectStore('sessions', { keyPath: 'token' });
+        sessionsStore.createIndex('idx_token', 'token', { unique: true });
+        sessionsStore.createIndex('idx_email', 'email', { unique: false });
       }
     };
 
@@ -188,11 +207,12 @@ const TicketDB = {
 ───────────────────────────────────────── */
 
 const UserDB = {
-  getAll:   () => _getAll('users'),
-  count:    () => _count('users'),
-  save:     (user) => _put('users', user),
-  saveMany: (users) => _putMany('users', users),
-  delete:   (id) => _delete('users', id),
+  getAll:      () => _getAll('users'),
+  count:       () => _count('users'),
+  getByEmail:  (email) => _getByIndex('users', 'idx_email', email.toLowerCase()).then(r => r[0] || null),
+  save:        (user) => _put('users', { ...user, email: (user.email||'').toLowerCase() }),
+  saveMany:    (users) => _putMany('users', users.map(u => ({ ...u, email: (u.email||'').toLowerCase() }))),
+  delete:      (id) => _delete('users', id),
 };
 
 /* ─────────────────────────────────────────
@@ -200,11 +220,28 @@ const UserDB = {
 ───────────────────────────────────────── */
 
 const AgentDB = {
-  getAll:   () => _getAll('agents'),
-  count:    () => _count('agents'),
-  save:     (agent) => _put('agents', agent),
-  saveMany: (agents) => _putMany('agents', agents),
-  delete:   (id) => _delete('agents', id),
+  getAll:      () => _getAll('agents'),
+  count:       () => _count('agents'),
+  getByEmail:  (email) => _getByIndex('agents', 'idx_email', email.toLowerCase()).then(r => r[0] || null),
+  save:        (agent) => _put('agents', agent),
+  saveMany:    (agents) => _putMany('agents', agents),
+  delete:      (id) => _delete('agents', id),
+};
+
+/* ─────────────────────────────────────────
+   API SESSIONS
+───────────────────────────────────────── */
+
+const SessionDB = {
+  getByToken:     (token) => _getByIndex('sessions', 'idx_token', token).then(r => r[0] || null),
+  getByEmail:     (email) => _getByIndex('sessions', 'idx_email', email.toLowerCase()),
+  save:           (s)     => _put('sessions', s),
+  delete:         (token) => _delete('sessions', token),
+  deleteExpired:  async () => {
+    const all = await _getAll('sessions');
+    const now = Date.now();
+    for (const s of all) { if (s.expiresAt < now) await _delete('sessions', s.token); }
+  },
 };
 
 /* ─────────────────────────────────────────
@@ -285,6 +322,47 @@ async function seedDemoData() {
 }
 
 /**
+ * Initialise les comptes de démo avec mots de passe hashés (PBKDF2)
+ * Exécuté une seule fois, après seedDemoData
+ */
+async function seedDemoAccounts() {
+  if (localStorage.getItem('tf_accounts_seeded')) return;
+
+  // Les fonctions de hachage viennent de security.js (chargé avant database.js dans les pages)
+  if (typeof hashPassword === 'undefined' || typeof generateSalt === 'undefined') return;
+
+  console.log('[DB] Hash des comptes de démo (PBKDF2)...');
+
+  const DEMO = [
+    { id: 'acc_admin', name: 'Admin Principal',  email: 'admin@ticketflow.fr', role: 'admin', password: 'admin123' },
+    { id: 'acc_agent', name: 'Agent Support',    email: 'agent@ticketflow.fr', role: 'agent', password: 'agent123' },
+    { id: 'acc_user',  name: 'Utilisateur Demo', email: 'user@ticketflow.fr',  role: 'user',  password: 'user123'  },
+  ];
+
+  for (const acc of DEMO) {
+    const existing = await UserDB.getByEmail(acc.email);
+    if (existing && existing.passwordHash) continue; // déjà hashé
+
+    const salt = generateSalt();
+    const hash = await hashPassword(acc.password, salt);
+
+    await UserDB.save({
+      id           : acc.id,
+      name         : acc.name,
+      email        : acc.email,
+      role         : acc.role,
+      passwordHash : hash,
+      passwordSalt : salt,
+      createdAt    : new Date().toISOString(),
+      isDemo       : true,
+    });
+  }
+
+  localStorage.setItem('tf_accounts_seeded', '1');
+  console.log('[DB] Comptes de démo hashés ✓');
+}
+
+/**
  * Point d'entrée : initialise la BDD, migre depuis localStorage si besoin, insère les démos.
  * À appeler au DOMContentLoaded de chaque dashboard.
  */
@@ -292,4 +370,5 @@ async function initDB() {
   await openDB();
   await migrateFromLocalStorage();
   await seedDemoData();
+  await seedDemoAccounts();
 }

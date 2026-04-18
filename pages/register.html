@@ -9,6 +9,8 @@
   <link rel="stylesheet" href="../css/auth.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://accounts.google.com/gsi/client" async></script>
+  <script src="../js/database.js"></script>
+  <script src="../js/security.js"></script>
 </head>
 <body>
 
@@ -400,6 +402,9 @@
     }
   });
 
+  // Initialiser la DB au chargement
+  (async () => { try { await initDB(); } catch(e) { console.warn('[Register] initDB:', e); } })();
+
   // Submit
   document.getElementById('register-form').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -409,22 +414,62 @@
     const btn = document.getElementById('submit-btn');
     btn.classList.add('loading'); btn.disabled = true;
 
-    await new Promise(r => setTimeout(r, 900));
+    try {
+      const firstname = document.getElementById('firstname').value.trim();
+      const lastname  = document.getElementById('lastname').value.trim();
+      const company   = document.getElementById('company').value.trim();
+      const email     = document.getElementById('email').value.trim().toLowerCase();
+      const password  = document.getElementById('password').value;
+      const role      = document.querySelector('input[name="role"]:checked').value;
+      const name      = firstname + ' ' + lastname;
 
-    const firstname = document.getElementById('firstname').value.trim();
-    const lastname  = document.getElementById('lastname').value.trim();
-    const email     = document.getElementById('email').value.trim().toLowerCase();
-    const role      = document.querySelector('input[name="role"]:checked').value;
+      // Vérifier si l'email existe déjà
+      const existing = await UserDB.getByEmail(email);
+      if (existing) {
+        btn.classList.remove('loading'); btn.disabled = false;
+        showError('Un compte avec cet email existe déjà. <a href="login.html" style="color:#4f46e5">Se connecter</a>');
+        return;
+      }
 
-    localStorage.setItem('tf_user', JSON.stringify({
-      email, name: firstname + ' ' + lastname, role,
-      avatar: firstname.charAt(0).toUpperCase()
-    }));
+      // Valider la robustesse du mot de passe
+      const pwdCheck = Security.validatePassword(password);
+      if (!pwdCheck.ok) {
+        btn.classList.remove('loading'); btn.disabled = false;
+        showError(pwdCheck.message); return;
+      }
 
-    document.getElementById('alert-success').classList.add('show');
-    setTimeout(() => {
-      window.location.href = role === 'agent' ? 'dashboard-agent.html' : 'dashboard-user.html';
-    }, 1500);
+      // Hacher le mot de passe (PBKDF2)
+      const salt = Security.generateSalt();
+      const hash = await Security.hashPassword(password, salt);
+
+      // Sauvegarder l'utilisateur en IndexedDB
+      const newUser = {
+        id           : 'u_' + Date.now(),
+        name,
+        email,
+        role,
+        company      : company || null,
+        passwordHash : hash,
+        passwordSalt : salt,
+        createdAt    : new Date().toISOString(),
+        suspended    : false,
+        provider     : 'local',
+      };
+      await UserDB.save(newUser);
+
+      // Créer la session
+      await Security.createSession(newUser);
+
+      document.getElementById('alert-success').classList.add('show');
+      setTimeout(() => {
+        window.location.href = role === 'agent' ? 'dashboard-agent.html' : 'dashboard-user.html';
+      }, 1500);
+
+    } catch(err) {
+      console.error('[Register]', err);
+      btn.classList.remove('loading'); btn.disabled = false;
+      showError('Une erreur est survenue. Réessayez.');
+    }
   });
 
   /* ═══════════════════════════════════════
