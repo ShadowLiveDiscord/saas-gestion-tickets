@@ -8,7 +8,14 @@
  * X-Session-Token à chaque requête authentifiée.
  */
 
-const API_BASE = 'http://localhost:3001/api';
+// URL de l'API — définie automatiquement dans js/config.js
+const API_BASE = (typeof TF_CONFIG !== 'undefined') ? TF_CONFIG.API_URL : (() => {
+  const h = window.location.hostname;
+  const p = window.location.protocol;
+  return (h === 'localhost' || h === '127.0.0.1')
+    ? 'http://localhost:3001/api'
+    : `${p}//${h}:3001/api`;
+})();
 
 /* ─────────────────────────────────────────
    HELPER FETCH

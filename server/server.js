@@ -217,8 +217,19 @@ async function cleanSessions() {
 ═══════════════════════════════════════ */
 app.use(express.json({ limit: '2mb' }));
 
+// CORS : accepte toutes les origines configurées (séparées par virgule)
+const allowedOrigins = (process.env.FRONTEND_URL || '*')
+  .split(',').map(s => s.trim());
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: (origin, cb) => {
+    // Pas d'origine (appels serveur-à-serveur, outils) → ok
+    if (!origin) return cb(null, true);
+    // Wildcard → tout accepter
+    if (allowedOrigins.includes('*')) return cb(null, true);
+    if (allowedOrigins.includes(origin)) return cb(null, true);
+    cb(new Error('CORS bloqué pour ' + origin));
+  },
   methods: ['GET','POST','PUT','DELETE','OPTIONS'],
   allowedHeaders: ['Content-Type','Authorization','X-Session-Token'],
   credentials: true,
@@ -555,12 +566,12 @@ app.get('/api/health', async (req, res) => {
 ═══════════════════════════════════════ */
 app.listen(PORT, async () => {
   console.log('');
-  console.log('┌─────────────────────────────────────────┐');
-  console.log('│   TicketFlow API  →  http://localhost:' + PORT + '  │');
-  console.log('└─────────────────────────────────────────┘');
+  console.log('┌─────────────────────────────────────────────────┐');
+  console.log('│   TicketFlow API — port ' + PORT + '                        │');
+  console.log('└─────────────────────────────────────────────────┘');
   console.log('  DB Host    :', process.env.DB_HOST + ':' + process.env.DB_PORT);
   console.log('  DB Name    :', process.env.DB_NAME);
-  console.log('  Frontend   :', process.env.FRONTEND_URL);
+  console.log('  CORS       :', process.env.FRONTEND_URL || '*');
   console.log('');
 
   try {
