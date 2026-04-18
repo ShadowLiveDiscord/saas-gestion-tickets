@@ -578,8 +578,30 @@ app.listen(PORT, async () => {
     await getDB();
     console.log('  ✓ Connecté à MySQL\n');
   } catch(e) {
-    console.error('  ✗ Erreur MySQL :', e.message);
-    console.error('    → Vérifiez les credentials dans server/.env\n');
+    const code = e.code || '';
+    console.error('\n  ✗ Erreur MySQL :', e.message || e);
+    if (code === 'ECONNREFUSED' || code === 'ETIMEDOUT' || !e.message) {
+      console.error('\n  ⚠ CAUSE PROBABLE :');
+      console.error('    Le host "localhost" dans .env désigne le MySQL INTERNE de lordhosting.');
+      console.error('    Il n\'est pas accessible depuis votre PC local.\n');
+      console.error('  SOLUTIONS :');
+      console.error('    A) Déployez ce serveur (server.js) DIRECTEMENT sur lordhosting');
+      console.error('       → le MySQL sera alors accessible en localhost depuis le serveur');
+      console.error('');
+      console.error('    B) Demandez à lordhosting d\'activer les connexions MySQL distantes');
+      console.error('       → ils vous fourniront un hostname externe (ex: sql.lordhosting.com)');
+      console.error('       → remplacez DB_HOST=localhost par ce hostname dans .env');
+      console.error('');
+      console.error('    C) Tunnel SSH (développement uniquement) :');
+      console.error('       ssh -L 3307:localhost:3306 user@votre-serveur-lordhosting');
+      console.error('       Puis DB_HOST=127.0.0.1 et DB_PORT=3307 dans .env\n');
+    } else if (code === 'ER_ACCESS_DENIED_ERROR') {
+      console.error('  → Mot de passe ou utilisateur incorrect dans server/.env\n');
+    } else if (code === 'ER_BAD_DB_ERROR') {
+      console.error('  → La base de données "' + process.env.DB_NAME + '" n\'existe pas encore.');
+      console.error('    Exécutez le SQL fourni dans phpMyAdmin de lordhosting.\n');
+    }
+    console.error('    Code erreur :', code, '\n');
   }
 
   // Nettoyage des sessions expirées toutes les heures
