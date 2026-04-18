@@ -1,0 +1,1 @@
+npx serve "c:\Users\shado\Downloads\Saas Gestion de Ticket" --listen 3000

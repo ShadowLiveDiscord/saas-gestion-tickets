@@ -10,9 +10,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <!-- Google Identity Services -->
   <script src="https://accounts.google.com/gsi/client" async></script>
-  <!-- Base de données & Sécurité -->
-  <script src="../js/database.js"></script>
+  <!-- API MySQL & Sécurité -->
   <script src="../js/security.js"></script>
+  <script src="../js/api-client.js"></script>
 </head>
 <body>
 
@@ -334,44 +334,29 @@
     btn.classList.add('loading'); btn.disabled = true;
 
     try {
-      // Chercher l'utilisateur en IndexedDB
-      await initDB();
-      const user = await UserDB.getByEmail(email);
+      // Connexion via API MySQL
+      const data = await AuthAPI.login(email, password);
 
-      let authenticated = false;
-      let userData      = null;
-
-      if (user && user.passwordHash) {
-        // Vérification PBKDF2
-        authenticated = await Security.verifyPassword(password, user.passwordHash, user.passwordSalt);
-        if (authenticated) userData = user;
-      }
-
-      if (!authenticated) {
-        const attempt = Security.recordFailedAttempt(email);
+      if (!data) {
         btn.classList.remove('loading'); btn.disabled = false;
-        if (attempt.blocked) {
-          showError(`Compte temporairement bloqué (${attempt.minutesLeft} min) après trop d'échecs.`);
-        } else {
-          showError(`Email ou mot de passe incorrect. (${attempt.attemptsLeft} tentative(s) restante(s))`);
-        }
-        document.getElementById('password').classList.add('error');
-        setTimeout(() => document.getElementById('password').classList.remove('error'), 3000);
-        return;
+        return; // AuthAPI redirige si 401
       }
 
-      // Succès — effacer rate limit et créer session
       Security.clearRateLimit(email);
-      await Security.createSession(userData);
-
       showToast('✓ Connexion réussie !', '#10b981');
       const features = getFeatures();
-      setTimeout(() => redirectByRole(userData.role, features), 700);
+      setTimeout(() => redirectByRole(data.user.role, features), 700);
 
     } catch(err) {
-      console.error('[Login]', err);
+      const attempt = Security.recordFailedAttempt(email);
       btn.classList.remove('loading'); btn.disabled = false;
-      showError('Une erreur est survenue. Réessayez.');
+      if (attempt.blocked) {
+        showError(`Compte temporairement bloqué (${attempt.minutesLeft} min).`);
+      } else {
+        showError(`Email ou mot de passe incorrect. (${attempt.attemptsLeft} tentative(s) restante(s))`);
+      }
+      document.getElementById('password').classList.add('error');
+      setTimeout(() => document.getElementById('password').classList.remove('error'), 3000);
     }
   });
 

@@ -1,0 +1,15 @@
+# Dépendances Node.js
+node_modules/
+server/node_modules/
+
+# Variables d'environnement (JAMAIS commiter le .env réel !)
+server/.env
+.env
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db

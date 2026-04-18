@@ -9,8 +9,8 @@
   <link rel="stylesheet" href="../css/auth.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://accounts.google.com/gsi/client" async></script>
-  <script src="../js/database.js"></script>
   <script src="../js/security.js"></script>
+  <script src="../js/api-client.js"></script>
 </head>
 <body>
 
@@ -402,8 +402,8 @@
     }
   });
 
-  // Initialiser la DB au chargement
-  (async () => { try { await initDB(); } catch(e) { console.warn('[Register] initDB:', e); } })();
+  // Vérifier disponibilité API au chargement
+  (async () => { try { await initDB(); } catch(e) { console.warn('[Register] API:', e); } })();
 
   // Submit
   document.getElementById('register-form').addEventListener('submit', async function(e) {
@@ -423,14 +423,6 @@
       const role      = document.querySelector('input[name="role"]:checked').value;
       const name      = firstname + ' ' + lastname;
 
-      // Vérifier si l'email existe déjà
-      const existing = await UserDB.getByEmail(email);
-      if (existing) {
-        btn.classList.remove('loading'); btn.disabled = false;
-        showError('Un compte avec cet email existe déjà. <a href="login.html" style="color:#4f46e5">Se connecter</a>');
-        return;
-      }
-
       // Valider la robustesse du mot de passe
       const pwdCheck = Security.validatePassword(password);
       if (!pwdCheck.ok) {
@@ -438,31 +430,17 @@
         showError(pwdCheck.message); return;
       }
 
-      // Hacher le mot de passe (PBKDF2)
-      const salt = Security.generateSalt();
-      const hash = await Security.hashPassword(password, salt);
+      // Inscription via API MySQL (hash côté serveur avec bcrypt)
+      const data = await AuthAPI.register({ name, email, password, role, company: company || null });
 
-      // Sauvegarder l'utilisateur en IndexedDB
-      const newUser = {
-        id           : 'u_' + Date.now(),
-        name,
-        email,
-        role,
-        company      : company || null,
-        passwordHash : hash,
-        passwordSalt : salt,
-        createdAt    : new Date().toISOString(),
-        suspended    : false,
-        provider     : 'local',
-      };
-      await UserDB.save(newUser);
-
-      // Créer la session
-      await Security.createSession(newUser);
+      if (!data) {
+        btn.classList.remove('loading'); btn.disabled = false;
+        return;
+      }
 
       document.getElementById('alert-success').classList.add('show');
       setTimeout(() => {
-        window.location.href = role === 'agent' ? 'dashboard-agent.html' : 'dashboard-user.html';
+        window.location.href = data.user.role === 'agent' ? 'dashboard-agent.html' : 'dashboard-user.html';
       }, 1500);
 
     } catch(err) {
