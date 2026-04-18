@@ -33,18 +33,22 @@ async function _apiFetch(path, options = {}) {
     ...options,
   });
 
-  // Session expirée → redirection
+  // Session expirée → redirection (sauf si on est déjà sur login.html)
   if (res.status === 401) {
     localStorage.removeItem('tf_user');
     localStorage.removeItem('tf_session_token');
-    const inPages = window.location.pathname.includes('/pages/');
-    window.location.href = (inPages ? '' : 'pages/') + 'login.html';
+    if (!window.location.pathname.includes('login.html')) {
+      const inPages = window.location.pathname.includes('/pages/');
+      window.location.href = (inPages ? '' : 'pages/') + 'login.html';
+    }
     return null;
   }
 
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || 'Erreur API ' + res.status);
-  return data;
+  // Le backend PHP enveloppe les réponses dans { success, data }
+  // → on dépaquette automatiquement pour que le reste du code reçoive les données directement
+  return (data && data.success === true && 'data' in data) ? data.data : data;
 }
 
 const _get    = (path)         => _apiFetch(path);
@@ -74,18 +78,29 @@ async function isApiAvailable() {
 const AuthAPI = {
   async login(email, password) {
     const data = await _post('/auth/login', { email, password });
-    if (data) {
+    if (data && data.token) {
       localStorage.setItem('tf_session_token', data.token);
-      localStorage.setItem('tf_user', JSON.stringify(data.user));
+      // Stocker l'utilisateur avec _exp pour la vérification d'expiration
+      const userStore = {
+        ...data.user,
+        _token : data.token,
+        _exp   : data.expires ? new Date(data.expires).getTime() : (Date.now() + 86400000),
+      };
+      localStorage.setItem('tf_user', JSON.stringify(userStore));
     }
     return data;
   },
 
   async register(userData) {
     const data = await _post('/auth/register', userData);
-    if (data) {
+    if (data && data.token) {
       localStorage.setItem('tf_session_token', data.token);
-      localStorage.setItem('tf_user', JSON.stringify(data.user));
+      const userStore = {
+        ...data.user,
+        _token : data.token,
+        _exp   : Date.now() + 86400000,
+      };
+      localStorage.setItem('tf_user', JSON.stringify(userStore));
     }
     return data;
   },

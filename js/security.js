@@ -257,12 +257,17 @@ async function requireAuth(requiredRole = null) {
   const session = await getSession();
 
   if (!session) {
-    window.location.href = '../pages/login.html';
+    // Éviter la boucle infinie si on est déjà sur login.html
+    if (!window.location.pathname.includes('login.html')) {
+      window.location.href = '../pages/login.html';
+    }
     return null;
   }
 
   if (requiredRole && session.role !== 'admin' && session.role !== requiredRole) {
-    window.location.href = '../pages/login.html';
+    if (!window.location.pathname.includes('login.html')) {
+      window.location.href = '../pages/login.html';
+    }
     return null;
   }
 
