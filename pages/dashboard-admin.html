@@ -301,6 +301,36 @@
     .es h3 { font-size:1rem; font-weight:700; margin-bottom:6px; }
     .es p  { font-size:.82rem; color:var(--text-light); max-width:280px; line-height:1.6; }
 
+    /* ── AGENT CARDS ── */
+    .agents-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; padding:20px; }
+    .agent-card {
+      background:white; border:1.5px solid var(--border); border-radius:14px;
+      overflow:hidden; transition:.25s; cursor:pointer;
+    }
+    .agent-card:hover { border-color:#c4b5fd; box-shadow:0 8px 28px rgba(79,70,229,.1); transform:translateY(-2px); }
+    .agent-card-top {
+      background:linear-gradient(135deg,#0f172a,#1e1b4b);
+      padding:18px 20px; display:flex; align-items:center; gap:14px; position:relative; overflow:hidden;
+    }
+    .agent-card-top::after { content:''; position:absolute; top:-30px; right:-30px; width:100px; height:100px; background:rgba(255,255,255,.04); border-radius:50%; }
+    .agent-av-lg { width:48px; height:48px; min-width:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.1rem; font-weight:800; color:white; border:2px solid rgba(255,255,255,.2); }
+    .agent-card-name { color:white; font-weight:800; font-size:.95rem; }
+    .agent-card-email { color:rgba(255,255,255,.45); font-size:.75rem; margin-top:2px; }
+    .agent-card-body { padding:16px 20px; display:flex; flex-direction:column; gap:12px; }
+    .agent-stats-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+    .agent-stat { text-align:center; padding:8px; background:#f8fafc; border-radius:9px; }
+    .agent-stat-val { font-size:1.1rem; font-weight:900; color:var(--text); line-height:1; }
+    .agent-stat-lbl { font-size:.62rem; color:var(--text-light); font-weight:600; margin-top:3px; text-transform:uppercase; letter-spacing:.05em; }
+    .agent-card-actions { display:flex; gap:8px; }
+    .agent-btn { flex:1; padding:8px 10px; border-radius:9px; border:1.5px solid var(--border); background:white; font-size:.75rem; font-weight:700; cursor:pointer; transition:.2s; display:flex; align-items:center; justify-content:center; gap:5px; }
+    .agent-btn:hover { background:#f5f3ff; border-color:#c4b5fd; color:#7c3aed; }
+    .agent-btn.red:hover { background:#fef2f2; border-color:#fecaca; color:#dc2626; }
+    .agent-btn.green { border-color:#bbf7d0; background:#f0fdf4; color:#059669; }
+    .agent-btn.green:hover { background:#dcfce7; }
+
+    /* Assignation badge dans tickets */
+    .assigned-badge { display:inline-flex; align-items:center; gap:4px; background:#f5f3ff; color:#7c3aed; font-size:.68rem; font-weight:700; padding:2px 8px; border-radius:999px; border:1px solid #ddd6fe; }
+
     @media(max-width:1200px) { .kpi-grid { grid-template-columns:repeat(3,1fr); } }
     @media(max-width:900px)  { .kpi-grid { grid-template-columns:repeat(2,1fr); } .charts-row { grid-template-columns:1fr; } }
   </style>
@@ -327,10 +357,8 @@
   <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
-      <div class="logo-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" width="20" height="20">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75a3.75 3.75 0 01-7.5 0V6m-4.125 4.5h15.75c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125H4.375A1.125 1.125 0 013.25 21.75V11.625C3.25 11.004 3.754 10.5 4.375 10.5z"/>
-        </svg>
+      <div class="logo-icon" style="background:none;padding:0;overflow:hidden;border-radius:10px;box-shadow:0 4px 14px rgba(239,68,68,.35)">
+        <img src="../assets/logo-icon.png" alt="TicketFlow" style="width:34px;height:34px;object-fit:cover;display:block;border-radius:10px" />
       </div>
       TicketFlow
     </div>
@@ -639,6 +667,68 @@
   </div>
 </div>
 
+<!-- MODAL : DÉTAIL AGENT -->
+<div class="modal-overlay" id="modal-agent-detail">
+  <div class="modal" style="max-width:700px;width:95vw;border-radius:16px;overflow:hidden;max-height:90vh;display:flex;flex-direction:column">
+    <div id="mad-header" style="background:linear-gradient(135deg,#0f172a,#1e1b4b);padding:22px 24px;display:flex;align-items:center;gap:16px">
+      <div id="mad-av" class="agent-av-lg" style="font-size:1.2rem">A</div>
+      <div style="flex:1">
+        <div id="mad-name" style="color:white;font-size:1.1rem;font-weight:800"></div>
+        <div id="mad-email" style="color:rgba(255,255,255,.45);font-size:.78rem;margin-top:3px"></div>
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+          <span id="mad-specialty" style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);font-size:.68rem;font-weight:700;padding:2px 10px;border-radius:999px"></span>
+          <span id="mad-perf" style="font-size:.68rem;font-weight:700;padding:2px 10px;border-radius:999px"></span>
+        </div>
+      </div>
+      <button class="modal-close" style="color:rgba(255,255,255,.5);font-size:1.2rem" onclick="closeModal('modal-agent-detail')">✕</button>
+    </div>
+    <div id="mad-stats-row" style="display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--border)">
+      <div style="padding:14px;text-align:center;border-right:1px solid var(--border)"><div id="mad-s-total" style="font-size:1.4rem;font-weight:900;color:#4f46e5">0</div><div style="font-size:.65rem;color:var(--text-light);font-weight:600;margin-top:3px;text-transform:uppercase;letter-spacing:.05em">Traités</div></div>
+      <div style="padding:14px;text-align:center;border-right:1px solid var(--border)"><div id="mad-s-open" style="font-size:1.4rem;font-weight:900;color:#f59e0b">0</div><div style="font-size:.65rem;color:var(--text-light);font-weight:600;margin-top:3px;text-transform:uppercase;letter-spacing:.05em">En cours</div></div>
+      <div style="padding:14px;text-align:center;border-right:1px solid var(--border)"><div id="mad-s-resolved" style="font-size:1.4rem;font-weight:900;color:#10b981">0</div><div style="font-size:.65rem;color:var(--text-light);font-weight:600;margin-top:3px;text-transform:uppercase;letter-spacing:.05em">Résolus</div></div>
+      <div style="padding:14px;text-align:center"><div id="mad-s-pct" style="font-size:1.4rem;font-weight:900;color:#8b5cf6">0%</div><div style="font-size:.65rem;color:var(--text-light);font-weight:600;margin-top:3px;text-transform:uppercase;letter-spacing:.05em">Taux rés.</div></div>
+    </div>
+    <div style="flex:1;overflow-y:auto">
+      <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:.8rem;font-weight:700;color:var(--text)">Tickets assignés à cet agent</span>
+        <button onclick="openAssignModal(currentAgentId)" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;border:none;border-radius:9px;padding:7px 14px;font-size:.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+          Assigner un ticket
+        </button>
+      </div>
+      <div id="mad-tickets-list"></div>
+    </div>
+    <div class="modal-footer" style="justify-content:space-between">
+      <button class="btn btn-danger" style="border-radius:9px;font-size:.8rem" id="mad-delete-btn">🗑 Supprimer l'agent</button>
+      <button class="btn btn-ghost" onclick="closeModal('modal-agent-detail')" style="border-radius:9px">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL : ASSIGNER UN TICKET -->
+<div class="modal-overlay" id="modal-assign-ticket">
+  <div class="modal" style="max-width:520px;width:95vw;border-radius:16px">
+    <div class="modal-header">
+      <div>
+        <h3 style="font-size:.98rem;font-weight:800">Assigner un ticket</h3>
+        <p style="font-size:.78rem;color:var(--text-light);margin-top:3px">Agent : <strong id="assign-agent-name">—</strong></p>
+      </div>
+      <button class="modal-close" onclick="closeModal('modal-assign-ticket')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="margin-bottom:14px">
+        <input type="text" id="assign-search" placeholder="🔍 Rechercher un ticket…" oninput="filterAssignableTickets()"
+          style="width:100%;border:1.5px solid var(--border);border-radius:9px;padding:9px 13px;font-size:.82rem;outline:none;transition:.2s"
+          onfocus="this.style.borderColor='#4f46e5'" onblur="this.style.borderColor='var(--border)'" />
+      </div>
+      <div id="assignable-tickets-list" style="max-height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:6px"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-assign-ticket')" style="border-radius:9px">Annuler</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL : AJOUTER AGENT -->
 <div class="modal-overlay" id="modal-add-agent">
   <div class="modal" style="max-width:480px;width:95vw">
@@ -904,12 +994,13 @@ function renderAdminTickets(list) {
   }
   document.getElementById('admin-tickets-container').innerHTML = `
     <table>
-      <thead><tr><th>Ticket</th><th>Client</th><th>Priorité</th><th>Statut</th><th>Date</th><th>Actions</th></tr></thead>
+      <thead><tr><th>Ticket</th><th>Client</th><th>Assigné à</th><th>Priorité</th><th>Statut</th><th>Date</th><th>Actions</th></tr></thead>
       <tbody>
         ${toShow.map(t=>`
           <tr onclick="openAdminTicket(${t.id})" style="cursor:pointer">
             <td><div class="ticket-name">${t.title}</div><div class="ticket-sub">${t.category} · #${String(t.id).slice(-5)}</div></td>
             <td style="font-size:.82rem">${t.userName||t.userEmail||'—'}</td>
+            <td>${t.assignedTo?`<span class="assigned-badge">🛡️ ${t.assignedTo}</span>`:`<span style="color:#cbd5e1;font-size:.75rem">—</span>`}</td>
             <td><span class="prio-pill ${PRIO_CLASS[t.priority]}">${PRIO_DOT[t.priority]} ${PRIORITY_LABELS[t.priority]}</span></td>
             <td>
               <select class="status-select" onclick="event.stopPropagation()" onchange="event.stopPropagation();adminChangeStatus(${t.id},this.value)">
@@ -1120,52 +1211,193 @@ async function deleteUser(id) {
 }
 
 // ===== AGENTS =====
+let currentAgentId = null;
+
 function renderAgents() {
   document.getElementById('agents-count').textContent = agents.length;
   if (agents.length === 0) {
-    document.getElementById('agents-container').innerHTML = `<div class="es"><div class="es-icon">🛡️</div><h3>Aucun agent</h3></div>`;
+    document.getElementById('agents-container').innerHTML = `<div class="es"><div class="es-icon">🛡️</div><h3>Aucun agent</h3><p>Ajoutez un premier agent de support.</p></div>`;
     return;
   }
-  document.getElementById('agents-container').innerHTML = `
-    <table>
-      <thead><tr><th>Agent</th><th>Email</th><th>Spécialité</th><th>Tickets traités</th><th>Taux résolution</th><th>Action</th></tr></thead>
+  const container = document.getElementById('agents-container');
+  container.innerHTML = `<div class="agents-grid">${agents.map((a,i)=>{
+    const avClass   = AV_COLORS[(i+2) % AV_COLORS.length];
+    const pct       = a.tickets>0 ? Math.round(a.resolved/a.tickets*100) : 0;
+    const pctColor  = pct>=80?'#10b981':pct>=50?'#f59e0b':'#ef4444';
+    const pctBg     = pct>=80?'#f0fdf4':pct>=50?'#fefce8':'#fef2f2';
+    const assigned  = allTickets.filter(t => t.assignedTo === a.name && t.status === 'en_cours').length;
+    const specialty_colors = { 'Technique':'#eff6ff:#2563eb','Facturation':'#fefce8:#854d0e','Commercial':'#f0fdf4:#166534','Généraliste':'#f5f3ff:#7c3aed' };
+    const [sbg, sc] = (specialty_colors[a.specialty]||'#f1f5f9:#64748b').split(':');
+    return `
+      <div class="agent-card" onclick="openAgentDetail(${a.id})">
+        <div class="agent-card-top">
+          <div class="agent-av-lg ${avClass}">${a.name.charAt(0).toUpperCase()}</div>
+          <div style="flex:1;min-width:0;position:relative;z-index:1">
+            <div class="agent-card-name">${a.name}</div>
+            <div class="agent-card-email">${a.email}</div>
+            <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+              <span style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:999px">${a.specialty}</span>
+              ${assigned>0?`<span style="background:rgba(245,158,11,.25);color:#fbbf24;font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:999px">${assigned} en cours</span>`:''}
+            </div>
+          </div>
+          <div style="position:relative;z-index:1;text-align:center">
+            <div style="font-size:1.2rem;font-weight:900;color:${pctColor}">${pct}%</div>
+            <div style="font-size:.6rem;color:rgba(255,255,255,.35);font-weight:600;text-transform:uppercase;letter-spacing:.05em">résolution</div>
+          </div>
+        </div>
+        <div class="agent-card-body">
+          <div class="agent-stats-row">
+            <div class="agent-stat">
+              <div class="agent-stat-val" style="color:#4f46e5">${a.tickets}</div>
+              <div class="agent-stat-lbl">Traités</div>
+            </div>
+            <div class="agent-stat">
+              <div class="agent-stat-val" style="color:#10b981">${a.resolved}</div>
+              <div class="agent-stat-lbl">Résolus</div>
+            </div>
+            <div class="agent-stat">
+              <div class="agent-stat-val" style="color:#f59e0b">${assigned}</div>
+              <div class="agent-stat-lbl">En cours</div>
+            </div>
+          </div>
+          <div class="progress-bar" style="height:6px">
+            <div class="progress-fill" style="width:${pct}%;background:${pctColor}"></div>
+          </div>
+          <div class="agent-card-actions" onclick="event.stopPropagation()">
+            <button class="agent-btn green" onclick="openAgentDetail(${a.id})">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              Voir les tickets
+            </button>
+            <button class="agent-btn" onclick="openAssignModal(${a.id})">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+              Assigner
+            </button>
+            <button class="agent-btn red" onclick="deleteAgent(${a.id})" title="Supprimer">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>`;
+  }).join('')}</div>`;
+}
+
+// ── Ouvrir le détail d'un agent ──
+function openAgentDetail(agentId) {
+  currentAgentId = agentId;
+  const a = agents.find(x=>x.id===agentId);
+  if (!a) return;
+  const i = agents.indexOf(a);
+  const avClass = AV_COLORS[(i+2) % AV_COLORS.length];
+  const pct = a.tickets>0 ? Math.round(a.resolved/a.tickets*100) : 0;
+  const pctColor = pct>=80?'#10b981':pct>=50?'#f59e0b':'#ef4444';
+  const agentTickets = allTickets.filter(t=>t.assignedTo===a.name);
+  const agentOpen    = agentTickets.filter(t=>t.status==='en_cours').length;
+  const agentResolved= agentTickets.filter(t=>t.status==='resolu').length;
+
+  const av = document.getElementById('mad-av');
+  av.textContent = a.name.charAt(0).toUpperCase();
+  av.className = `agent-av-lg ${avClass}`;
+  document.getElementById('mad-name').textContent     = a.name;
+  document.getElementById('mad-email').textContent    = a.email;
+  document.getElementById('mad-specialty').textContent= a.specialty;
+  document.getElementById('mad-perf').textContent     = `${pct}% résolution`;
+  document.getElementById('mad-perf').style.background = pct>=80?'rgba(16,185,129,.2)':pct>=50?'rgba(245,158,11,.2)':'rgba(239,68,68,.2)';
+  document.getElementById('mad-perf').style.color      = pctColor;
+  document.getElementById('mad-s-total').textContent   = a.tickets;
+  document.getElementById('mad-s-open').textContent    = agentOpen;
+  document.getElementById('mad-s-resolved').textContent= agentResolved;
+  document.getElementById('mad-s-pct').textContent     = pct + '%';
+  document.getElementById('mad-delete-btn').onclick    = () => deleteAgent(agentId);
+
+  // Tickets assignés
+  const list = document.getElementById('mad-tickets-list');
+  if (agentTickets.length === 0) {
+    list.innerHTML = `<div class="es" style="padding:30px"><div class="es-icon">📋</div><h3>Aucun ticket assigné</h3><p>Cliquez sur "Assigner un ticket" pour en affecter un.</p></div>`;
+  } else {
+    list.innerHTML = `<table>
+      <thead><tr><th>Ticket</th><th>Priorité</th><th>Statut</th><th>Date</th><th></th></tr></thead>
       <tbody>
-        ${agents.map((a,i)=>{
-          const avClass = AV_COLORS[(i+2) % AV_COLORS.length];
-          const pct = a.tickets>0 ? Math.round(a.resolved/a.tickets*100) : 0;
-          const pctColor = pct>=80?'#10b981':pct>=50?'#f59e0b':'#ef4444';
-          return `
-            <tr>
-              <td><div style="display:flex;align-items:center;gap:10px">
-                <div class="av-sm ${avClass}">${a.name.charAt(0).toUpperCase()}</div>
-                <span style="font-weight:600;font-size:.85rem">${a.name}</span>
-              </div></td>
-              <td style="color:var(--text-light);font-size:.82rem">${a.email}</td>
-              <td><span class="badge badge-gray">${a.specialty}</span></td>
-              <td style="font-size:.85rem;font-weight:600;text-align:center">${a.tickets}</td>
-              <td>
-                <div style="display:flex;align-items:center;gap:8px">
-                  <div class="progress-bar" style="width:70px">
-                    <div class="progress-fill" style="width:${pct}%;background:${pctColor}"></div>
-                  </div>
-                  <span style="font-size:.78rem;font-weight:700;color:${pctColor}">${pct}%</span>
-                </div>
-              </td>
-              <td>
-                <button class="btn-icon" onclick="deleteAgent(${a.id})" title="Supprimer">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
-                </button>
-              </td>
-            </tr>`;
-        }).join('')}
+        ${agentTickets.map(t=>`
+          <tr onclick="openAdminTicket(${t.id})" style="cursor:pointer">
+            <td><div class="ticket-name">${t.title}</div><div class="ticket-sub">${t.category}</div></td>
+            <td><span class="prio-pill ${PRIO_CLASS[t.priority]}">${PRIO_DOT[t.priority]} ${PRIORITY_LABELS[t.priority]}</span></td>
+            <td><div style="display:flex;align-items:center;gap:5px"><span class="status-dot ${t.status}"></span><span style="font-size:.78rem;font-weight:500">${STATUS_LABELS[t.status]}</span></div></td>
+            <td style="font-size:.75rem;color:var(--text-light)">${formatDate(t.date)}</td>
+            <td onclick="event.stopPropagation()">
+              <button onclick="unassignTicket(${t.id})" style="background:none;border:none;color:var(--text-light);cursor:pointer;font-size:.72rem;font-weight:600;padding:4px 8px;border-radius:6px;transition:.2s" onmouseover="this.style.color='#dc2626'" onmouseout="this.style.color='var(--text-light)'">Désassigner</button>
+            </td>
+          </tr>`).join('')}
       </tbody>
     </table>`;
+  }
+  openModal('modal-agent-detail');
+}
+
+// ── Ouvrir la modale d'assignation ──
+function openAssignModal(agentId) {
+  currentAgentId = agentId;
+  const a = agents.find(x=>x.id===agentId);
+  if (!a) return;
+  document.getElementById('assign-agent-name').textContent = a.name;
+  document.getElementById('assign-search').value = '';
+  renderAssignableTickets(allTickets.filter(t=>!t.assignedTo && (t.status==='ouvert'||t.status==='en_cours')));
+  openModal('modal-assign-ticket');
+}
+
+function renderAssignableTickets(list) {
+  const c = document.getElementById('assignable-tickets-list');
+  if (list.length === 0) {
+    c.innerHTML = `<div style="text-align:center;padding:24px;color:var(--text-light);font-size:.82rem">Aucun ticket disponible pour l'assignation.</div>`;
+    return;
+  }
+  c.innerHTML = list.map(t=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;transition:.2s;cursor:pointer" onmouseover="this.style.borderColor='#c4b5fd';this.style.background='#faf5ff'" onmouseout="this.style.borderColor='var(--border)';this.style.background='white'" onclick="assignTicketToAgent(${t.id})">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;font-size:.85rem;color:var(--text)">${t.title}</div>
+        <div style="font-size:.72rem;color:var(--text-light);margin-top:2px">${t.category} · ${t.userName||t.userEmail||'—'}</div>
+      </div>
+      <span class="prio-pill ${PRIO_CLASS[t.priority]}">${PRIO_DOT[t.priority]} ${PRIORITY_LABELS[t.priority]}</span>
+      <button style="background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;border:none;border-radius:8px;padding:5px 12px;font-size:.72rem;font-weight:700;cursor:pointer;flex-shrink:0">Assigner</button>
+    </div>`).join('');
+}
+
+function filterAssignableTickets() {
+  const q = document.getElementById('assign-search').value.toLowerCase();
+  const list = allTickets.filter(t=>!t.assignedTo && (t.status==='ouvert'||t.status==='en_cours') && (!q||t.title.toLowerCase().includes(q)||(t.userName||'').toLowerCase().includes(q)));
+  renderAssignableTickets(list);
+}
+
+async function assignTicketToAgent(ticketId) {
+  const a = agents.find(x=>x.id===currentAgentId);
+  if (!a) return;
+  const t = allTickets.find(x=>x.id===ticketId);
+  if (!t) return;
+  t.assignedTo = a.name;
+  if (t.status==='ouvert') t.status = 'en_cours';
+  await TicketDB.save(t);
+  await loadAllData();
+  closeModal('modal-assign-ticket');
+  openAgentDetail(currentAgentId);
+  updateKPIs(); renderAgents(); updateBannerChips();
+  showToast(`Ticket assigné à ${a.name}.`, 'success');
+}
+
+async function unassignTicket(ticketId) {
+  const t = allTickets.find(x=>x.id===ticketId);
+  if (!t) return;
+  t.assignedTo = null;
+  await TicketDB.save(t);
+  await loadAllData();
+  openAgentDetail(currentAgentId);
+  renderAgents(); updateKPIs();
+  showToast('Ticket désassigné.', 'info');
 }
 
 async function deleteAgent(id) {
   showConfirm('Supprimer cet agent ?', 'Cette action est irréversible.', async () => {
     await AgentDB.delete(id);
     await loadAllData(); renderAgents(); updateKPIs();
+    closeModal('modal-agent-detail');
     showToast('Agent supprimé.', 'success');
   });
 }
