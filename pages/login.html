@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="stylesheet" href="../css/auth.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async></script>
 </head>
 <body>
 
@@ -135,16 +137,17 @@
 
         <div class="divider">ou continuer avec</div>
 
-        <div class="social-grid">
-          <button class="social-btn">
-            <img src="https://www.google.com/favicon.ico" width="16" alt="Google" />
-            Google
-          </button>
-          <button class="social-btn">
-            <svg viewBox="0 0 24 24" fill="#0078d4" width="16" height="16"><path d="M11.5 2C6.25 2 2 6.25 2 11.5S6.25 21 11.5 21 21 16.75 21 11.5 16.75 2 11.5 2zm0 2c1.9 0 3.65.63 5.07 1.68L4.68 16.57A7.47 7.47 0 014 11.5C4 7.36 7.36 4 11.5 4zm0 15c-1.9 0-3.65-.63-5.07-1.68l11.89-10.89A7.47 7.47 0 0119 11.5C19 15.64 15.64 19 11.5 19z"/></svg>
-            Microsoft
-          </button>
-        </div>
+        <!-- Bouton Google officiel -->
+        <button class="social-btn social-btn-google" id="google-signin-btn" onclick="triggerGoogleSignIn()">
+          <svg width="18" height="18" viewBox="0 0 48 48">
+            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            <path fill="none" d="M0 0h48v48H0z"/>
+          </svg>
+          Continuer avec Google
+        </button>
 
         <p class="auth-form-footer">
           Pas encore de compte ? <a href="register.html">Créer un compte</a>
@@ -202,7 +205,52 @@
     </div>
   </div>
 
+<!-- ════ MODAL CONFIGURATION GOOGLE ════ -->
+<div id="modal-google-setup" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;backdrop-filter:blur(4px);align-items:center;justify-content:center">
+  <div style="background:white;border-radius:20px;padding:36px;max-width:480px;width:90%;box-shadow:0 24px 60px rgba(0,0,0,.2);animation:float-up .3s ease">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+      <div style="width:44px;height:44px;border-radius:12px;background:#fff7ed;border:2px solid #fed7aa;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="22" height="22" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      </div>
+      <div>
+        <h3 style="font-size:1.1rem;font-weight:800;color:#0f172a;margin:0">Configurer Google Sign-In</h3>
+        <p style="font-size:.8rem;color:#64748b;margin:2px 0 0">Un Client ID Google est requis</p>
+      </div>
+    </div>
+
+    <div style="background:#f8fafc;border-radius:12px;padding:16px;margin-bottom:18px;border:1px solid #e2e8f0">
+      <p style="font-size:.82rem;font-weight:700;color:#374151;margin:0 0 10px">Comment obtenir un Client ID :</p>
+      <ol style="font-size:.8rem;color:#64748b;padding-left:18px;margin:0;line-height:1.8">
+        <li>Allez sur <a href="https://console.cloud.google.com" target="_blank" style="color:#4f46e5;font-weight:600">console.cloud.google.com</a></li>
+        <li>Créez un projet → APIs &amp; Services → <strong>Credentials</strong></li>
+        <li>Cliquez <strong>Create Credentials → OAuth 2.0 Client ID</strong></li>
+        <li>Type : <strong>Web application</strong></li>
+        <li>Ajoutez dans "Origines autorisées" : <code style="background:#e2e8f0;padding:1px 5px;border-radius:4px">http://localhost:3000</code></li>
+        <li>Copiez le <strong>Client ID</strong> généré</li>
+      </ol>
+    </div>
+
+    <div style="margin-bottom:16px">
+      <label style="font-size:.82rem;font-weight:600;color:#374151;display:block;margin-bottom:6px">Votre Client ID Google</label>
+      <input type="text" id="google-client-id-input" placeholder="xxxx.apps.googleusercontent.com"
+        style="width:100%;padding:10px 14px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:.85rem;outline:none;font-family:Inter,sans-serif;transition:all .2s"
+        onfocus="this.style.borderColor='#4f46e5';this.style.boxShadow='0 0 0 4px rgba(79,70,229,.1)'"
+        onblur="this.style.borderColor='#e5e7eb';this.style.boxShadow='none'" />
+    </div>
+
+    <div style="display:flex;gap:10px">
+      <button onclick="closeGoogleModal()" style="flex:1;padding:11px;border:1.5px solid #e5e7eb;border-radius:10px;background:white;cursor:pointer;font-size:.875rem;font-weight:600;color:#374151;font-family:Inter,sans-serif">
+        Annuler
+      </button>
+      <button onclick="saveGoogleClientId()" style="flex:2;padding:11px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border:none;border-radius:10px;color:white;cursor:pointer;font-size:.875rem;font-weight:700;font-family:Inter,sans-serif;box-shadow:0 4px 12px rgba(79,70,229,.35)">
+        Enregistrer et activer →
+      </button>
+    </div>
+  </div>
 </div>
+
+<!-- Toast notification -->
+<div id="toast-notif" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0f172a;color:white;padding:12px 20px;border-radius:12px;font-size:.85rem;font-weight:500;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.3);white-space:nowrap;animation:float-up .3s ease"></div>
 
 <script src="../js/features.js"></script>
 <script>
@@ -270,6 +318,133 @@
     else if (user.role === 'agent' && features.dashboard_agent.enabled) window.location.href = 'dashboard-agent.html';
     else if (user.role === 'user' && features.dashboard_user.enabled) window.location.href = 'dashboard-user.html';
   }
+
+  /* ═══════════════════════════════════════
+     GOOGLE SIGN-IN
+  ═══════════════════════════════════════ */
+
+  const GOOGLE_CLIENT_ID_KEY = 'tf_google_client_id';
+
+  function getGoogleClientId() {
+    return localStorage.getItem(GOOGLE_CLIENT_ID_KEY) || '';
+  }
+
+  function initGoogleSignIn() {
+    const clientId = getGoogleClientId();
+    if (!clientId || typeof google === 'undefined') return;
+    try {
+      google.accounts.id.initialize({
+        client_id: clientId,
+        callback: handleGoogleCredential,
+        auto_select: false,
+        cancel_on_tap_outside: true,
+      });
+      // afficher le badge "Google configuré" sur le bouton
+      const btn = document.getElementById('google-signin-btn');
+      if (btn) {
+        btn.style.borderColor = '#34A853';
+        btn.style.color = '#1a7340';
+      }
+    } catch(e) { console.warn('Google GSI init error:', e); }
+  }
+
+  function triggerGoogleSignIn() {
+    const clientId = getGoogleClientId();
+    if (!clientId) {
+      openGoogleModal();
+      return;
+    }
+    if (typeof google === 'undefined') {
+      showToast('⚠️ Script Google non chargé. Vérifiez votre connexion internet.', '#f59e0b');
+      return;
+    }
+    google.accounts.id.prompt((notification) => {
+      if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+        // Fallback: ouvrir la popup OAuth manuellement
+        google.accounts.id.renderButton(
+          document.createElement('div'),
+          { theme: 'outline', size: 'large' }
+        );
+        showToast('Activez les pop-ups ou réessayez.', '#f59e0b');
+      }
+    });
+  }
+
+  function handleGoogleCredential(response) {
+    try {
+      const payload = JSON.parse(atob(response.credential.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
+      const name    = payload.name || payload.given_name || 'Utilisateur Google';
+      const email   = (payload.email || '').toLowerCase();
+      const picture = payload.picture || '';
+
+      // Vérifier si c'est un compte admin connu
+      const DEMO = {
+        'admin@ticketflow.fr': 'admin',
+        'agent@ticketflow.fr': 'agent',
+      };
+      const role = DEMO[email] || 'user';
+
+      localStorage.setItem('tf_user', JSON.stringify({
+        email, name, role,
+        avatar: name.charAt(0).toUpperCase(),
+        picture,
+        provider: 'google',
+      }));
+
+      showToast('✓ Connexion Google réussie !', '#10b981');
+      setTimeout(() => {
+        const features = getFeatures();
+        if (role === 'admin') window.location.href = 'dashboard-admin.html';
+        else if (role === 'agent') window.location.href = features.dashboard_agent.enabled ? 'dashboard-agent.html' : 'dashboard-user.html';
+        else window.location.href = features.dashboard_user.enabled ? 'dashboard-user.html' : '../index.html';
+      }, 900);
+    } catch(e) {
+      showToast('Erreur lors de la connexion Google.', '#ef4444');
+      console.error(e);
+    }
+  }
+
+  function openGoogleModal() {
+    const modal = document.getElementById('modal-google-setup');
+    modal.style.display = 'flex';
+    const saved = getGoogleClientId();
+    if (saved) document.getElementById('google-client-id-input').value = saved;
+    document.getElementById('google-client-id-input').focus();
+  }
+
+  function closeGoogleModal() {
+    document.getElementById('modal-google-setup').style.display = 'none';
+  }
+
+  function saveGoogleClientId() {
+    const val = document.getElementById('google-client-id-input').value.trim();
+    if (!val || !val.includes('.apps.googleusercontent.com')) {
+      document.getElementById('google-client-id-input').style.borderColor = '#ef4444';
+      showToast('Client ID invalide. Format attendu : xxxx.apps.googleusercontent.com', '#ef4444');
+      return;
+    }
+    localStorage.setItem(GOOGLE_CLIENT_ID_KEY, val);
+    closeGoogleModal();
+    showToast('✓ Client ID enregistré ! Rechargement…', '#10b981');
+    setTimeout(() => location.reload(), 1200);
+  }
+
+  function showToast(msg, bg) {
+    const t = document.getElementById('toast-notif');
+    t.textContent = msg;
+    t.style.background = bg || '#0f172a';
+    t.style.display = 'block';
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => { t.style.display = 'none'; }, 3500);
+  }
+
+  // Fermer le modal en cliquant à l'extérieur
+  document.getElementById('modal-google-setup').addEventListener('click', function(e) {
+    if (e.target === this) closeGoogleModal();
+  });
+
+  // Initialiser Google Sign-In une fois le script GSI chargé
+  window.addEventListener('load', () => { setTimeout(initGoogleSignIn, 500); });
 </script>
 </body>
 </html>
