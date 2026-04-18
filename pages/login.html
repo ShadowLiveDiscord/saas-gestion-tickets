@@ -137,17 +137,8 @@
 
         <div class="divider">ou continuer avec</div>
 
-        <!-- Bouton Google officiel -->
-        <button class="social-btn social-btn-google" id="google-signin-btn" onclick="triggerGoogleSignIn()">
-          <svg width="18" height="18" viewBox="0 0 48 48">
-            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-            <path fill="none" d="M0 0h48v48H0z"/>
-          </svg>
-          Continuer avec Google
-        </button>
+        <!-- Conteneur bouton Google (renderButton) -->
+        <div id="google-btn-wrap" style="width:100%;min-height:44px"></div>
 
         <p class="auth-form-footer">
           Pas encore de compte ? <a href="register.html">Créer un compte</a>
@@ -329,9 +320,32 @@
     return localStorage.getItem(GOOGLE_CLIENT_ID_KEY) || '';
   }
 
-  function initGoogleSignIn() {
+  function renderGoogleButton() {
+    const wrap     = document.getElementById('google-btn-wrap');
     const clientId = getGoogleClientId();
-    if (!clientId || typeof google === 'undefined') return;
+
+    if (!clientId) {
+      // Pas de Client ID → bouton "Configurer"
+      wrap.innerHTML = `
+        <button class="social-btn social-btn-google" onclick="openGoogleModal()" style="width:100%">
+          <svg width="17" height="17" viewBox="0 0 48 48">
+            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+          </svg>
+          Continuer avec Google
+          <span style="font-size:.7rem;background:#fef3c7;color:#d97706;padding:2px 7px;border-radius:6px;margin-left:4px">⚙ configurer</span>
+        </button>`;
+      return;
+    }
+
+    if (typeof google === 'undefined') {
+      // Script GSI pas encore chargé — réessayer
+      setTimeout(renderGoogleButton, 600);
+      return;
+    }
+
     try {
       google.accounts.id.initialize({
         client_id: clientId,
@@ -339,50 +353,48 @@
         auto_select: false,
         cancel_on_tap_outside: true,
       });
-      // afficher le badge "Google configuré" sur le bouton
-      const btn = document.getElementById('google-signin-btn');
-      if (btn) {
-        btn.style.borderColor = '#34A853';
-        btn.style.color = '#1a7340';
-      }
-    } catch(e) { console.warn('Google GSI init error:', e); }
-  }
 
-  function triggerGoogleSignIn() {
-    const clientId = getGoogleClientId();
-    if (!clientId) {
-      openGoogleModal();
-      return;
+      // Vider et injecter le bouton officiel Google
+      wrap.innerHTML = '';
+      const btnContainer = document.createElement('div');
+      btnContainer.style.cssText = 'width:100%';
+      wrap.appendChild(btnContainer);
+
+      google.accounts.id.renderButton(btnContainer, {
+        theme:         'outline',
+        size:          'large',
+        text:          'continue_with',
+        shape:         'rectangular',
+        logo_alignment:'left',
+        width:         wrap.offsetWidth || 360,
+      });
+
+      // Ajouter un lien "Modifier le Client ID"
+      const editLink = document.createElement('p');
+      editLink.style.cssText = 'font-size:.7rem;color:#9ca3af;text-align:center;margin-top:6px;cursor:pointer';
+      editLink.innerHTML = '⚙ <span style="text-decoration:underline" onclick="openGoogleModal()">Modifier le Client ID</span>';
+      wrap.appendChild(editLink);
+
+    } catch(e) {
+      console.error('Google GSI init error:', e);
+      wrap.innerHTML = `<button class="social-btn" onclick="openGoogleModal()" style="width:100%;color:#ef4444">⚠ Erreur Google — Reconfigurer</button>`;
     }
-    if (typeof google === 'undefined') {
-      showToast('⚠️ Script Google non chargé. Vérifiez votre connexion internet.', '#f59e0b');
-      return;
-    }
-    google.accounts.id.prompt((notification) => {
-      if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-        // Fallback: ouvrir la popup OAuth manuellement
-        google.accounts.id.renderButton(
-          document.createElement('div'),
-          { theme: 'outline', size: 'large' }
-        );
-        showToast('Activez les pop-ups ou réessayez.', '#f59e0b');
-      }
-    });
   }
 
   function handleGoogleCredential(response) {
     try {
-      const payload = JSON.parse(atob(response.credential.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
+      // Décoder le JWT Google (payload = partie du milieu en base64)
+      const b64     = response.credential.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      const payload = JSON.parse(decodeURIComponent(atob(b64).split('').map(c =>
+        '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+      ).join('')));
+
       const name    = payload.name || payload.given_name || 'Utilisateur Google';
       const email   = (payload.email || '').toLowerCase();
       const picture = payload.picture || '';
 
-      // Vérifier si c'est un compte admin connu
-      const DEMO = {
-        'admin@ticketflow.fr': 'admin',
-        'agent@ticketflow.fr': 'agent',
-      };
-      const role = DEMO[email] || 'user';
+      const ADMIN_EMAILS = { 'admin@ticketflow.fr': 'admin', 'agent@ticketflow.fr': 'agent' };
+      const role = ADMIN_EMAILS[email] || 'user';
 
       localStorage.setItem('tf_user', JSON.stringify({
         email, name, role,
@@ -394,9 +406,9 @@
       showToast('✓ Connexion Google réussie !', '#10b981');
       setTimeout(() => {
         const features = getFeatures();
-        if (role === 'admin') window.location.href = 'dashboard-admin.html';
-        else if (role === 'agent') window.location.href = features.dashboard_agent.enabled ? 'dashboard-agent.html' : 'dashboard-user.html';
-        else window.location.href = features.dashboard_user.enabled ? 'dashboard-user.html' : '../index.html';
+        if (role === 'admin')       window.location.href = 'dashboard-admin.html';
+        else if (role === 'agent')  window.location.href = features.dashboard_agent.enabled ? 'dashboard-agent.html' : 'dashboard-user.html';
+        else                        window.location.href = features.dashboard_user.enabled  ? 'dashboard-user.html'  : '../index.html';
       }, 900);
     } catch(e) {
       showToast('Erreur lors de la connexion Google.', '#ef4444');
@@ -409,7 +421,7 @@
     modal.style.display = 'flex';
     const saved = getGoogleClientId();
     if (saved) document.getElementById('google-client-id-input').value = saved;
-    document.getElementById('google-client-id-input').focus();
+    setTimeout(() => document.getElementById('google-client-id-input').focus(), 100);
   }
 
   function closeGoogleModal() {
@@ -438,13 +450,17 @@
     t._timer = setTimeout(() => { t.style.display = 'none'; }, 3500);
   }
 
-  // Fermer le modal en cliquant à l'extérieur
+  // Fermer modal en cliquant dehors
   document.getElementById('modal-google-setup').addEventListener('click', function(e) {
     if (e.target === this) closeGoogleModal();
   });
 
-  // Initialiser Google Sign-In une fois le script GSI chargé
-  window.addEventListener('load', () => { setTimeout(initGoogleSignIn, 500); });
+  // Lancer le rendu dès que possible
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(renderGoogleButton, 300));
+  } else {
+    setTimeout(renderGoogleButton, 300);
+  }
 </script>
 </body>
 </html>
